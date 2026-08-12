@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>日商簿記3級 合格特化型Web学習システム（全100問・高堅牢版）</title>
+  <title>日商簿記3級 合格特化型Web学習システム（本番仕訳表形式）</title>
   <style>
     :root {
       --bg-color: #f8fafc;
@@ -36,7 +36,7 @@
     }
 
     .container {
-      max-width: 900px;
+      max-width: 950px;
       margin: 0 auto;
     }
 
@@ -59,7 +59,7 @@
       font-size: 0.85rem;
     }
 
-    /* ダッシュボードグリッド */
+    /* ダッシュボード */
     .dashboard {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -90,7 +90,7 @@
       color: var(--streak-color);
     }
 
-    /* ツァイガルニク効果・進捗メーター */
+    /* 進捗メーター */
     .progress-container {
       background: var(--card-bg);
       border: 1px solid var(--border-color);
@@ -156,7 +156,7 @@
       word-break: break-word;
     }
 
-    /* ヒントエリア */
+    /* ヒント */
     .hint-toggle-btn {
       background: none;
       border: 1px solid var(--hint-border);
@@ -187,37 +187,50 @@
       display: none;
     }
 
-    /* 入力エリア */
-    .entry-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 15px;
+    /* 本番仕様：横並び仕訳テーブル */
+    .journal-table-wrapper {
+      width: 100%;
+      overflow-x: auto;
       margin-bottom: 15px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
     }
 
-    @media (max-width: 600px) {
-      .entry-grid {
-        grid-template-columns: 1fr;
-      }
+    .journal-table {
+      width: 100%;
+      min-width: 600px; /* モバイルでの潰れ防止 */
+      border-collapse: collapse;
+      background-color: #ffffff;
     }
 
-    .section-title {
-      font-weight: bold;
-      margin-bottom: 8px;
+    .journal-table th, .journal-table td {
+      padding: 8px 10px;
+      border: 1px solid var(--border-color);
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    .journal-table th {
+      background-color: #f1f5f9;
+      font-size: 0.85rem;
       color: #334155;
-      border-bottom: 1px solid var(--border-color);
-      padding-bottom: 4px;
-      font-size: 0.9rem;
+      font-weight: bold;
     }
 
-    .row-input {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 8px;
-      align-items: center;
+    .journal-table th.th-debit {
+      background-color: #eff6ff;
+      color: #1e40af;
+      border-bottom: 2px solid #3b82f6;
     }
 
-    select, input[type="number"] {
+    .journal-table th.th-credit {
+      background-color: #fef2f2;
+      color: #991b1b;
+      border-bottom: 2px solid #ef4444;
+    }
+
+    .journal-table td select, .journal-table td input[type="number"] {
+      width: 100%;
       padding: 8px;
       border: 1px solid var(--border-color);
       border-radius: 4px;
@@ -225,18 +238,8 @@
       outline: none;
     }
 
-    select:focus, input[type="number"]:focus {
+    .journal-table td select:focus, .journal-table td input[type="number"]:focus {
       border-color: var(--primary);
-    }
-
-    select {
-      flex: 1.3;
-      width: 0; /* フレックス縮小バグ防止 */
-    }
-
-    input[type="number"] {
-      flex: 1;
-      width: 0;
     }
 
     .btn-remove-row {
@@ -329,12 +332,12 @@
       background: none;
       border: 1px dashed var(--primary);
       color: var(--primary);
-      padding: 6px 8px;
+      padding: 8px;
       border-radius: 4px;
       cursor: pointer;
       font-size: 0.85rem;
       width: 100%;
-      margin-top: 5px;
+      margin-bottom: 15px;
       font-weight: bold;
     }
   </style>
@@ -344,7 +347,7 @@
 <div class="container">
   <header>
     <h1>日商簿記3級 合格特化型演習システム</h1>
-    <p>TAC講師監修 (全100問) × 行動心理学エンジン × 高信頼性アーキテクチャ</p>
+    <p>TAC講師監修 (全100問) × 標準仕訳表形式 (横並びUI) × SM-2復習アルゴリズム</p>
   </header>
 
   <!-- ダッシュボード -->
@@ -367,7 +370,7 @@
     </div>
   </div>
 
-  <!-- 本日の学習進捗メーター -->
+  <!-- 進捗メーター -->
   <div class="progress-container">
     <div class="progress-header">
       <span>本日の目標進捗</span>
@@ -378,7 +381,7 @@
     </div>
   </div>
 
-  <!-- クイズメインカード -->
+  <!-- 問題カード -->
   <div class="card" id="quiz-card">
     <div class="problem-header">
       <span class="category-badge" id="problem-category">カテゴリー</span>
@@ -392,29 +395,36 @@
     <button class="hint-toggle-btn" onclick="toggleHint()">
       💡 初学者向けヒントを表示/非表示
     </button>
-    <div class="hint-box" id="hint-box">
-      <!-- ヒント本文 -->
+    <div class="hint-box" id="hint-box"></div>
+
+    <!-- 横並び解答欄（標準仕訳帳形式） -->
+    <div class="journal-table-wrapper">
+      <table class="journal-table">
+        <thead>
+          <tr>
+            <th colspan="2" class="th-debit">借方（左側）</th>
+            <th colspan="2" class="th-credit">貸方（右側）</th>
+            <th style="width: 50px;">削除</th>
+          </tr>
+          <tr>
+            <th style="width: 32%;">勘定科目</th>
+            <th style="width: 18%;">金額</th>
+            <th style="width: 32%;">勘定科目</th>
+            <th style="width: 18%;">金額</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="journal-rows">
+          <!-- 動的に行を追加 -->
+        </tbody>
+      </table>
     </div>
 
-    <div class="entry-grid">
-      <!-- 借方入力部分 -->
-      <div>
-        <div class="section-title">借方（左側）</div>
-        <div id="debit-rows"></div>
-        <button class="add-row-btn" onclick="addRow('debit')">+ 行を追加</button>
-      </div>
-
-      <!-- 貸方入力部分 -->
-      <div>
-        <div class="section-title">貸方（右側）</div>
-        <div id="credit-rows"></div>
-        <button class="add-row-btn" onclick="addRow('credit')">+ 行を追加</button>
-      </div>
-    </div>
+    <button class="add-row-btn" onclick="addJournalRow()">+ 複合仕訳用の行を追加する</button>
 
     <button class="btn" id="submit-btn" onclick="checkAnswer()">解答を提出する</button>
 
-    <!-- 結果・解説エリア -->
+    <!-- 解答・解説エリア -->
     <div class="result-box" id="result-box">
       <div id="result-title" style="font-weight: bold; font-size: 1.05rem;"></div>
       <div id="result-detail" style="margin-top: 4px;"></div>
@@ -436,7 +446,7 @@
 <script>
 'use strict';
 
-// --- 全100問 完全データベース ---
+// 全100問データベース（最新許容科目適合・ヒント付）
 const QUESTION_DATABASE = [
   // 1. 商品売買・手付金・発送費 (Q001 - Q018)
   {
@@ -1457,16 +1467,15 @@ const QUESTION_DATABASE = [
   }
 ];
 
-// --- エンジニアリング基準：堅牢なデータ保存 & 例外ハンドリング ---
+// LocalStorage 管理
 class StorageManager {
-  static KEY = 'boki3_system_state_v1';
+  static KEY = 'boki3_system_state_v2';
 
   static loadState() {
     try {
       const serialized = localStorage.getItem(this.KEY);
       if (!serialized) return this.getDefaultState();
       const parsed = JSON.parse(serialized);
-      // 型チェックおよびキー存在保証
       if (typeof parsed !== 'object' || parsed === null) return this.getDefaultState();
       return {
         progress: parsed.progress || {},
@@ -1475,7 +1484,6 @@ class StorageManager {
         todayCount: typeof parsed.todayCount === 'number' ? parsed.todayCount : 0
       };
     } catch (e) {
-      console.warn('LocalStorage error or corrupt data, resetting state:', e);
       return this.getDefaultState();
     }
   }
@@ -1483,36 +1491,23 @@ class StorageManager {
   static saveState(state) {
     try {
       localStorage.setItem(this.KEY, JSON.stringify(state));
-    } catch (e) {
-      console.error('Failed to save state to LocalStorage:', e);
-    }
+    } catch (e) {}
   }
 
   static getDefaultState() {
-    return {
-      progress: {},
-      streak: 0,
-      lastStudyDate: null,
-      todayCount: 0
-    };
+    return { progress: {}, streak: 0, lastStudyDate: null, todayCount: 0 };
   }
 }
 
-// アプリケーション状態
 let state = StorageManager.loadState();
 let currentQuestionIndex = 0;
 let currentErrorType = 'NONE';
 
-// 日付ユーティリティ（タイムゾーン安全）
 function getTodayString() {
   const d = new Date();
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
-// ストリーク & 当日進捗計算
 function checkDailyStreak() {
   const today = getTodayString();
   if (!state.lastStudyDate) return;
@@ -1521,20 +1516,14 @@ function checkDailyStreak() {
   const currentDate = new Date(today);
   const diffDays = Math.round((currentDate - lastDate) / (1000 * 60 * 60 * 24));
 
-  if (diffDays === 1) {
-    // 連続学習成功
-  } else if (diffDays > 1) {
-    // 1日以上空いた場合はストリークリセット
+  if (diffDays > 1) {
     state.streak = 0;
     state.todayCount = 0;
-  }
-
-  if (state.lastStudyDate !== today) {
-    state.todayCount = 0; // 日付が変わっていたら当日の回答カウントリセット
+  } else if (state.lastStudyDate !== today) {
+    state.todayCount = 0;
   }
 }
 
-// ダッシュボードUI更新
 function updateDashboard() {
   checkDailyStreak();
 
@@ -1559,14 +1548,12 @@ function updateDashboard() {
   document.getElementById('stat-streak').innerText = `${state.streak} 日`;
   document.getElementById('stat-ease').innerText = (totalEase / total).toFixed(2);
 
-  // プログレスバー更新（1日目標：最低10問）
   const targetGoal = Math.max(dueCount, 10);
   const percent = Math.min(Math.round((state.todayCount / targetGoal) * 100), 100);
   document.getElementById('progress-bar').style.width = `${percent}%`;
   document.getElementById('progress-text').innerText = `${state.todayCount} / ${targetGoal} 問完了`;
 }
 
-// 問題レンダリング
 function loadQuestion(index) {
   if (index < 0 || index >= QUESTION_DATABASE.length) index = 0;
   currentQuestionIndex = index;
@@ -1582,43 +1569,46 @@ function loadQuestion(index) {
 
   document.getElementById('result-box').style.display = 'none';
 
-  // 入力行クリア＆再生成
-  document.getElementById('debit-rows').innerHTML = '';
-  document.getElementById('credit-rows').innerHTML = '';
+  // 行クリア＆初期行追加
+  const tbody = document.getElementById('journal-rows');
+  tbody.innerHTML = '';
 
-  for (let i = 0; i < Math.max(q.debit.length, 1); i++) addRow('debit');
-  for (let i = 0; i < Math.max(q.credit.length, 1); i++) addRow('credit');
+  const initialRows = Math.max(q.debit.length, q.credit.length, 1);
+  for (let i = 0; i < initialRows; i++) {
+    addJournalRow();
+  }
 }
 
-function addRow(side) {
-  const container = document.getElementById(`${side}-rows`);
+// 本番仕様：1行の中に借方（科目・金額）｜貸方（科目・金額）を生成
+function addJournalRow() {
+  const tbody = document.getElementById('journal-rows');
   const q = QUESTION_DATABASE[currentQuestionIndex];
 
-  const div = document.createElement('div');
-  div.className = 'row-input';
+  const tr = document.createElement('tr');
 
-  let optionsHtml = '<option value="">(勘定科目を選択)</option>';
+  let optionsHtml = '<option value="">(選択)</option>';
   q.options.forEach(opt => {
     optionsHtml += `<option value="${escapeHtml(opt)}">${escapeHtml(opt)}</option>`;
   });
 
-  div.innerHTML = `
-    <select class="${side}-account">${optionsHtml}</select>
-    <input type="number" class="${side}-amount" placeholder="金額" min="0" step="100">
-    <button type="button" class="btn-remove-row" onclick="removeRow(this)">✕</button>
+  tr.innerHTML = `
+    <td><select class="debit-account">${optionsHtml}</select></td>
+    <td><input type="number" class="debit-amount" placeholder="0" min="0" step="100"></td>
+    <td><select class="credit-account">${optionsHtml}</select></td>
+    <td><input type="number" class="credit-amount" placeholder="0" min="0" step="100"></td>
+    <td><button type="button" class="btn-remove-row" onclick="removeJournalRow(this)">✕</button></td>
   `;
-  container.appendChild(div);
+  tbody.appendChild(tr);
 }
 
-function removeRow(btn) {
-  const row = btn.parentElement;
-  const container = row.parentElement;
-  if (container.children.length > 1) {
-    row.remove();
+function removeJournalRow(btn) {
+  const tbody = document.getElementById('journal-rows');
+  if (tbody.children.length > 1) {
+    btn.closest('tr').remove();
   } else {
-    // 1行しか残っていない場合はクリア
-    row.querySelector('select').value = '';
-    row.querySelector('input').value = '';
+    const tr = tbody.children[0];
+    tr.querySelectorAll('select').forEach(s => s.value = '');
+    tr.querySelectorAll('input').forEach(i => i.value = '');
   }
 }
 
@@ -1679,7 +1669,7 @@ function checkAnswer() {
   if (debitCorrect && creditCorrect) {
     resultBox.className = 'result-box correct';
     resultTitle.innerText = '正解！ (Correct)';
-    resultDetail.innerText = '勘定科目・金額ともに貸借一致しています。';
+    resultDetail.innerText = '借方・貸方の勘定科目および金額が完全に一致しています。';
     currentErrorType = 'NONE';
   } else {
     resultBox.className = 'result-box incorrect';
@@ -1687,29 +1677,26 @@ function checkAnswer() {
     
     if (!debitCorrect && !creditCorrect) {
       currentErrorType = 'CONCEPT';
-      resultDetail.innerText = '借方・貸方ともに不一致です。問題文の取引構造を再確認しましょう。';
+      resultDetail.innerText = '借方・貸方ともに不一致です。仕訳の基本構造を確認してください。';
     } else {
       currentErrorType = 'ACCOUNT_ITEM';
-      resultDetail.innerText = '勘定科目の選択または数値計算にミスがあります。';
+      resultDetail.innerText = '勘定科目の選択または金額計算にミスがあります。';
     }
   }
 
   expBox.innerText = q.explanation;
 }
 
-// SM-2アルゴリズム ＆ 心理学ストリーク計算
 function applySelfEval(quality) {
   const q = QUESTION_DATABASE[currentQuestionIndex];
   const today = getTodayString();
 
-  // ストリーク＆進捗カウントの更新
   if (state.lastStudyDate !== today) {
     state.streak = (state.lastStudyDate) ? state.streak + 1 : 1;
     state.lastStudyDate = today;
   }
   state.todayCount += 1;
 
-  // SM-2 パラメータ計算
   let p = state.progress[q.id] || {
     intervalDays: 0,
     repetitionCount: 0,
@@ -1729,7 +1716,6 @@ function applySelfEval(quality) {
     repetitionCount++;
   }
 
-  // 難易度係数（EaseFactor）更新
   easeFactor = easeFactor + (0.1 - (3 - quality) * (0.08 + (3 - quality) * 0.02));
   if (currentErrorType === 'ACCOUNT_ITEM') easeFactor -= 0.05;
   if (currentErrorType === 'CONCEPT') easeFactor -= 0.10;
@@ -1756,7 +1742,6 @@ function nextQuestion() {
   loadQuestion(nextIdx);
 }
 
-// アプリケーション初期化
 window.addEventListener('DOMContentLoaded', () => {
   updateDashboard();
   loadQuestion(0);
@@ -1765,4 +1750,3 @@ window.addEventListener('DOMContentLoaded', () => {
 
 </body>
 </html>
-
