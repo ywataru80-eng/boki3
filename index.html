@@ -124,6 +124,158 @@
       transition: width 0.3s ease;
     }
 
+
+    /* 項目別目次 */
+    .toc-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      margin-bottom: 10px;
+      overflow: hidden;
+    }
+
+    .toc-main-details > summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 12px 14px;
+      font-weight: 700;
+      color: #0f172a;
+      background: #eef2ff;
+      border-bottom: 1px solid transparent;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      user-select: none;
+    }
+
+    .toc-main-details > summary::-webkit-details-marker,
+    .toc-group details > summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .toc-main-details[open] > summary {
+      border-bottom-color: var(--border-color);
+    }
+
+    .toc-summary-sub {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .toc-body {
+      padding: 10px;
+      background: #f8fafc;
+    }
+
+    .toc-help {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin: 0 2px 8px;
+    }
+
+    .toc-group {
+      margin-bottom: 7px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      overflow: hidden;
+      background: #ffffff;
+    }
+
+    .toc-group:last-child {
+      margin-bottom: 0;
+    }
+
+    .toc-group details > summary {
+      cursor: pointer;
+      list-style: none;
+      padding: 9px 10px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #334155;
+      background: #f8fafc;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .toc-group-count {
+      color: var(--text-muted);
+      font-size: 0.7rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .toc-question-list {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 5px;
+      padding: 8px;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    .toc-question-btn {
+      width: 100%;
+      border: 1px solid #cbd5e1;
+      border-radius: 5px;
+      background: #ffffff;
+      color: #334155;
+      padding: 8px 9px;
+      text-align: left;
+      cursor: pointer;
+      font-size: 0.76rem;
+      line-height: 1.35;
+    }
+
+    .toc-question-btn:hover,
+    .toc-question-btn:focus-visible {
+      background: #eff6ff;
+      border-color: #93c5fd;
+      outline: none;
+    }
+
+    .toc-question-btn.active {
+      background: #dbeafe;
+      border-color: var(--primary);
+      color: #1e3a8a;
+      font-weight: 700;
+    }
+
+    .toc-question-id {
+      display: inline-block;
+      min-width: 3.3em;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .toc-fab {
+      position: fixed;
+      left: 14px;
+      bottom: 14px;
+      z-index: 900;
+      border: none;
+      border-radius: 999px;
+      background: #334155;
+      color: #ffffff;
+      padding: 10px 14px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.25);
+      cursor: pointer;
+    }
+
+    .toc-fab:active {
+      transform: translateY(1px);
+    }
+
+    @media (min-width: 640px) {
+      .toc-question-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
     .card {
       background: var(--card-bg);
       border: 1px solid var(--border-color);
@@ -559,7 +711,7 @@
 <div class="container">
   <header>
     <h1>日商簿記3級 仕訳特化型演習システム（200問・教科書解説版）</h1>
-    <p>2026年度出題区分対応 (全200問) × 教科書型解説 × スマホ最適化 × 教材版 v7.3</p>
+    <p>2026年度出題区分対応 (全200問) × 教科書型解説 × スマホ最適化 × 教材版 v7.4</p>
   </header>
 
   <!-- ダッシュボード -->
@@ -596,6 +748,20 @@
       <div class="progress-bar-fill" id="progress-bar"></div>
     </div>
   </div>
+
+  <!-- 項目別目次 -->
+  <section class="toc-card" id="toc-card" aria-label="項目別目次">
+    <details class="toc-main-details" id="toc-details">
+      <summary>
+        <span>☰ 項目別目次</span>
+        <span class="toc-summary-sub">全200問・タップで直接移動</span>
+      </summary>
+      <div class="toc-body">
+        <p class="toc-help">項目を開き、学習したい問題を選択してください。目次から問題を開いただけでは学習回数や復習履歴は更新されません。</p>
+        <div id="toc-groups"></div>
+      </div>
+    </details>
+  </section>
 
   <!-- 問題カード -->
   <div class="card" id="quiz-card">
@@ -662,6 +828,9 @@
   </div>
 </div>
 
+<!-- フローティング目次ボタン -->
+<button type="button" class="toc-fab" onclick="openTableOfContents()">☰ 目次</button>
+
 <!-- フローティング電卓ボタン -->
 <button type="button" class="calc-fab" onclick="toggleCalculator()">
   🧮 電卓
@@ -710,7 +879,7 @@
 <script>
 'use strict';
 
-// 全200問データベース（2026年度適用 出題区分対応・教科書型解説 v7.3）
+// 全200問データベース（2026年度適用 出題区分対応・教科書型解説 v7.4）
 const QUESTION_DATABASE = [
   {
     "id": "Q001",
@@ -5678,6 +5847,102 @@ const QUESTION_DATABASE = [
   }
 ];
 
+
+// 項目別目次（問題番号の範囲で分類）
+const TOC_GROUPS = [
+  { title: "商品売買・手付金・諸掛り", start: 1, end: 20 },
+  { title: "現金・預金・小口現金", start: 21, end: 40 },
+  { title: "手形・電子記録債権債務", start: 41, end: 60 },
+  { title: "固定資産・減価償却", start: 61, end: 80 },
+  { title: "貸倒れ・貸倒引当金", start: 81, end: 89 },
+  { title: "経過勘定・消耗品", start: 90, end: 100 },
+  { title: "給与・社会保険・税金", start: 101, end: 111 },
+  { title: "株式会社の純資産・配当", start: 112, end: 116 },
+  { title: "小口現金・貯蔵品・借入金", start: 117, end: 122 },
+  { title: "決算整理・仮勘定・諸費用収益", start: 123, end: 150 },
+  { title: "商品売買・消費税 追加演習", start: 151, end: 160 },
+  { title: "総合演習", start: 161, end: 200 }
+];
+
+let quizCardTemplate = '';
+
+function renderTableOfContents() {
+  const host = document.getElementById('toc-groups');
+  if (!host) return;
+  host.innerHTML = '';
+
+  TOC_GROUPS.forEach(group => {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'toc-group';
+
+    const details = document.createElement('details');
+    const summary = document.createElement('summary');
+    const label = document.createElement('span');
+    label.textContent = group.title;
+    const count = document.createElement('span');
+    count.className = 'toc-group-count';
+    count.textContent = `Q${String(group.start).padStart(3, '0')}〜Q${String(group.end).padStart(3, '0')}`;
+    summary.append(label, count);
+    details.appendChild(summary);
+
+    const list = document.createElement('div');
+    list.className = 'toc-question-list';
+
+    for (let no = group.start; no <= group.end; no++) {
+      const q = QUESTION_DATABASE[no - 1];
+      if (!q) continue;
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'toc-question-btn';
+      button.dataset.questionId = q.id;
+      button.innerHTML = `<span class="toc-question-id">${escapeHtml(q.id)}</span>${escapeHtml(q.category)}`;
+      button.addEventListener('click', () => goToQuestion(q.id));
+      list.appendChild(button);
+    }
+
+    details.appendChild(list);
+    wrapper.appendChild(details);
+    host.appendChild(wrapper);
+  });
+}
+
+function updateTocActive(questionId) {
+  document.querySelectorAll('.toc-question-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.questionId === questionId);
+  });
+}
+
+function ensureQuizCardShell() {
+  const quizCard = document.getElementById('quiz-card');
+  if (!quizCard) return;
+  if (!document.getElementById('problem-category') && quizCardTemplate) {
+    quizCard.innerHTML = quizCardTemplate;
+  }
+}
+
+function goToQuestion(questionId) {
+  const index = QUESTION_DATABASE.findIndex(q => q.id === questionId);
+  if (index < 0) return;
+
+  ensureQuizCardShell();
+  loadQuestion(index);
+
+  const tocDetails = document.getElementById('toc-details');
+  if (tocDetails) tocDetails.open = false;
+
+  requestAnimationFrame(() => {
+    const quizCard = document.getElementById('quiz-card');
+    if (quizCard) quizCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+}
+
+function openTableOfContents() {
+  const tocDetails = document.getElementById('toc-details');
+  if (tocDetails) tocDetails.open = true;
+  const tocCard = document.getElementById('toc-card');
+  if (tocCard) tocCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
 // 有効問題IDマップの生成
 const VALID_QUESTION_IDS = new Set(QUESTION_DATABASE.map(q => q.id));
 
@@ -5687,7 +5952,7 @@ const UPDATED_FROM_V7_0_IDS = new Set(["Q012","Q024","Q029","Q036","Q039","Q052"
 // --- 堅牢な LocalStorage 管理クラス ---
 class StorageManager {
   static KEY_200 = 'boki3_system_state_v6_200';
-  // 教材表示はv7.3だが、問題文・正答の対応はv7.1と同一のため、学習履歴互換性を保つためbankVersionはv7.1のままとする。
+  // 教材表示はv7.4だが、問題文・正答の対応はv7.1と同一のため、学習履歴互換性を保つためbankVersionはv7.1のままとする。
   static VERSION = 'v7.1';
 
   static loadState() {
@@ -5912,6 +6177,8 @@ function loadQuestion(index) {
     return;
   }
 
+  ensureQuizCardShell();
+
   if (index < 0 || index >= QUESTION_DATABASE.length) index = 0;
   currentQuestionIndex = index;
   isAnswered = false;
@@ -5921,6 +6188,7 @@ function loadQuestion(index) {
   setEvalButtonsDisabled(true);
 
   const q = QUESTION_DATABASE[index];
+  updateTocActive(q.id);
 
   document.getElementById('problem-category').innerText = q.category;
   document.getElementById('problem-id-text').innerText = `ID: ${q.id} (${index + 1} / ${QUESTION_DATABASE.length})`;
@@ -6312,6 +6580,9 @@ function applyCalcToJournal(side) {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
+  const quizCard = document.getElementById('quiz-card');
+  quizCardTemplate = quizCard ? quizCard.innerHTML : '';
+  renderTableOfContents();
   updateDashboard();
   nextQuestion();
 });
