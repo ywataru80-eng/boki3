@@ -357,13 +357,15 @@
     .grid-table-wrapper {
       width: 100%;
       margin-bottom: 10px;
-      border: 1px solid var(--table-border);
+      border: 0;
+      box-shadow: inset 0 0 0 1px var(--table-border);
       background-color: #ffffff;
       overflow-x: hidden; /* 仕訳表は横スクロールさせず画面内に収める */
     }
 
     .grid-table {
-      width: 100%;
+      width: calc(100% - 2px);
+      margin: 0 1px;
       min-width: 0;
       border-collapse: collapse;
       table-layout: fixed;
@@ -389,7 +391,8 @@
     }
 
     .grid-table select,
-    .grid-table input[type="number"] {
+    .grid-table input.debit-amount,
+    .grid-table input.credit-amount {
       width: 100%;
       height: 38px;
       border: none;
@@ -403,31 +406,39 @@
       transition: background-color 0.2s;
     }
 
-    .grid-table input[type="number"] {
+    .grid-table input.debit-amount,
+    .grid-table input.credit-amount {
       text-align: right;
       padding-right: 8px;
       font-weight: 600;
       font-size: 1rem;
       min-width: 0;
       font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: clip;
       transition: background-color 0.2s, font-size 0.12s ease;
       appearance: textfield;
       -moz-appearance: textfield;
     }
 
-    .grid-table input[type="number"]::-webkit-outer-spin-button,
-    .grid-table input[type="number"]::-webkit-inner-spin-button {
+    .grid-table input.debit-amount::-webkit-outer-spin-button,
+    .grid-table input.debit-amount::-webkit-inner-spin-button,
+    .grid-table input.credit-amount::-webkit-outer-spin-button,
+    .grid-table input.credit-amount::-webkit-inner-spin-button {
       -webkit-appearance: none;
       margin: 0;
     }
 
     .grid-table select:focus,
-    .grid-table input[type="number"]:focus {
+    .grid-table input.debit-amount:focus,
+    .grid-table input.credit-amount:focus {
       background-color: #f0fdf4;
     }
 
     .grid-table select:disabled,
-    .grid-table input[type="number"]:disabled {
+    .grid-table input.debit-amount:disabled,
+    .grid-table input.credit-amount:disabled {
       color: #64748b;
       background-color: #f8fafc;
     }
@@ -720,7 +731,7 @@
     }
 
 
-    /* ===== v8.1 モード切替・表問題 ===== */
+    /* ===== v8.3 モード切替・表問題 ===== */
     .mode-switcher {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -846,7 +857,7 @@
 <div class="container">
   <header>
     <h1>日商簿記3級 総合演習システム（仕訳200問＋表問題40問）</h1>
-    <p>2026年度出題区分対応 × 仕訳200問 × 表・決算演習40問 × 教科書型解説 × 教材版 v8.1</p>
+    <p>2026年度出題区分対応 × 仕訳200問 × 表・決算演習40問 × 教科書型解説 × 教材版 v8.3</p>
   </header>
 
   <div class="mode-switcher" aria-label="演習モード切替">
@@ -1067,7 +1078,7 @@
 <script>
 'use strict';
 
-// 仕訳200問データベース（2026年度適用 出題区分対応・教科書型解説 v8.1）
+// 仕訳200問データベース（2026年度適用 出題区分対応・教科書型解説 v8.3）
 const QUESTION_DATABASE = [
   {
     "id": "Q001",
@@ -6036,6 +6047,7 @@ const QUESTION_DATABASE = [
 ];
 
 
+// v8.3: T009〜T014では0円側を入力対象にせず「—」固定表示に変更。T024の当期純利益行の合計行指定を解除。
 // 表・決算演習40問（2026年度3級範囲：試算表、8桁精算表、決算整理後残高試算表、損益計算書、貸借対照表）
 const TABLE_DATABASE = [
   {
@@ -7010,7 +7022,7 @@ const TABLE_DATABASE = [
         "label": "売上",
         "cells": {
           "debit": {
-            "answer": 0
+            "given": "—"
           },
           "credit": {
             "answer": 420000
@@ -7024,7 +7036,7 @@ const TABLE_DATABASE = [
             "answer": 240000
           },
           "credit": {
-            "answer": 0
+            "given": "—"
           }
         }
       },
@@ -7121,7 +7133,7 @@ const TABLE_DATABASE = [
             "answer": 240000
           },
           "credit": {
-            "answer": 0
+            "given": "—"
           }
         }
       },
@@ -7215,7 +7227,7 @@ const TABLE_DATABASE = [
         "label": "売上",
         "cells": {
           "debit": {
-            "answer": 0
+            "given": "—"
           },
           "credit": {
             "answer": 100000
@@ -7282,7 +7294,7 @@ const TABLE_DATABASE = [
             "answer": 100000
           },
           "credit": {
-            "answer": 0
+            "given": "—"
           }
         }
       },
@@ -7293,7 +7305,7 @@ const TABLE_DATABASE = [
             "answer": 30000
           },
           "credit": {
-            "answer": 0
+            "given": "—"
           }
         }
       },
@@ -7315,7 +7327,7 @@ const TABLE_DATABASE = [
             "answer": 80000
           },
           "credit": {
-            "answer": 0
+            "given": "—"
           }
         }
       },
@@ -7323,7 +7335,7 @@ const TABLE_DATABASE = [
         "label": "資本金",
         "cells": {
           "debit": {
-            "answer": 0
+            "given": "—"
           },
           "credit": {
             "answer": 530000
@@ -7368,7 +7380,7 @@ const TABLE_DATABASE = [
             "answer": 300000
           },
           "credit": {
-            "answer": 0
+            "given": "—"
           }
         }
       },
@@ -7401,7 +7413,7 @@ const TABLE_DATABASE = [
             "answer": 100000
           },
           "credit": {
-            "answer": 0
+            "given": "—"
           }
         }
       },
@@ -7420,7 +7432,7 @@ const TABLE_DATABASE = [
         "label": "売上",
         "cells": {
           "debit": {
-            "answer": 0
+            "given": "—"
           },
           "credit": {
             "answer": 430000
@@ -8689,8 +8701,7 @@ const TABLE_DATABASE = [
           "bsC": {
             "answer": 150000
           }
-        },
-        "isTotal": true
+        }
       }
     ],
     "explanation": "【考え方】損益計算書欄では収益合計と費用合計の差額が当期純利益です。利益の場合、損益計算書欄の借方と貸借対照表欄の貸方に同額を記入して両欄を一致させます。\n【計算】900,000－（500,000＋200,000＋50,000）＝150,000円です。"
@@ -9614,7 +9625,7 @@ const UPDATED_FROM_V7_0_IDS = new Set(["Q012","Q024","Q029","Q036","Q039","Q052"
 // --- 堅牢な LocalStorage 管理クラス ---
 class StorageManager {
   static KEY_200 = 'boki3_system_state_v6_200';
-  // 教材表示はv8.1だが、問題文・正答の対応はv7.1と同一のため、学習履歴互換性を保つためbankVersionはv7.1のままとする。
+  // 教材表示はv8.3。仕訳問題文・正答の対応はv7.1から変更していないため、既存の学習履歴互換性を保つためbankVersionはv7.1のままとする。
   static VERSION = 'v7.1';
 
   static loadState() {
@@ -9893,18 +9904,69 @@ function loadQuestion(index) {
   setInputFieldsDisabled(false);
 }
 
-// 金額の桁数に応じて文字サイズを自動調整（仕訳表専用）
+// 仕訳金額欄の「実際の表示幅」に合わせて文字サイズを自動調整する。
+// type="text" + inputmode="numeric" を使うことで、モバイルでも16px固定にならず文字縮小を反映できる。
+// 桁数の決め打ちではなく、Canvasで現在の文字幅を測定し、入力欄内に収まる最大サイズを求める。
 function fitJournalAmountFont(input) {
   if (!input) return;
-  const digits = String(input.value || '').replace(/[^0-9]/g, '').length;
-  let size = 16;
-  if (digits >= 11) size = 9.5;
-  else if (digits === 10) size = 10;
-  else if (digits === 9) size = 11;
-  else if (digits === 8) size = 12;
-  else if (digits === 7) size = 13;
-  else if (digits === 6) size = 14;
-  input.style.fontSize = `${size}px`;
+
+  const value = String(input.value ?? '');
+  const MAX_SIZE = 16;
+  const MIN_SIZE = 6;
+
+  // 空欄は標準サイズへ戻す。
+  if (value === '') {
+    input.style.fontSize = `${MAX_SIZE}px`;
+    return;
+  }
+
+  const style = window.getComputedStyle(input);
+  const padLeft = parseFloat(style.paddingLeft) || 0;
+  const padRight = parseFloat(style.paddingRight) || 0;
+  // clientWidthは現在の端末・向き・表幅を反映した実幅。
+  const availableWidth = Math.max(1, input.clientWidth - padLeft - padRight - 2);
+
+  if (!fitJournalAmountFont.canvas) {
+    fitJournalAmountFont.canvas = document.createElement('canvas');
+  }
+  const ctx = fitJournalAmountFont.canvas.getContext('2d');
+  if (!ctx) {
+    input.style.fontSize = `${MAX_SIZE}px`;
+    return;
+  }
+
+  const fontFamily = style.fontFamily || 'sans-serif';
+  const fontWeight = style.fontWeight || '600';
+  const fontStyle = style.fontStyle || 'normal';
+
+  const measureAt = (size) => {
+    ctx.font = `${fontStyle} ${fontWeight} ${size}px ${fontFamily}`;
+    // Safari等で末尾が窮屈にならないよう2px分の余裕を持たせる。
+    return ctx.measureText(value).width + 2;
+  };
+
+  // 入るなら最大サイズのまま。
+  if (measureAt(MAX_SIZE) <= availableWidth) {
+    input.style.fontSize = `${MAX_SIZE}px`;
+    return;
+  }
+
+  // 実幅に収まる最大フォントサイズを二分探索する。
+  let low = MIN_SIZE;
+  let high = MAX_SIZE;
+  for (let i = 0; i < 14; i++) {
+    const mid = (low + high) / 2;
+    if (measureAt(mid) <= availableWidth) low = mid;
+    else high = mid;
+  }
+
+  // 0.1px単位で切り下げ、ブラウザ描画誤差によるはみ出しを避ける。
+  const fitted = Math.max(MIN_SIZE, Math.floor(low * 10) / 10);
+  input.style.fontSize = `${fitted}px`;
+}
+
+function refitAllJournalAmountFonts() {
+  document.querySelectorAll('.grid-table .debit-amount, .grid-table .credit-amount').forEach(fitJournalAmountFont);
 }
 
 // 5列標準テーブル行の生成
@@ -9922,24 +9984,32 @@ function addJournalRow() {
 
   tr.innerHTML = `
     <td><select class="debit-account">${optionsHtml}</select></td>
-    <td><input type="number" class="debit-amount" placeholder="" min="0" step="100"></td>
+    <td><input type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" class="debit-amount" placeholder="" aria-label="借方金額"></td>
     <td><select class="credit-account">${optionsHtml}</select></td>
-    <td><input type="number" class="credit-amount" placeholder="" min="0" step="100"></td>
+    <td><input type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" class="credit-amount" placeholder="" aria-label="貸方金額"></td>
     <td><button type="button" class="btn-row-del" onclick="removeJournalRow(this)">✕</button></td>
   `;
 
   const debitInput = tr.querySelector('.debit-amount');
   const creditInput = tr.querySelector('.credit-amount');
-  if (debitInput) {
-    debitInput.addEventListener('focus', () => { lastFocusedInput = debitInput; });
-    debitInput.addEventListener('input', () => fitJournalAmountFont(debitInput));
-  }
-  if (creditInput) {
-    creditInput.addEventListener('focus', () => { lastFocusedInput = creditInput; });
-    creditInput.addEventListener('input', () => fitJournalAmountFont(creditInput));
-  }
+  const bindAmountInput = (input) => {
+    if (!input) return;
+    input.addEventListener('focus', () => { lastFocusedInput = input; });
+    input.addEventListener('input', () => {
+      // 外付けキーボード等から記号・小数が入った場合も正の整数入力に限定する。
+      const sanitized = String(input.value || '').replace(/[^0-9]/g, '');
+      if (input.value !== sanitized) input.value = sanitized;
+      fitJournalAmountFont(input);
+    });
+  };
+  bindAmountInput(debitInput);
+  bindAmountInput(creditInput);
 
   tbody.appendChild(tr);
+  requestAnimationFrame(() => {
+    fitJournalAmountFont(debitInput);
+    fitJournalAmountFont(creditInput);
+  });
 }
 
 function removeJournalRow(btn) {
@@ -10414,12 +10484,32 @@ function applyCalcToJournal(side) {
   }
 }
 
+let journalResizeTimer = null;
+window.addEventListener('resize', () => {
+  clearTimeout(journalResizeTimer);
+  journalResizeTimer = setTimeout(refitAllJournalAmountFonts, 80);
+});
+window.addEventListener('orientationchange', () => {
+  setTimeout(refitAllJournalAmountFonts, 180);
+});
+
+// 親要素の幅が変化した場合にも再計測する。対応ブラウザではResizeObserverを利用する。
+if (typeof ResizeObserver !== 'undefined') {
+  window.addEventListener('DOMContentLoaded', () => {
+    const wrapper = document.querySelector('.grid-table-wrapper');
+    if (!wrapper) return;
+    const observer = new ResizeObserver(() => refitAllJournalAmountFonts());
+    observer.observe(wrapper);
+  });
+}
+
 window.addEventListener('DOMContentLoaded', () => {
   const quizCard = document.getElementById('quiz-card');
   quizCardTemplate = quizCard ? quizCard.innerHTML : '';
   renderTableOfContents();
   updateDashboard();
   nextQuestion();
+  requestAnimationFrame(refitAllJournalAmountFonts);
   updateTableDashboard();
   renderTableToc();
   loadTableQuestion(getNextTableQuestionIndex());
