@@ -326,6 +326,55 @@
       color: #7f1d1d;
     }
 
+    /* 正解仕訳表示ボックス */
+    .correct-journal-box {
+      margin-top: 12px;
+      padding: 12px;
+      background-color: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+    }
+
+    .correct-journal-title {
+      font-weight: bold;
+      font-size: 0.9rem;
+      color: #0f172a;
+      margin-bottom: 8px;
+    }
+
+    .correct-journal-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    .correct-journal-table th, .correct-journal-table td {
+      padding: 8px 10px;
+      border: 1px solid var(--border-color);
+    }
+
+    .correct-journal-table th {
+      font-weight: bold;
+      font-size: 0.85rem;
+    }
+
+    .correct-journal-table th.th-debit {
+      color: #1e40af;
+      background-color: #eff6ff;
+      border-bottom: 2px solid #3b82f6;
+    }
+
+    .correct-journal-table th.th-credit {
+      color: #991b1b;
+      background-color: #fef2f2;
+      border-bottom: 2px solid #ef4444;
+    }
+
+    .correct-journal-table td {
+      vertical-align: top;
+      background-color: #ffffff;
+    }
+
     .explanation-box {
       margin-top: 12px;
       padding: 12px;
@@ -464,6 +513,12 @@
     <div class="result-box" id="result-box">
       <div id="result-title" style="font-weight: bold; font-size: 1.05rem;"></div>
       <div id="result-detail" style="margin-top: 4px;"></div>
+
+      <!-- 正解仕訳表示エリア -->
+      <div class="correct-journal-box" id="correct-journal-box">
+        <div class="correct-journal-title">正解の仕訳:</div>
+        <div id="correct-journal-content"></div>
+      </div>
 
       <div class="explanation-box" id="explanation-box"></div>
 
@@ -853,7 +908,7 @@ const QUESTION_DATABASE = [
     statement: "商品 ￥200,000 を仕入れ、代金として約束手形を振り出して支払った。",
     hint: "商品仕入代金としての手形振出は「支払手形（負債）」です。",
     options: ["仕入", "支払手形"],
-    debit: [{ account: "仕入", amount: 20000 }],
+    debit: [{ account: "仕入", amount: 200000 }],
     credit: [{ account: "支払手形", amount: 200000 }],
     explanation: "仕入高の計上と「支払手形」債務の発生を計上します。"
   },
@@ -1901,6 +1956,7 @@ function checkAnswer() {
   const resultBox = document.getElementById('result-box');
   const resultTitle = document.getElementById('result-title');
   const resultDetail = document.getElementById('result-detail');
+  const correctJournalContent = document.getElementById('correct-journal-content');
   const expBox = document.getElementById('explanation-box');
 
   resultBox.style.display = 'block';
@@ -1937,6 +1993,29 @@ function checkAnswer() {
       currentErrorType = 'ACCOUNT_ITEM';
       resultDetail.innerText = '勘定科目の選択にミスがあります。指定された許容科目を確認してください。';
     }
+  }
+
+  // 正解仕訳の表描画
+  if (correctJournalContent) {
+    const debitHtml = q.debit.map(e => `<div style="display:flex; justify-content:space-between; margin-bottom:4px; gap:8px;"><span>${escapeHtml(e.account)}</span><span style="font-weight:600;">￥${e.amount.toLocaleString()}</span></div>`).join('');
+    const creditHtml = q.credit.map(e => `<div style="display:flex; justify-content:space-between; margin-bottom:4px; gap:8px;"><span>${escapeHtml(e.account)}</span><span style="font-weight:600;">￥${e.amount.toLocaleString()}</span></div>`).join('');
+    
+    correctJournalContent.innerHTML = `
+      <table class="correct-journal-table">
+        <thead>
+          <tr>
+            <th class="th-debit" style="width: 50%;">借方</th>
+            <th class="th-credit" style="width: 50%;">貸方</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>${debitHtml}</td>
+            <td>${creditHtml}</td>
+          </tr>
+        </tbody>
+      </table>
+    `;
   }
 
   expBox.innerText = q.explanation;
