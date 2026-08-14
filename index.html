@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>日商簿記3級 総合演習システム（2026年度出題区分対応・仕訳200問＋表問題40問）</title>
   <style>
     :root {
@@ -532,6 +532,54 @@
       color: #7f1d1d;
     }
 
+    .diagnostic-box {
+      display: none;
+      margin-top: 10px;
+      padding: 10px 12px;
+      background: #fff7ed;
+      border: 1px solid #fdba74;
+      border-left: 4px solid #f97316;
+      border-radius: 6px;
+      color: #7c2d12;
+    }
+
+    .diagnostic-box.visible {
+      display: block;
+    }
+
+    .diagnostic-title {
+      font-size: 0.86rem;
+      font-weight: 800;
+      margin-bottom: 6px;
+      color: #9a3412;
+    }
+
+    .diagnostic-summary {
+      font-size: 0.82rem;
+      line-height: 1.6;
+      margin-bottom: 6px;
+    }
+
+    .diagnostic-list {
+      margin: 0;
+      padding-left: 1.25rem;
+      font-size: 0.82rem;
+      line-height: 1.65;
+    }
+
+    .diagnostic-list li + li {
+      margin-top: 3px;
+    }
+
+    .diagnostic-note {
+      margin-top: 8px;
+      padding-top: 7px;
+      border-top: 1px dashed #fdba74;
+      font-size: 0.74rem;
+      line-height: 1.55;
+      color: #92400e;
+    }
+
     .correct-journal-box {
       margin-top: 8px;
       padding: 8px;
@@ -739,7 +787,7 @@
     }
 
 
-    /* ===== v8.4 モード切替・表問題 ===== */
+    /* ===== v8.5 モード切替・表問題・個別誤答診断 ===== */
     .mode-switcher {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -883,6 +931,175 @@
       margin-left: auto;
     }
 
+  
+
+    /* ===== v8.6 iPhone-first overrides ===== */
+    html { min-height: 100%; }
+    body {
+      padding-top: calc(8px + env(safe-area-inset-top));
+      padding-right: calc(8px + env(safe-area-inset-right));
+      padding-bottom: calc(8px + env(safe-area-inset-bottom));
+      padding-left: calc(8px + env(safe-area-inset-left));
+      -webkit-tap-highlight-color: transparent;
+    }
+    .container { padding-bottom: calc(88px + env(safe-area-inset-bottom)); }
+
+    .mode-btn, .tool-btn, .btn-submit, .eval-btn,
+    .table-secondary-btn, .table-primary-btn, .table-view-btn,
+    .table-segment-btn, .row-control-btn, .calc-btn,
+    .calc-apply-btn, .calc-close-btn, .toc-fab, .calc-fab {
+      min-height: 44px;
+      touch-action: manipulation;
+    }
+    .tool-btn { flex: 1 1 0; justify-content: center; padding: 8px 10px; font-size: 0.82rem; }
+    .btn-submit { min-height: 48px; }
+
+    /* 仕訳表はiPhoneでも借方・貸方を常時左右表示。横スクロールは禁止。 */
+    .grid-table-wrapper { overflow-x: hidden; overscroll-behavior-x: none; }
+    .grid-table { width: 100%; margin: 0; table-layout: fixed; }
+    .grid-table td { height: 46px; }
+    .grid-table select,
+    .grid-table input.debit-amount,
+    .grid-table input.credit-amount {
+      height: 46px;
+      min-height: 46px;
+      font-size: 16px;
+    }
+    .grid-table select {
+      padding: 0 3px;
+      text-overflow: ellipsis;
+    }
+    .grid-table input.debit-amount,
+    .grid-table input.credit-amount {
+      padding-left: 2px;
+      padding-right: 4px;
+    }
+    .journal-cbt-note {
+      margin: -3px 0 9px;
+      font-size: .74rem;
+      line-height: 1.45;
+      color: #475569;
+    }
+    .journal-row-controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .row-control-btn {
+      border: 1px dashed var(--border-color);
+      border-radius: 7px;
+      background: #f8fafc;
+      color: #334155;
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+    .row-control-btn.danger { color: #b91c1c; border-color: #fecaca; background: #fff7f7; }
+    .row-control-btn:disabled { opacity: .45; }
+
+    .toc-fab { left: calc(10px + env(safe-area-inset-left)); bottom: calc(10px + env(safe-area-inset-bottom)); }
+    .calc-fab { right: calc(10px + env(safe-area-inset-right)); bottom: calc(10px + env(safe-area-inset-bottom)); }
+    .calculator-modal {
+      right: calc(8px + env(safe-area-inset-right));
+      bottom: calc(66px + env(safe-area-inset-bottom));
+      width: min(310px, calc(100vw - 16px - env(safe-area-inset-left) - env(safe-area-inset-right)));
+      max-height: calc(100dvh - 90px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+      overflow-y: auto;
+    }
+    .calc-close-btn { min-width: 44px; font-size: 1.15rem; }
+    .calc-btn { padding: 0; font-size: 1rem; }
+    .calc-apply-btn { padding: 6px 4px; font-size: 0.72rem; }
+
+    /* iPhone向け表入力ビュー: 2列単位で入力し、全体表は必要時だけ表示。 */
+    .table-view-switcher {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin: 10px 0 8px;
+    }
+    .table-view-switcher[hidden], .table-segment-nav[hidden] { display: none !important; }
+    .table-view-btn, .table-segment-btn {
+      border: 1px solid var(--border-color);
+      background: #fff;
+      color: #334155;
+      border-radius: 7px;
+      font-weight: 700;
+      padding: 7px 8px;
+    }
+    .table-view-btn.active, .table-segment-btn.active {
+      background: #ede9fe;
+      color: #5b21b6;
+      border-color: #8b5cf6;
+    }
+    .table-segment-nav {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+    .table-exercise-wrapper.compact-mode {
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: auto;
+    }
+    .exercise-table.compact {
+      width: 100%;
+      min-width: 0;
+      table-layout: fixed;
+      font-size: 0.82rem;
+    }
+    .exercise-table.compact th:first-child,
+    .exercise-table.compact td:first-child {
+      width: 42%;
+      min-width: 0;
+      position: static;
+      white-space: normal;
+      word-break: break-word;
+    }
+    .exercise-table.compact th:not(:first-child),
+    .exercise-table.compact td:not(:first-child) { width: 29%; padding: 7px 4px; }
+    .exercise-table.compact th { position: static; white-space: normal; }
+    .exercise-table.compact .table-answer-input {
+      width: 100%;
+      min-width: 0;
+      min-height: 44px;
+      padding: 7px 4px;
+      font-size: 16px;
+    }
+    .table-answer-input { min-height: 44px; font-size: 16px; }
+
+    .learning-coach-box {
+      margin-top: 10px;
+      padding: 12px;
+      border: 1px solid #bfdbfe;
+      border-radius: 8px;
+      background: #eff6ff;
+    }
+    .learning-coach-title { font-weight: 800; color: #1e3a8a; margin-bottom: 5px; }
+    .learning-coach-summary { font-size: .84rem; color: #334155; margin-bottom: 7px; }
+    .learning-coach-steps { margin: 0 0 8px 1.25rem; padding: 0; font-size: .82rem; line-height: 1.6; }
+    .account-effect-list { display: grid; gap: 5px; }
+    .account-effect-item {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 6px;
+      align-items: start;
+      padding: 7px 8px;
+      border-radius: 6px;
+      background: #fff;
+      border: 1px solid #dbeafe;
+      font-size: .8rem;
+    }
+    .account-effect-side { font-weight: 800; white-space: nowrap; }
+
+    @media (max-width: 390px) {
+      body { padding-left: calc(5px + env(safe-area-inset-left)); padding-right: calc(5px + env(safe-area-inset-right)); }
+      .card { padding: 8px; }
+      .grid-table th { font-size: .72rem; padding: 5px 1px; }
+      .grid-table select { padding: 0 1px; }
+      .grid-table input.debit-amount, .grid-table input.credit-amount { padding-right: 2px; }
+      .statement { padding: 10px; }
+    }
+
   </style>
 </head>
 <body>
@@ -890,7 +1107,7 @@
 <div class="container">
   <header>
     <h1>日商簿記3級 総合演習システム（仕訳200問＋表問題40問）</h1>
-    <p>2026年度出題区分対応 × 仕訳200問 × 表・決算演習40問 × 教科書型解説 × 教材版 v8.4</p>
+    <p>2026年度出題区分対応 × 仕訳200問 × 表・決算演習40問 × 教科書型解説 × 教材版 v8.6</p>
   </header>
   <div id="data-integrity-banner" class="data-integrity-banner" role="alert" aria-live="polite"></div>
 
@@ -977,10 +1194,9 @@
         <thead>
           <tr>
             <th style="width: 31%;">借方科目</th>
-            <th style="width: 17%;">金額</th>
+            <th style="width: 19%;">金額</th>
             <th style="width: 31%;">貸方科目</th>
-            <th style="width: 17%;">金額</th>
-            <th style="width: 4%;"></th>
+            <th style="width: 19%;">金額</th>
           </tr>
         </thead>
         <tbody id="journal-rows">
@@ -988,14 +1204,25 @@
         </tbody>
       </table>
     </div>
+    <div class="journal-cbt-note">本試験仕様：同じ勘定科目は、借方・貸方それぞれで1回だけ使用します。金額は数字のみ入力します。</div>
 
-    <button type="button" class="add-row-btn" id="add-row-btn" data-action="add-journal-row">+ 行を追加する</button>
+    <div class="journal-row-controls">
+      <button type="button" class="row-control-btn" id="add-row-btn" data-action="add-journal-row">＋ 行を追加</button>
+      <button type="button" class="row-control-btn danger" id="remove-row-btn" data-action="remove-last-journal-row">－ 最後の行を削除</button>
+    </div>
     <button type="button" class="btn-submit" id="submit-btn" data-action="check-journal">決定（解答を提出）</button>
 
     <!-- 解答・解説エリア -->
     <div class="result-box" id="result-box">
       <div id="result-title" style="font-weight: bold; font-size: 0.95rem;"></div>
       <div id="result-detail" style="margin-top: 2px; font-size: 0.8rem;"></div>
+
+      <div class="diagnostic-box" id="diagnostic-box" aria-live="polite">
+        <div class="diagnostic-title">今回の不正解ポイント</div>
+        <div class="diagnostic-summary" id="diagnostic-summary"></div>
+        <ul class="diagnostic-list" id="diagnostic-list"></ul>
+        <div class="diagnostic-note">この診断は、入力した仕訳と登録済み正解仕訳の差分を機械的に表示したものです。会計処理の理由は、下の「教科書解説」で確認してください。</div>
+      </div>
 
       <!-- 正解仕訳表示 -->
       <div class="correct-journal-box" id="correct-journal-box">
@@ -1004,6 +1231,12 @@
       </div>
 
       <div class="explanation-box" id="explanation-box"></div>
+      <div class="learning-coach-box" id="learning-coach-box">
+        <div class="learning-coach-title">仕訳の組み立て（5大要素チェック）</div>
+        <div class="learning-coach-summary" id="learning-coach-summary"></div>
+        <ol class="learning-coach-steps" id="learning-coach-steps"></ol>
+        <div class="account-effect-list" id="account-effect-list"></div>
+      </div>
 
       <div style="margin-top: 10px; font-weight: bold; font-size: 0.75rem;" id="eval-instruction">自覚難易度の選択:</div>
       <div class="self-eval-buttons">
@@ -1046,6 +1279,11 @@
       </div>
       <div class="hint-box" id="table-hint-box"></div>
       <div class="table-note">空欄セルに金額を入力してください。金額はカンマなしでも入力できます。</div>
+      <div class="table-view-switcher" id="table-view-switcher" hidden aria-label="表の表示方法">
+        <button type="button" class="table-view-btn" data-action="set-table-view" data-view="compact">iPhone入力</button>
+        <button type="button" class="table-view-btn" data-action="set-table-view" data-view="full">全体表</button>
+      </div>
+      <div class="table-segment-nav" id="table-segment-nav" hidden aria-label="表の入力列切替"></div>
       <div class="table-exercise-wrapper" id="table-exercise-wrapper"><div id="table-exercise-host"></div></div>
       <button type="button" class="btn-submit" id="table-submit-btn" data-action="check-table">決定（表を採点）</button>
       <div class="table-result-box" id="table-result-box">
@@ -1113,7 +1351,7 @@
 <script type="module">
 'use strict';
 
-// 仕訳200問データベース（2026年度適用 出題区分対応・教科書型解説 v8.4）
+// 仕訳200問データベース（2026年度適用 出題区分対応・教科書型解説 v8.6）
 const QUESTION_DATABASE = [
   {
     "id": "Q001",
@@ -6082,7 +6320,7 @@ const QUESTION_DATABASE = [
 ];
 
 
-// v8.4: 教材データはv8.3から変更せず、アーキテクチャ・保存仕様・検証・電卓・復習ロジックを改修。
+// v8.5: 教材データはv8.3から変更せず、不正解時の個別差分診断を追加。
 // 表・決算演習40問（2026年度3級範囲：試算表、8桁精算表、決算整理後残高試算表、損益計算書、貸借対照表）
 const TABLE_DATABASE = [
   {
@@ -9754,15 +9992,21 @@ function deepFreeze(value) {
 
 function runIntegrityCheck() {
   const result = validateQuestionBanks();
+  const diagnosticIssues = validateDiagnosticEngine();
+  const classificationIssues = validateAccountClassifications();
+  result.diagnosticIssues = diagnosticIssues;
+  result.classificationIssues = classificationIssues;
+  result.issues.push(...diagnosticIssues.map(issue => `誤答診断: ${issue}`));
+  result.issues.push(...classificationIssues.map(account => `5大要素分類未登録: ${account}`));
   const banner = document.getElementById('data-integrity-banner');
   if (result.issues.length) {
-    console.error('教材データ整合性エラー', result);
+    console.error('起動時整合性チェックエラー', result);
     if (banner) {
-      banner.textContent = `教材データの整合性エラーを検出しました。\n${result.issues.join('\n')}`;
+      banner.textContent = `教材データまたは採点診断の整合性エラーを検出しました。\n${result.issues.join('\n')}`;
       banner.classList.add('visible');
     }
   } else {
-    console.info('教材データ整合性チェック OK', result);
+    console.info('教材データ・採点診断の整合性チェック OK', result);
     if (banner) banner.classList.remove('visible');
   }
   return result;
@@ -9771,7 +10015,7 @@ function runIntegrityCheck() {
 deepFreeze(QUESTION_DATABASE);
 deepFreeze(TABLE_DATABASE);
 
-const APP_VERSION = 'v8.4';
+const APP_VERSION = 'v8.6';
 const STORAGE_SCHEMA_VERSION = 2;
 const JOURNAL_BANK_VERSION = 'v7.1';
 const TABLE_BANK_VERSION = 'v8.3';
@@ -9890,7 +10134,7 @@ const Runtime = {
   state: StorageManager.loadState(),
   mode: 'journal',
   journal: { currentQuestionIndex: -1, currentErrorType: 'NONE', isAnswered: false, isEvalCompleted: false, lastFocusedInput: null },
-  table: { currentIndex: -1, answered: false, lastFocusedInput: null },
+  table: { currentIndex: -1, answered: false, lastFocusedInput: null, viewMode: 'full', segmentIndex: 0, draft: {} },
   calculator: { current: '0', prev: null, op: null, resetOnNext: false, error: false },
   ui: { quizCardTemplate: null, journalResizeTimer: null }
 };
@@ -9946,14 +10190,14 @@ function setEvalButtonsDisabled(disabled, isCorrect = false) {
 function setInputFieldsDisabled(disabled) {
   const selects = document.querySelectorAll('.grid-table select');
   const inputs = document.querySelectorAll('.grid-table input');
-  const removeBtns = document.querySelectorAll('.btn-row-del');
   const addBtn = document.getElementById('add-row-btn');
+  const removeBtn = document.getElementById('remove-row-btn');
   const submitBtn = document.getElementById('submit-btn');
 
   selects.forEach(s => s.disabled = disabled);
   inputs.forEach(i => i.disabled = disabled);
-  removeBtns.forEach(b => b.disabled = disabled);
   if (addBtn) addBtn.disabled = disabled;
+  if (removeBtn) removeBtn.disabled = disabled;
   if (submitBtn) submitBtn.disabled = disabled;
 }
 
@@ -10053,6 +10297,9 @@ function loadQuestion(index) {
   hintBox.style.display = 'none';
 
   document.getElementById('result-box').style.display = 'none';
+  renderJournalDiagnostic(null);
+  const coachBox = document.getElementById('learning-coach-box');
+  if (coachBox) coachBox.style.display = 'none';
 
   const tbody = document.getElementById('journal-rows');
   if (tbody) {
@@ -10074,7 +10321,7 @@ function fitJournalAmountFont(input) {
 
   const value = String(input.value ?? '');
   const MAX_SIZE = 16;
-  const MIN_SIZE = 6;
+  const MIN_SIZE = 11;
 
   // 空欄は標準サイズへ戻す。
   if (value === '') {
@@ -10131,17 +10378,18 @@ function refitAllJournalAmountFonts() {
   document.querySelectorAll('.grid-table .debit-amount, .grid-table .credit-amount').forEach(fitJournalAmountFont);
 }
 
-// 5列標準テーブル行の生成
+// iPhone-first 4列仕訳テーブル行の生成（借方科目・金額・貸方科目・金額）
 function addJournalRow() {
   const tbody = document.getElementById('journal-rows');
   if (!tbody || Runtime.journal.currentQuestionIndex === -1 || Runtime.journal.isAnswered) return;
   const q = QUESTION_DATABASE[Runtime.journal.currentQuestionIndex];
   const tr = document.createElement('tr');
 
-  const createAccountCell = (className) => {
+  const createAccountCell = (className, label) => {
     const td = document.createElement('td');
     const select = document.createElement('select');
     select.className = className;
+    select.setAttribute('aria-label', label);
     const blank = document.createElement('option');
     blank.value = '';
     blank.textContent = '(選択)';
@@ -10153,7 +10401,7 @@ function addJournalRow() {
       select.appendChild(option);
     });
     td.appendChild(select);
-    return td;
+    return { td, control: select };
   };
 
   const createAmountCell = (className, label) => {
@@ -10171,35 +10419,47 @@ function addJournalRow() {
       if (input.value !== sanitized) input.value = sanitized;
       fitJournalAmountFont(input);
     });
+    input.addEventListener('keydown', event => handleJournalFieldKeydown(event, input));
     td.appendChild(input);
-    return { td, input };
+    return { td, control: input };
   };
 
+  const debitAccount = createAccountCell('debit-account', '借方科目');
   const debit = createAmountCell('debit-amount', '借方金額');
+  const creditAccount = createAccountCell('credit-account', '貸方科目');
   const credit = createAmountCell('credit-amount', '貸方金額');
-  const deleteTd = document.createElement('td');
-  const deleteButton = document.createElement('button');
-  deleteButton.type = 'button';
-  deleteButton.className = 'btn-row-del';
-  deleteButton.dataset.action = 'remove-journal-row';
-  deleteButton.setAttribute('aria-label', 'この行を削除');
-  deleteButton.textContent = '✕';
-  deleteTd.appendChild(deleteButton);
+  debitAccount.control.addEventListener('keydown', event => handleJournalFieldKeydown(event, debitAccount.control));
+  creditAccount.control.addEventListener('keydown', event => handleJournalFieldKeydown(event, creditAccount.control));
 
-  tr.append(createAccountCell('debit-account'), debit.td, createAccountCell('credit-account'), credit.td, deleteTd);
+  tr.append(debitAccount.td, debit.td, creditAccount.td, credit.td);
   tbody.appendChild(tr);
-  requestAnimationFrame(() => { fitJournalAmountFont(debit.input); fitJournalAmountFont(credit.input); });
+  requestAnimationFrame(() => { fitJournalAmountFont(debit.control); fitJournalAmountFont(credit.control); });
 }
 
-function removeJournalRow(btn) {
+function removeLastJournalRow() {
   const tbody = document.getElementById('journal-rows');
   if (!tbody || Runtime.journal.isAnswered) return;
   if (tbody.children.length > 1) {
-    btn.closest('tr').remove();
+    tbody.lastElementChild?.remove();
   } else {
     const tr = tbody.children[0];
-    tr.querySelectorAll('select').forEach(s => s.value = '');
-    tr.querySelectorAll('input').forEach(i => { i.value = ''; fitJournalAmountFont(i); });
+    tr?.querySelectorAll('select').forEach(s => { s.value = ''; });
+    tr?.querySelectorAll('input').forEach(i => { i.value = ''; fitJournalAmountFont(i); });
+  }
+}
+
+function focusRelativeJournalField(current, direction) {
+  const fields = [...document.querySelectorAll('#journal-rows select:not(:disabled), #journal-rows input:not(:disabled)')];
+  const index = fields.indexOf(current);
+  if (index < 0) return;
+  const next = fields[index + direction];
+  if (next) { next.focus(); if (typeof next.select === 'function' && next.tagName === 'INPUT') next.select(); }
+}
+
+function handleJournalFieldKeydown(event, control) {
+  if (event.key === 'Enter') {
+    event.preventDefault();
+    focusRelativeJournalField(control, event.shiftKey ? -1 : 1);
   }
 }
 
@@ -10225,41 +10485,185 @@ function getEntries(side) {
   for (let i = 0; i < accounts.length; i++) {
     const acc = accounts[i].value;
     const rawAmt = amounts[i].value;
-    
     const numAmt = Number(rawAmt);
     const isValidInteger = rawAmt !== "" && Number.isInteger(numAmt) && numAmt > 0;
 
-    if (acc && !isValidInteger) {
-      hasIncomplete = true;
-    } else if (!acc && rawAmt !== "") {
-      hasIncomplete = true;
-    } else if (acc && isValidInteger) {
-      entries.push({ account: acc, amount: numAmt });
-    }
+    if (acc && !isValidInteger) hasIncomplete = true;
+    else if (!acc && rawAmt !== "") hasIncomplete = true;
+    else if (acc && isValidInteger) entries.push({ account: acc, amount: numAmt });
   }
-  return { entries, hasIncomplete };
+  const counts = new Map();
+  entries.forEach(entry => counts.set(entry.account, (counts.get(entry.account) || 0) + 1));
+  const duplicateAccounts = [...counts.entries()].filter(([, count]) => count > 1).map(([account]) => account);
+  return { entries, hasIncomplete, duplicateAccounts };
+}
+
+function aggregateJournalEntries(entries) {
+  const map = new Map();
+  (entries || []).forEach(entry => {
+    if (!entry || typeof entry.account !== 'string') return;
+    const amount = Number(entry.amount);
+    if (!Number.isFinite(amount)) return;
+    map.set(entry.account, (map.get(entry.account) || 0) + amount);
+  });
+  return [...map.entries()]
+    .map(([account, amount]) => ({ account, amount }))
+    .sort((a, b) => a.account.localeCompare(b.account));
+}
+
+function journalEntryMap(entries) {
+  return new Map(aggregateJournalEntries(entries).map(entry => [entry.account, entry.amount]));
 }
 
 function normalizeAndCompare(userEntries, correctEntries) {
-  const aggregate = (entries) => {
-    const map = {};
-    entries.forEach(e => {
-      map[e.account] = (map[e.account] || 0) + e.amount;
-    });
-    return Object.keys(map).map(k => ({ account: k, amount: map[k] })).sort((a, b) => a.account.localeCompare(b.account));
-  };
-
-  const normUser = aggregate(userEntries);
-  const normCorrect = aggregate(correctEntries);
-
+  const userAccounts = (userEntries || []).map(entry => entry.account);
+  if (new Set(userAccounts).size !== userAccounts.length) return false;
+  const normUser = aggregateJournalEntries(userEntries);
+  const normCorrect = aggregateJournalEntries(correctEntries);
   if (normUser.length !== normCorrect.length) return false;
+  return normUser.every((entry, index) =>
+    entry.account === normCorrect[index].account && entry.amount === normCorrect[index].amount
+  );
+}
 
-  for (let i = 0; i < normUser.length; i++) {
-    if (normUser[i].account !== normCorrect[i].account || normUser[i].amount !== normCorrect[i].amount) {
-      return false;
+function formatYen(amount) {
+  return `${Number(amount).toLocaleString('ja-JP')}円`;
+}
+
+function diagnoseJournalAnswer(userDebit, userCredit, correctDebit, correctCredit) {
+  const sides = {
+    debit: { label: '借方', user: journalEntryMap(userDebit), correct: journalEntryMap(correctDebit) },
+    credit: { label: '貸方', user: journalEntryMap(userCredit), correct: journalEntryMap(correctCredit) }
+  };
+  const issues = [];
+  const consumed = { debitExtra: new Set(), debitMissing: new Set(), creditExtra: new Set(), creditMissing: new Set() };
+
+  const detectReversal = (fromKey, toKey) => {
+    const from = sides[fromKey];
+    const to = sides[toKey];
+    for (const [account, userAmount] of from.user) {
+      if (from.correct.has(account) || !to.correct.has(account)) continue;
+      const correctAmount = to.correct.get(account);
+      const amountNote = userAmount === correctAmount
+        ? formatYen(correctAmount)
+        : `入力 ${formatYen(userAmount)} / 正解 ${formatYen(correctAmount)}`;
+      issues.push({
+        type: 'SIDE_REVERSED',
+        text: `「${account}」は${from.label}ではなく${to.label}です（${amountNote}）。`
+      });
+      consumed[`${fromKey}Extra`].add(account);
+      consumed[`${toKey}Missing`].add(account);
+    }
+  };
+  detectReversal('debit', 'credit');
+  detectReversal('credit', 'debit');
+
+  for (const sideKey of ['debit', 'credit']) {
+    const side = sides[sideKey];
+    for (const [account, correctAmount] of side.correct) {
+      if (consumed[`${sideKey}Missing`].has(account)) continue;
+      if (!side.user.has(account)) {
+        issues.push({
+          type: 'MISSING',
+          text: `${side.label}に必要な「${account}」${formatYen(correctAmount)}が入力されていません。`
+        });
+        continue;
+      }
+      const userAmount = side.user.get(account);
+      if (userAmount !== correctAmount) {
+        issues.push({
+          type: 'AMOUNT',
+          text: `${side.label}「${account}」の金額は、入力 ${formatYen(userAmount)} に対して正解は ${formatYen(correctAmount)}（差額 ${formatYen(Math.abs(userAmount - correctAmount))}）です。`
+        });
+      }
+    }
+    for (const [account, userAmount] of side.user) {
+      if (consumed[`${sideKey}Extra`].has(account) || side.correct.has(account)) continue;
+      issues.push({
+        type: 'EXTRA',
+        text: `${side.label}に、正解仕訳にはない「${account}」${formatYen(userAmount)}が入力されています。`
+      });
     }
   }
-  return true;
+
+  const issueTypes = new Set(issues.map(issue => issue.type));
+  let errorType = 'ACCOUNT_ITEM';
+  let summary = '勘定科目または借方・貸方の位置に相違があります。下の差分を確認してください。';
+  if (issues.length === 0) {
+    errorType = 'NONE';
+    summary = '入力内容は登録済み正解仕訳と一致しています。';
+  } else if ([...issueTypes].every(type => type === 'AMOUNT')) {
+    errorType = 'CALCULATION';
+    summary = '勘定科目と借方・貸方の位置は一致していますが、金額に相違があります。';
+  } else if (issueTypes.has('SIDE_REVERSED')) {
+    errorType = 'CONCEPT';
+    summary = '借方・貸方が逆になっている勘定科目があります。';
+  } else {
+    errorType = 'ACCOUNT_ITEM';
+    summary = '勘定科目に不足または余分な入力があります。';
+  }
+
+  return { issues, errorType, summary };
+}
+
+function validateDiagnosticEngine() {
+  const issues = [];
+  const exact = diagnoseJournalAnswer(
+    [{ account: '現金', amount: 100 }], [{ account: '売上', amount: 100 }],
+    [{ account: '現金', amount: 100 }], [{ account: '売上', amount: 100 }]
+  );
+  if (exact.issues.length !== 0 || exact.errorType !== 'NONE') issues.push('完全一致ケースの診断に失敗');
+
+  const duplicateRejected = !normalizeAndCompare(
+    [{ account: '現金', amount: 40 }, { account: '現金', amount: 60 }],
+    [{ account: '現金', amount: 100 }]
+  );
+  if (!duplicateRejected) issues.push('同一側で同じ勘定科目を複数回使う入力を拒否できていない');
+
+  const amountOnly = diagnoseJournalAnswer(
+    [{ account: '現金', amount: 90 }], [{ account: '売上', amount: 100 }],
+    [{ account: '現金', amount: 100 }], [{ account: '売上', amount: 100 }]
+  );
+  if (amountOnly.errorType !== 'CALCULATION' || !amountOnly.issues.some(i => i.type === 'AMOUNT')) {
+    issues.push('金額相違ケースの診断に失敗');
+  }
+
+  const reversed = diagnoseJournalAnswer(
+    [{ account: '売上', amount: 100 }], [{ account: '現金', amount: 100 }],
+    [{ account: '現金', amount: 100 }], [{ account: '売上', amount: 100 }]
+  );
+  if (reversed.errorType !== 'CONCEPT' || !reversed.issues.some(i => i.type === 'SIDE_REVERSED')) {
+    issues.push('借貸逆転ケースの診断に失敗');
+  }
+
+  const accountMismatch = diagnoseJournalAnswer(
+    [{ account: '売掛金', amount: 100 }], [{ account: '売上', amount: 100 }],
+    [{ account: '現金', amount: 100 }], [{ account: '売上', amount: 100 }]
+  );
+  if (accountMismatch.errorType !== 'ACCOUNT_ITEM' || !accountMismatch.issues.some(i => i.type === 'MISSING') || !accountMismatch.issues.some(i => i.type === 'EXTRA')) {
+    issues.push('勘定科目相違ケースの診断に失敗');
+  }
+  return issues;
+}
+
+function renderJournalDiagnostic(diagnostic) {
+  const box = document.getElementById('diagnostic-box');
+  const summary = document.getElementById('diagnostic-summary');
+  const list = document.getElementById('diagnostic-list');
+  if (!box || !summary || !list) return;
+  list.replaceChildren();
+  if (!diagnostic || diagnostic.issues.length === 0) {
+    box.classList.remove('visible');
+    summary.textContent = '';
+    return;
+  }
+  summary.textContent = diagnostic.summary;
+  diagnostic.issues.forEach(issue => {
+    const li = document.createElement('li');
+    li.textContent = issue.text;
+    list.appendChild(li);
+  });
+  box.classList.add('visible');
 }
 
 function checkAnswer() {
@@ -10271,6 +10675,13 @@ function checkAnswer() {
 
   if (debitRes.hasIncomplete || creditRes.hasIncomplete) {
     alert('【注意】勘定科目のみ、または金額のみが入力されているか、金額に小数や0以下の不正な数値が含まれています。正しく正の整数で入力してから提出してください。');
+    return;
+  }
+  if (debitRes.duplicateAccounts.length || creditRes.duplicateAccounts.length) {
+    const parts = [];
+    if (debitRes.duplicateAccounts.length) parts.push(`借方：${debitRes.duplicateAccounts.join('、')}`);
+    if (creditRes.duplicateAccounts.length) parts.push(`貸方：${creditRes.duplicateAccounts.join('、')}`);
+    alert(`【本試験仕様】同じ勘定科目は借方・貸方それぞれ1回だけ使用します。\n重複：${parts.join(' / ')}`);
     return;
   }
 
@@ -10295,26 +10706,14 @@ function checkAnswer() {
     resultTitle.innerText = '正解';
     resultDetail.innerText = '借方・貸方の勘定科目および金額が完全に一致しています。';
     Runtime.journal.currentErrorType = 'NONE';
+    renderJournalDiagnostic(null);
   } else {
     resultBox.className = 'result-box incorrect';
     resultTitle.innerText = '不正解';
-
-    const isAccountsMatch = (entriesA, entriesB) => {
-      const setA = Array.from(new Set(entriesA.map(e => e.account))).sort().join(',');
-      const setB = Array.from(new Set(entriesB.map(e => e.account))).sort().join(',');
-      return setA === setB;
-    };
-
-    if (isAccountsMatch(debitRes.entries, q.debit) && isAccountsMatch(creditRes.entries, q.credit)) {
-      Runtime.journal.currentErrorType = 'CALCULATION';
-      resultDetail.innerText = '勘定科目は正解ですが、計算金額に誤りがあります。';
-    } else if (!debitCorrect && !creditCorrect) {
-      Runtime.journal.currentErrorType = 'CONCEPT';
-      resultDetail.innerText = '借方・貸方ともに不一致です。問題文の仕訳構造と取引概念を確認してください。';
-    } else {
-      Runtime.journal.currentErrorType = 'ACCOUNT_ITEM';
-      resultDetail.innerText = '勘定科目の選択にミスがあります。指定された許容科目を確認してください。';
-    }
+    const diagnostic = diagnoseJournalAnswer(debitRes.entries, creditRes.entries, q.debit, q.credit);
+    Runtime.journal.currentErrorType = diagnostic.errorType;
+    resultDetail.innerText = diagnostic.summary;
+    renderJournalDiagnostic(diagnostic);
   }
 
   // 正解仕訳の表描画（常に表示）
@@ -10340,7 +10739,77 @@ function checkAnswer() {
     `;
   }
 
-  expBox.innerText = q.explanation;
+  expBox.innerText = `【教科書解説】\n${q.explanation}`;
+  renderLearningCoach(q);
+}
+
+
+const ACCOUNT_CLASSIFICATIONS = Object.freeze({
+  'クレジット売掛金':'資産','仮払法人税等':'資産','仮払消費税':'資産','仮払金':'資産','備品':'資産',
+  '前払保険料':'資産','前払地代':'資産','前払手数料':'資産','前払金':'資産','受取商品券':'資産','受取手形':'資産',
+  '土地':'資産','売掛金':'資産','定期預金':'資産','小口現金':'資産','差入保証金':'資産','建物':'資産','当座預金':'資産',
+  '手形貸付金':'資産','普通預金':'資産','未収入金':'資産','未収利息':'資産','消耗品':'資産','現金':'資産','立替金':'資産',
+  '繰越商品':'資産','貯蔵品':'資産','貸付金':'資産','車両運搬具':'資産','電子記録債権':'資産',
+  '備品減価償却累計額':'資産控除','建物減価償却累計額':'資産控除','車両運搬具減価償却累計額':'資産控除','貸倒引当金':'資産控除',
+  '仮受消費税':'負債','仮受金':'負債','借入金':'負債','前受家賃':'負債','前受手数料':'負債','前受金':'負債','当座借越':'負債',
+  '所得税預り金':'負債','手形借入金':'負債','支払手形':'負債','未払保険料':'負債','未払利息':'負債','未払地代':'負債','未払家賃':'負債',
+  '未払法人税等':'負債','未払消費税':'負債','未払配当金':'負債','未払金':'負債','社会保険料預り金':'負債','買掛金':'負債',
+  '電子記録債務':'負債','預り金':'負債',
+  '利益準備金':'純資産','資本金':'純資産','繰越利益剰余金':'純資産',
+  '償却債権取立益':'収益','受取利息':'収益','受取地代':'収益','受取家賃':'収益','受取手数料':'収益','固定資産売却益':'収益',
+  '売上':'収益','貸倒引当金戻入':'収益','雑収入':'収益',
+  '仕入':'費用','保管費':'費用','修繕費':'費用','固定資産売却損':'費用','広告宣伝費':'費用','支払保険料':'費用','支払利息':'費用',
+  '支払地代':'費用','支払家賃':'費用','支払手数料':'費用','旅費交通費':'費用','水道光熱費':'費用','法人税、住民税及び事業税':'費用',
+  '法定福利費':'費用','消耗品費':'費用','減価償却費':'費用','発送費':'費用','租税公課':'費用','給料':'費用','諸会費':'費用',
+  '貸倒引当金繰入':'費用','貸倒損失':'費用','通信費':'費用','雑損失':'費用','雑費':'費用',
+  '現金過不足':'一時勘定','損益':'決算振替勘定'
+});
+
+function accountEffectText(account, side) {
+  const type = ACCOUNT_CLASSIFICATIONS[account] || '分類確認';
+  const isDebit = side === 'debit';
+  if (type === '資産') return `資産の${isDebit ? '増加' : '減少'} → ${isDebit ? '借方' : '貸方'}`;
+  if (type === '資産控除') return `資産控除項目の${isDebit ? '減少' : '増加'} → ${isDebit ? '借方' : '貸方'}`;
+  if (type === '負債') return `負債の${isDebit ? '減少' : '増加'} → ${isDebit ? '借方' : '貸方'}`;
+  if (type === '純資産') return `純資産の${isDebit ? '減少' : '増加'} → ${isDebit ? '借方' : '貸方'}`;
+  if (type === '収益') return `収益の${isDebit ? '減少・取消し' : '発生'} → ${isDebit ? '借方' : '貸方'}`;
+  if (type === '費用') return `費用の${isDebit ? '発生' : '減少・取消し'} → ${isDebit ? '借方' : '貸方'}`;
+  return `${type}（問題の決算・一時処理として借貸を確認）`;
+}
+
+function renderLearningCoach(q) {
+  const box = document.getElementById('learning-coach-box');
+  const summary = document.getElementById('learning-coach-summary');
+  const steps = document.getElementById('learning-coach-steps');
+  const list = document.getElementById('account-effect-list');
+  if (!box || !summary || !steps || !list || !q) return;
+  const totalLines = q.debit.length + q.credit.length;
+  summary.textContent = totalLines >= 4
+    ? `この問題は複数の勘定科目が動く複合仕訳です。答えを丸暗記せず、次の順で分解します。`
+    : `この問題も「科目 → 5大要素 → 増減 → 借貸」の順で確認します。`;
+  steps.replaceChildren();
+  ['問題文から増減する勘定科目を拾う','各科目を5大要素（または資産控除・決算勘定）に分類する','増加・減少を判定して借方／貸方へ置く','最後に借方合計と貸方合計が一致するか検算する'].forEach(text => {
+    const li = document.createElement('li'); li.textContent = text; steps.appendChild(li);
+  });
+  list.replaceChildren();
+  const add = (side, label, entry) => {
+    const item = document.createElement('div'); item.className = 'account-effect-item';
+    const sideEl = document.createElement('span'); sideEl.className = 'account-effect-side'; sideEl.textContent = label;
+    const body = document.createElement('span');
+    body.textContent = `${entry.account} ${formatYen(entry.amount)} — ${accountEffectText(entry.account, side)}`;
+    item.append(sideEl, body); list.appendChild(item);
+  };
+  q.debit.forEach(entry => add('debit','借方',entry));
+  q.credit.forEach(entry => add('credit','貸方',entry));
+  box.style.display = 'block';
+}
+
+function validateAccountClassifications() {
+  const missing = new Set();
+  QUESTION_DATABASE.forEach(q => [...q.debit, ...q.credit].forEach(entry => {
+    if (!ACCOUNT_CLASSIFICATIONS[entry.account]) missing.add(entry.account);
+  }));
+  return [...missing].sort();
 }
 
 // SM-2 inspired: 簿記学習向けに3段階自己評価とエラー種別補正を組み合わせた独自間隔反復。
@@ -10424,86 +10893,165 @@ function formatTableValue(v) {
   return String(v);
 }
 
+function tableDraftKey(rowIndex, columnKey) { return `${rowIndex}:${columnKey}`; }
+
+function getTableSegments(q) {
+  const segments = [];
+  for (let i = 0; i < q.columns.length; i += 2) {
+    const columns = q.columns.slice(i, i + 2);
+    const bases = columns.map(c => c.label.replace(/\s*(借|貸|借方|貸方)\s*$/u, '').trim());
+    const label = bases.length === 2 && bases[0] === bases[1] ? bases[0] : columns.map(c => c.label).join('・');
+    segments.push({ label, columns });
+  }
+  return segments;
+}
+
+function getTableAnswerSpecs(q) {
+  const specs = [];
+  q.rows.forEach((row, rowIndex) => q.columns.forEach(column => {
+    const cell = (row.cells || {})[column.key];
+    if (cell && Object.prototype.hasOwnProperty.call(cell, 'answer')) {
+      specs.push({ rowIndex, columnKey: column.key, answer: Number(cell.answer), rowLabel: row.label, columnLabel: column.label });
+    }
+  }));
+  return specs;
+}
+
+function syncVisibleTableDraft() {
+  document.querySelectorAll('#table-exercise-host .table-answer-input').forEach(input => {
+    Runtime.table.draft[tableDraftKey(Number(input.dataset.row), input.dataset.key)] = String(input.value || '');
+  });
+}
+
+function currentVisibleTableColumns(q) {
+  if (Runtime.table.viewMode !== 'compact') return q.columns;
+  const segments = getTableSegments(q);
+  return segments[Math.min(Runtime.table.segmentIndex, segments.length - 1)]?.columns || q.columns.slice(0, 2);
+}
+
+function renderTableViewControls(q) {
+  const switcher = document.getElementById('table-view-switcher');
+  const segmentNav = document.getElementById('table-segment-nav');
+  if (!switcher || !segmentNav) return;
+  const hasMultipleSegments = q.columns.length > 2;
+  switcher.hidden = !hasMultipleSegments;
+  switcher.querySelectorAll('.table-view-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.view === Runtime.table.viewMode));
+  const segments = getTableSegments(q);
+  segmentNav.replaceChildren();
+  if (Runtime.table.viewMode === 'compact' && segments.length > 1) {
+    segmentNav.hidden = false;
+    segments.forEach((segment, index) => {
+      const btn = document.createElement('button');
+      btn.type = 'button'; btn.className = 'table-segment-btn';
+      if (index === Runtime.table.segmentIndex) btn.classList.add('active');
+      btn.dataset.action = 'set-table-segment'; btn.dataset.segment = String(index);
+      btn.textContent = segment.label;
+      segmentNav.appendChild(btn);
+    });
+  } else segmentNav.hidden = true;
+}
+
+function handleTableInputKeydown(event, input) {
+  if (!['Enter','ArrowRight','ArrowLeft','ArrowDown','ArrowUp'].includes(event.key)) return;
+  const fields = [...document.querySelectorAll('#table-exercise-host .table-answer-input:not(:disabled)')];
+  const index = fields.indexOf(input);
+  if (index < 0) return;
+  let direction = 1;
+  if (event.key === 'ArrowLeft' || event.key === 'ArrowUp' || (event.key === 'Enter' && event.shiftKey)) direction = -1;
+  event.preventDefault();
+  const next = fields[index + direction];
+  if (next) { next.focus(); next.select(); }
+}
+
 function renderTableQuestionTable(q) {
   const host = document.getElementById('table-exercise-host');
-  if (!host) return;
+  const wrapper = document.getElementById('table-exercise-wrapper');
+  if (!host || !wrapper) return;
+  const visibleColumns = currentVisibleTableColumns(q);
+  const compact = Runtime.table.viewMode === 'compact';
+  wrapper.classList.toggle('compact-mode', compact);
   const table = document.createElement('table');
-  table.className = `exercise-table${q.columns.length >= 6 ? ' wide' : ''}`;
+  table.className = compact ? 'exercise-table compact' : `exercise-table${q.columns.length >= 6 ? ' wide' : ''}`;
   const thead = document.createElement('thead');
   const headRow = document.createElement('tr');
-  const firstTh = document.createElement('th');
-  firstTh.textContent = '勘定科目・項目';
-  headRow.appendChild(firstTh);
-  q.columns.forEach(column => {
-    const th = document.createElement('th');
-    th.textContent = column.label;
-    headRow.appendChild(th);
-  });
-  thead.appendChild(headRow);
-  table.appendChild(thead);
+  const firstTh = document.createElement('th'); firstTh.textContent = '勘定科目・項目'; headRow.appendChild(firstTh);
+  visibleColumns.forEach(column => { const th = document.createElement('th'); th.textContent = column.label; headRow.appendChild(th); });
+  thead.appendChild(headRow); table.appendChild(thead);
 
   const tbody = document.createElement('tbody');
   const fragment = document.createDocumentFragment();
   q.rows.forEach((row, rowIndex) => {
-    const tr = document.createElement('tr');
-    if (row.isTotal) tr.classList.add('total-row');
-    const labelTd = document.createElement('td');
-    labelTd.textContent = row.label;
-    tr.appendChild(labelTd);
-    q.columns.forEach(column => {
+    const tr = document.createElement('tr'); if (row.isTotal) tr.classList.add('total-row');
+    const labelTd = document.createElement('td'); labelTd.textContent = row.label; tr.appendChild(labelTd);
+    visibleColumns.forEach(column => {
       const td = document.createElement('td');
       const cell = (row.cells || {})[column.key] || { given: '—' };
       if (Object.prototype.hasOwnProperty.call(cell, 'answer')) {
         const input = document.createElement('input');
-        input.type = 'text';
-        input.inputMode = 'numeric';
-        input.pattern = '[0-9]*';
-        input.autocomplete = 'off';
-        input.className = 'table-answer-input';
-        input.dataset.row = String(rowIndex);
-        input.dataset.key = column.key;
-        input.dataset.answer = String(cell.answer);
+        input.type = 'text'; input.inputMode = 'numeric'; input.pattern = '[0-9]*'; input.autocomplete = 'off';
+        input.className = 'table-answer-input'; input.dataset.row = String(rowIndex); input.dataset.key = column.key; input.dataset.answer = String(cell.answer);
+        const key = tableDraftKey(rowIndex, column.key); input.value = Runtime.table.draft[key] ?? '';
+        input.disabled = Runtime.table.answered;
+        if (Runtime.table.answered) {
+          const ok = input.value !== '' && Number(input.value) === Number(cell.answer);
+          input.classList.add(ok ? 'cell-correct' : 'cell-wrong');
+        }
         input.addEventListener('focus', () => { Runtime.table.lastFocusedInput = input; });
         input.addEventListener('input', () => {
           const sanitized = String(input.value || '').replace(/[^0-9]/g, '');
           if (input.value !== sanitized) input.value = sanitized;
+          Runtime.table.draft[key] = input.value;
         });
+        input.addEventListener('keydown', event => handleTableInputKeydown(event, input));
         td.appendChild(input);
       } else {
-        const span = document.createElement('span');
-        span.className = 'table-given';
-        span.textContent = formatTableValue(cell.given);
-        td.appendChild(span);
+        const span = document.createElement('span'); span.className = 'table-given'; span.textContent = formatTableValue(cell.given); td.appendChild(span);
       }
       tr.appendChild(td);
     });
     fragment.appendChild(tr);
   });
-  tbody.appendChild(fragment);
-  table.appendChild(tbody);
-  host.replaceChildren(table);
+  tbody.appendChild(fragment); table.appendChild(tbody); host.replaceChildren(table);
+}
+
+function setTableView(view) {
+  if (Runtime.table.currentIndex < 0) return;
+  syncVisibleTableDraft();
+  Runtime.table.viewMode = view === 'full' ? 'full' : 'compact';
+  Runtime.table.segmentIndex = Math.max(0, Runtime.table.segmentIndex);
+  const q = TABLE_DATABASE[Runtime.table.currentIndex];
+  renderTableViewControls(q); renderTableQuestionTable(q);
+}
+
+function setTableSegment(index) {
+  if (Runtime.table.currentIndex < 0) return;
+  syncVisibleTableDraft();
+  const q = TABLE_DATABASE[Runtime.table.currentIndex];
+  const segments = getTableSegments(q);
+  Runtime.table.segmentIndex = Math.min(Math.max(0, Number(index) || 0), Math.max(0, segments.length - 1));
+  Runtime.table.viewMode = 'compact';
+  renderTableViewControls(q); renderTableQuestionTable(q);
 }
 
 function loadTableQuestion(index) {
-  if (index<0 || index>=TABLE_DATABASE.length) index=0;
-  Runtime.table.currentIndex=index; Runtime.table.answered=false; Runtime.table.lastFocusedInput=null;
-  const q=TABLE_DATABASE[index];
-  document.getElementById('table-problem-category').innerText=q.category;
-  document.getElementById('table-problem-id-text').innerText=`ID: ${q.id} (${index+1} / ${TABLE_DATABASE.length})`;
-  document.getElementById('table-problem-statement').innerText=q.statement;
-  const hint=document.getElementById('table-hint-box');
-  hint.innerText = tableHintFor(q); hint.style.display='none';
-  renderTableQuestionTable(q);
-  const rb=document.getElementById('table-result-box'); rb.className='table-result-box'; rb.style.display='none';
-  document.getElementById('table-submit-btn').disabled=false;
-  updateTableTocActive(q.id);
+  if (index < 0 || index >= TABLE_DATABASE.length) index = 0;
+  Runtime.table.currentIndex = index; Runtime.table.answered = false; Runtime.table.lastFocusedInput = null; Runtime.table.segmentIndex = 0; Runtime.table.draft = {};
+  const q = TABLE_DATABASE[index];
+  Runtime.table.viewMode = window.matchMedia && window.matchMedia('(max-width: 600px)').matches ? 'compact' : 'full';
+  document.getElementById('table-problem-category').innerText = q.category;
+  document.getElementById('table-problem-id-text').innerText = `ID: ${q.id} (${index + 1} / ${TABLE_DATABASE.length})`;
+  document.getElementById('table-problem-statement').innerText = q.statement;
+  const hint = document.getElementById('table-hint-box'); hint.innerText = tableHintFor(q); hint.style.display = 'none';
+  renderTableViewControls(q); renderTableQuestionTable(q);
+  const rb = document.getElementById('table-result-box'); rb.className = 'table-result-box'; rb.style.display = 'none';
+  document.getElementById('table-submit-btn').disabled = false; updateTableTocActive(q.id);
 }
 
 function tableHintFor(q) {
   const map={
     '残高試算表':'資産・費用は通常借方残高、負債・純資産・収益は通常貸方残高です。最後に借方合計と貸方合計を照合します。',
     '合計試算表':'残高ではなく、各勘定の借方記入額・貸方記入額の累計をそのまま記入します。',
-    '8桁精算表':'試算表→修正記入→損益計算書・貸借対照表の順に、各勘定の性質と決算整理後の残高を追います。',
+    '8桁精算表':'試算表→修正記入→損益計算書・貸借対照表の順に、各勘定の性質と決算整理後の残高を追います。iPhone入力では2列ずつ切り替えて入力できます。',
     '決算整理後残高試算表':'決算整理仕訳を反映した後の各勘定残高を求めます。資産・費用は借方、負債・純資産・収益は貸方が基本です。',
     '損益計算書':'収益合計から費用合計を差し引きます。収益＞費用なら当期純利益、収益＜費用なら当期純損失です。',
     '貸借対照表':'資産＝負債＋純資産になることを最後に確認します。貸倒引当金や減価償却累計額は関連する資産から控除して考えます。'
@@ -10517,44 +11065,37 @@ function toggleTableHint() {
 }
 
 function checkTableAnswer() {
-  if (Runtime.table.currentIndex<0 || Runtime.table.answered) return;
-  const q=TABLE_DATABASE[Runtime.table.currentIndex];
-  const inputs=[...document.querySelectorAll('#table-exercise-host .table-answer-input')];
-  if (inputs.some(i=>i.value==='')) { alert('【注意】空欄が残っています。すべての入力欄に金額を入力してください。'); return; }
-  let wrong=0;
-  const wrongItems=[];
-  inputs.forEach(inp=>{
-    const raw=inp.value; const num=Number(raw); const ans=Number(inp.dataset.answer);
-    const ok=raw!=='' && Number.isInteger(num) && num>=0 && num===ans;
-    inp.classList.toggle('cell-correct',ok); inp.classList.toggle('cell-wrong',!ok); inp.disabled=true;
-    if(!ok) {
-      wrong++;
-      const ri=Number(inp.dataset.row);
-      const key=inp.dataset.key;
-      const rowLabel=q.rows[ri] ? q.rows[ri].label : '';
-      const col=q.columns.find(c=>c.key===key);
-      wrongItems.push(`${rowLabel}・${col ? col.label : key}：正答 ${ans.toLocaleString()}円`);
-    }
+  if (Runtime.table.currentIndex < 0 || Runtime.table.answered) return;
+  const q = TABLE_DATABASE[Runtime.table.currentIndex];
+  syncVisibleTableDraft();
+  const specs = getTableAnswerSpecs(q);
+  const missing = specs.filter(spec => (Runtime.table.draft[tableDraftKey(spec.rowIndex, spec.columnKey)] ?? '') === '');
+  if (missing.length) {
+    const first = missing[0];
+    const segments = getTableSegments(q);
+    const segmentIndex = segments.findIndex(segment => segment.columns.some(c => c.key === first.columnKey));
+    if (segmentIndex >= 0) { Runtime.table.viewMode = 'compact'; Runtime.table.segmentIndex = segmentIndex; renderTableViewControls(q); renderTableQuestionTable(q); }
+    requestAnimationFrame(() => document.querySelector(`#table-exercise-host .table-answer-input[data-row="${first.rowIndex}"][data-key="${CSS.escape(first.columnKey)}"]`)?.focus());
+    alert(`【注意】未入力が${missing.length}か所あります。最初の未入力欄へ移動します。`);
+    return;
+  }
+
+  let wrong = 0; const wrongItems = [];
+  specs.forEach(spec => {
+    const raw = Runtime.table.draft[tableDraftKey(spec.rowIndex, spec.columnKey)];
+    const num = Number(raw); const ok = raw !== '' && Number.isInteger(num) && num >= 0 && num === spec.answer;
+    if (!ok) { wrong += 1; wrongItems.push(`${spec.rowLabel}・${spec.columnLabel}：入力 ${Number.isFinite(num) ? num.toLocaleString() : raw}円 / 正答 ${spec.answer.toLocaleString()}円`); }
   });
-  Runtime.table.answered = true;
-  document.getElementById('table-submit-btn').disabled = true;
-  const isCorrect = wrong === 0;
-  const now = new Date();
-  const prev = Runtime.state.tableProgress[q.id] || { attempts: 0, correct: false };
+  Runtime.table.answered = true; document.getElementById('table-submit-btn').disabled = true;
+  renderTableQuestionTable(q);
+  const isCorrect = wrong === 0; const now = new Date(); const prev = Runtime.state.tableProgress[q.id] || { attempts: 0, correct: false };
   const srs = computeSrsProgress(prev, isCorrect ? 2 : 0, 'NONE', now);
-  Runtime.state.tableProgress[q.id] = {
-    ...prev, ...srs,
-    attempts: (Number.isFinite(prev.attempts) ? prev.attempts : 0) + 1,
-    correct: Boolean(prev.correct || isCorrect),
-    lastResultCorrect: isCorrect,
-    lastAttempt: now.toISOString()
-  };
+  Runtime.state.tableProgress[q.id] = { ...prev, ...srs, attempts: (Number.isFinite(prev.attempts) ? prev.attempts : 0) + 1, correct: Boolean(prev.correct || isCorrect), lastResultCorrect: isCorrect, lastAttempt: now.toISOString() };
   StorageManager.saveState(Runtime.state);
-  const box=document.getElementById('table-result-box');
-  box.className=`table-result-box ${isCorrect?'correct':'incorrect'}`; box.style.display='block';
-  document.getElementById('table-result-title').innerText=isCorrect?'正解':'不正解';
-  document.getElementById('table-result-detail').innerText=isCorrect?'すべての空欄が一致しています。':`${wrong}か所不一致です。\n${wrongItems.join('\n')}`;
-  document.getElementById('table-explanation-box').innerText=q.explanation;
+  const box = document.getElementById('table-result-box'); box.className = `table-result-box ${isCorrect ? 'correct' : 'incorrect'}`; box.style.display = 'block';
+  document.getElementById('table-result-title').innerText = isCorrect ? '正解' : '不正解';
+  document.getElementById('table-result-detail').innerText = isCorrect ? 'すべての空欄が一致しています。' : `${wrong}か所不一致です。\n${wrongItems.join('\n')}`;
+  document.getElementById('table-explanation-box').innerText = q.explanation;
   updateTableDashboard(); renderTableToc(); updateTableTocActive(q.id);
 }
 
@@ -10611,8 +11152,8 @@ function applyCalcToTable() {
   const num=Math.round(Number(Runtime.calculator.current));
   if(isNaN(num) || num<0){ alert('有効な金額を計算してから反映してください。'); return; }
   let target=Runtime.table.lastFocusedInput;
-  if(!target || target.disabled) target=document.querySelector('#table-exercise-host .table-answer-input:not(:disabled)');
-  if(target){ target.value=num; target.style.backgroundColor='#fef08a'; setTimeout(()=>target.style.backgroundColor='',400); toggleCalculator(); }
+  if(!target || target.disabled || !target.isConnected) target=document.querySelector('#table-exercise-host .table-answer-input:not(:disabled)');
+  if(target){ target.value=num; target.dispatchEvent(new Event('input', { bubbles:true })); target.style.backgroundColor='#fef08a'; setTimeout(()=>target.style.backgroundColor='',400); toggleCalculator(); }
 }
 
 // === 内蔵電卓（計算機）ロジック ===
@@ -10762,11 +11303,13 @@ function handleDelegatedAction(event) {
     case 'toggle-hint': toggleHint(); break;
     case 'toggle-calculator': toggleCalculator(); break;
     case 'add-journal-row': addJournalRow(); break;
-    case 'remove-journal-row': removeJournalRow(trigger); break;
+    case 'remove-last-journal-row': removeLastJournalRow(); break;
     case 'check-journal': checkAnswer(); break;
     case 'journal-eval': applySelfEval(Number(trigger.dataset.quality)); break;
     case 'toggle-table-hint': toggleTableHint(); break;
     case 'check-table': checkTableAnswer(); break;
+    case 'set-table-view': setTableView(trigger.dataset.view); break;
+    case 'set-table-segment': setTableSegment(Number(trigger.dataset.segment)); break;
     case 'open-toc': openTableOfContents(); break;
     case 'next-table': nextTableQuestion(); break;
     case 'apply-calc-journal': applyCalcToJournal(trigger.dataset.side); break;
