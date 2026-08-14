@@ -514,7 +514,7 @@
       <div id="result-title" style="font-weight: bold; font-size: 1.05rem;"></div>
       <div id="result-detail" style="margin-top: 4px;"></div>
 
-      <!-- 正解仕訳表示エリア -->
+      <!-- 正解仕訳表示エリア（正解・不正解問わず常に表示） -->
       <div class="correct-journal-box" id="correct-journal-box">
         <div class="correct-journal-title">正解の仕訳:</div>
         <div id="correct-journal-content"></div>
@@ -1416,7 +1416,7 @@ const QUESTION_DATABASE = [
     statement: "役員報酬 ￥500,000 を、源泉税 ￥40,000 を控除して当座預金から支払った。",
     hint: "役員給料は「役員報酬（費用）」、天引き額は「所得税預り金」です。",
     options: ["役員報酬", "所得税預り金", "当座預金"],
-    debit: [{ account: "役員報酬", amount: 500000 }],
+    debit: [{ account: "役員報酬", amount: 50000 }],
     credit: [{ account: "所得税預り金", amount: 40000 }, { account: "当座預金", amount: 460000 }],
     explanation: "総額を「役員報酬」とし、源泉税天引き分を「所得税預り金」とします。"
   },
@@ -1561,11 +1561,11 @@ const VALID_QUESTION_IDS = new Set(QUESTION_DATABASE.map(q => q.id));
 
 // 移行元バージョンに応じた累積パージ対象マップ（sourceVersion以降に変更された全IDを網羅）
 const PURGE_BY_SOURCE_VERSION = {
-  "v5": new Set(["Q006", "Q008", "Q011", "Q013", "Q014", "Q022", "Q030", "Q050", "Q051", "Q093"]),
-  "v6.0": new Set(["Q006", "Q008", "Q011", "Q013", "Q014", "Q022", "Q030", "Q050", "Q051", "Q093"]),
-  "v6.1": new Set(["Q006", "Q008", "Q011", "Q022", "Q050", "Q051"]),
-  "v6.2": new Set(["Q006", "Q022"]),
-  "v6.3": new Set(["Q022"]),
+  "v5": new Set(["Q006", "Q008", "Q011", "Q013", "Q014", "Q022", "Q030", "Q037", "Q050", "Q051", "Q087", "Q093"]),
+  "v6.0": new Set(["Q006", "Q008", "Q011", "Q013", "Q014", "Q022", "Q030", "Q037", "Q050", "Q051", "Q087", "Q093"]),
+  "v6.1": new Set(["Q006", "Q008", "Q011", "Q022", "Q030", "Q037", "Q050", "Q051", "Q087"]),
+  "v6.2": new Set(["Q006", "Q022", "Q030", "Q037", "Q087"]),
+  "v6.3": new Set(["Q022", "Q030", "Q037", "Q087"]),
   "v6.4": new Set()
 };
 
@@ -1995,7 +1995,7 @@ function checkAnswer() {
     }
   }
 
-  // 正解仕訳の表描画
+  // 正解仕訳の表描画（正解時・不正解時ともに常に表示）
   if (correctJournalContent) {
     const debitHtml = q.debit.map(e => `<div style="display:flex; justify-content:space-between; margin-bottom:4px; gap:8px;"><span>${escapeHtml(e.account)}</span><span style="font-weight:600;">￥${e.amount.toLocaleString()}</span></div>`).join('');
     const creditHtml = q.credit.map(e => `<div style="display:flex; justify-content:space-between; margin-bottom:4px; gap:8px;"><span>${escapeHtml(e.account)}</span><span style="font-weight:600;">￥${e.amount.toLocaleString()}</span></div>`).join('');
