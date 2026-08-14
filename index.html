@@ -359,13 +359,12 @@
       margin-bottom: 10px;
       border: 1px solid var(--table-border);
       background-color: #ffffff;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
+      overflow-x: hidden; /* 仕訳表は横スクロールさせず画面内に収める */
     }
 
     .grid-table {
       width: 100%;
-      min-width: 760px; /* iPhoneでも金額欄を十分な幅で表示する */
+      min-width: 0;
       border-collapse: collapse;
       table-layout: fixed;
     }
@@ -409,8 +408,9 @@
       padding-right: 8px;
       font-weight: 600;
       font-size: 1rem;
-      min-width: 120px;
+      min-width: 0;
       font-variant-numeric: tabular-nums;
+      transition: background-color 0.2s, font-size 0.12s ease;
       appearance: textfield;
       -moz-appearance: textfield;
     }
@@ -720,7 +720,7 @@
     }
 
 
-    /* ===== v8.0 モード切替・表問題 ===== */
+    /* ===== v8.1 モード切替・表問題 ===== */
     .mode-switcher {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -846,7 +846,7 @@
 <div class="container">
   <header>
     <h1>日商簿記3級 総合演習システム（仕訳200問＋表問題40問）</h1>
-    <p>2026年度出題区分対応 × 仕訳200問 × 表・決算演習40問 × 教科書型解説 × 教材版 v8.0</p>
+    <p>2026年度出題区分対応 × 仕訳200問 × 表・決算演習40問 × 教科書型解説 × 教材版 v8.1</p>
   </header>
 
   <div class="mode-switcher" aria-label="演習モード切替">
@@ -931,11 +931,11 @@
       <table class="grid-table">
         <thead>
           <tr>
-            <th style="width: 32%;">借方科目</th>
+            <th style="width: 31%;">借方科目</th>
             <th style="width: 17%;">金額</th>
-            <th style="width: 32%;">貸方科目</th>
+            <th style="width: 31%;">貸方科目</th>
             <th style="width: 17%;">金額</th>
-            <th style="width: 24px;"></th>
+            <th style="width: 4%;"></th>
           </tr>
         </thead>
         <tbody id="journal-rows">
@@ -1067,7 +1067,7 @@
 <script>
 'use strict';
 
-// 仕訳200問データベース（2026年度適用 出題区分対応・教科書型解説 v8.0）
+// 仕訳200問データベース（2026年度適用 出題区分対応・教科書型解説 v8.1）
 const QUESTION_DATABASE = [
   {
     "id": "Q001",
@@ -9614,7 +9614,7 @@ const UPDATED_FROM_V7_0_IDS = new Set(["Q012","Q024","Q029","Q036","Q039","Q052"
 // --- 堅牢な LocalStorage 管理クラス ---
 class StorageManager {
   static KEY_200 = 'boki3_system_state_v6_200';
-  // 教材表示はv8.0だが、問題文・正答の対応はv7.1と同一のため、学習履歴互換性を保つためbankVersionはv7.1のままとする。
+  // 教材表示はv8.1だが、問題文・正答の対応はv7.1と同一のため、学習履歴互換性を保つためbankVersionはv7.1のままとする。
   static VERSION = 'v7.1';
 
   static loadState() {
@@ -9893,6 +9893,20 @@ function loadQuestion(index) {
   setInputFieldsDisabled(false);
 }
 
+// 金額の桁数に応じて文字サイズを自動調整（仕訳表専用）
+function fitJournalAmountFont(input) {
+  if (!input) return;
+  const digits = String(input.value || '').replace(/[^0-9]/g, '').length;
+  let size = 16;
+  if (digits >= 11) size = 9.5;
+  else if (digits === 10) size = 10;
+  else if (digits === 9) size = 11;
+  else if (digits === 8) size = 12;
+  else if (digits === 7) size = 13;
+  else if (digits === 6) size = 14;
+  input.style.fontSize = `${size}px`;
+}
+
 // 5列標準テーブル行の生成
 function addJournalRow() {
   const tbody = document.getElementById('journal-rows');
@@ -9916,8 +9930,14 @@ function addJournalRow() {
 
   const debitInput = tr.querySelector('.debit-amount');
   const creditInput = tr.querySelector('.credit-amount');
-  if (debitInput) debitInput.addEventListener('focus', () => { lastFocusedInput = debitInput; });
-  if (creditInput) creditInput.addEventListener('focus', () => { lastFocusedInput = creditInput; });
+  if (debitInput) {
+    debitInput.addEventListener('focus', () => { lastFocusedInput = debitInput; });
+    debitInput.addEventListener('input', () => fitJournalAmountFont(debitInput));
+  }
+  if (creditInput) {
+    creditInput.addEventListener('focus', () => { lastFocusedInput = creditInput; });
+    creditInput.addEventListener('input', () => fitJournalAmountFont(creditInput));
+  }
 
   tbody.appendChild(tr);
 }
@@ -9930,7 +9950,7 @@ function removeJournalRow(btn) {
   } else {
     const tr = tbody.children[0];
     tr.querySelectorAll('select').forEach(s => s.value = '');
-    tr.querySelectorAll('input').forEach(i => i.value = '');
+    tr.querySelectorAll('input').forEach(i => { i.value = ''; fitJournalAmountFont(i); });
   }
 }
 
@@ -10385,6 +10405,7 @@ function applyCalcToJournal(side) {
 
   if (targetInput) {
     targetInput.value = num;
+    fitJournalAmountFont(targetInput);
     targetInput.style.backgroundColor = '#fef08a';
     setTimeout(() => {
       targetInput.style.backgroundColor = '';
