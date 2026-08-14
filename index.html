@@ -157,7 +157,7 @@
       word-break: break-word;
     }
 
-    /* ボタンツールバー（ヒント・電卓） */
+    /* ツールバー */
     .tool-bar {
       display: flex;
       gap: 8px;
@@ -203,138 +203,152 @@
       display: none;
     }
 
-    /* === レスポンシブ仕訳入力UI (CSS Grid) === */
-    .journal-container {
+    /* === 仕訳テーブル（PC表示） === */
+    .journal-table-wrapper {
+      width: 100%;
       margin-bottom: 12px;
     }
 
-    /* PC・タブレット表示（横並び対照表） */
-    @media (min-width: 641px) {
-      .journal-header {
-        display: grid;
-        grid-template-columns: 1fr 140px 1fr 140px 45px;
-        gap: 8px;
-        background-color: #f1f5f9;
-        padding: 8px 12px;
-        border: 1px solid var(--border-color);
-        border-radius: 6px 6px 0 0;
-        font-size: 0.85rem;
-        font-weight: bold;
-        text-align: center;
-        align-items: center;
-      }
-      .journal-header .th-debit {
-        grid-column: span 2;
-        color: #1e40af;
-        background-color: #eff6ff;
-        padding: 4px;
-        border-radius: 4px;
-        border: 1px solid #bfdbfe;
-      }
-      .journal-header .th-credit {
-        grid-column: span 2;
-        color: #991b1b;
-        background-color: #fef2f2;
-        padding: 4px;
-        border-radius: 4px;
-        border: 1px solid #fecaca;
-      }
-      .journal-header .th-del {
-        color: #64748b;
-        font-size: 0.75rem;
-      }
-
-      .journal-rows-container {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        margin-top: 8px;
-      }
-      .journal-row {
-        display: grid;
-        grid-template-columns: 1fr 140px 1fr 140px 45px;
-        gap: 8px;
-        align-items: center;
-        background: #ffffff;
-        padding: 8px 12px;
-        border: 1px solid var(--border-color);
-        border-radius: 6px;
-      }
-      .journal-side-block {
-        display: contents;
-      }
-      .mobile-side-label {
-        display: none;
-      }
-      .journal-input-group {
-        display: contents;
-      }
-      .journal-row-footer {
-        display: flex;
-        justify-content: center;
-      }
-      .journal-row-footer .btn-remove-row {
-        padding: 8px 10px;
-      }
+    .journal-table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: #ffffff;
     }
 
-    /* スマホ・iPhone表示（縦スタックカード型・横スクロール撤廃） */
+    .journal-table th, .journal-table td {
+      padding: 8px 10px;
+      border: 1px solid var(--border-color);
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    .journal-table th {
+      background-color: #f1f5f9;
+      font-size: 0.85rem;
+      color: #334155;
+      font-weight: bold;
+    }
+
+    .journal-table th.th-debit {
+      background-color: #eff6ff;
+      color: #1e40af;
+      border-bottom: 2px solid #3b82f6;
+    }
+
+    .journal-table th.th-credit {
+      background-color: #fef2f2;
+      color: #991b1b;
+      border-bottom: 2px solid #ef4444;
+    }
+
+    .journal-table th.th-del {
+      width: 50px;
+      font-size: 0.75rem;
+      color: #64748b;
+    }
+
+    /* === スマホ・iPhone表示（横スクロールなし・縦スタックカード型） === */
     @media (max-width: 640px) {
-      .journal-header {
-        display: none;
+      .journal-table thead {
+        display: none; /* スマホではヘッダーを非表示 */
       }
-      .journal-rows-container {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
+      .journal-table, .journal-table tbody, .journal-table tr {
+        display: block;
+        width: 100%;
       }
-      .journal-row {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
+      .journal-table tr {
         background: #ffffff;
         border: 1px solid var(--border-color);
         border-radius: 8px;
         padding: 10px;
+        margin-bottom: 12px;
         box-shadow: 0 1px 3px rgba(0,0,0,0.05);
       }
-      .journal-side-block {
-        padding: 8px;
-        border-radius: 6px;
+      .journal-table td {
+        display: block;
+        width: 100%;
+        padding: 0;
+        border: none;
+        text-align: left;
       }
-      .journal-side-block.debit {
+
+      /* 借方（左側）ブロック */
+      .journal-table td:nth-child(1),
+      .journal-table td:nth-child(2) {
         background-color: #eff6ff;
+      }
+      .journal-table td:nth-child(1) {
+        border-top-left-radius: 6px;
+        border-top-right-radius: 6px;
         border-left: 4px solid #3b82f6;
+        padding: 8px 8px 4px 8px;
       }
-      .journal-side-block.credit {
-        background-color: #fef2f2;
-        border-left: 4px solid #ef4444;
-      }
-      .mobile-side-label {
+      .journal-table td:nth-child(1)::before {
+        content: "借方（左側）- 勘定科目";
         display: block;
         font-size: 0.75rem;
         font-weight: bold;
-        margin-bottom: 6px;
+        color: #1e40af;
+        margin-bottom: 4px;
       }
-      .mobile-side-label.debit { color: #1e40af; }
-      .mobile-side-label.credit { color: #991b1b; }
-      
-      .journal-input-group {
-        display: flex;
-        gap: 6px;
+      .journal-table td:nth-child(2) {
+        border-bottom-left-radius: 6px;
+        border-bottom-right-radius: 6px;
+        border-left: 4px solid #3b82f6;
+        padding: 0 8px 8px 8px;
+        margin-bottom: 8px;
       }
-      .journal-input-group select {
-        flex: 1.3;
+      .journal-table td:nth-child(2)::before {
+        content: "借方金額";
+        display: block;
+        font-size: 0.75rem;
+        font-weight: bold;
+        color: #1e40af;
+        margin-bottom: 4px;
       }
-      .journal-input-group input {
-        flex: 1;
+
+      /* 貸方（右側）ブロック */
+      .journal-table td:nth-child(3),
+      .journal-table td:nth-child(4) {
+        background-color: #fef2f2;
       }
-      .journal-row-footer {
+      .journal-table td:nth-child(3) {
+        border-top-left-radius: 6px;
+        border-top-right-radius: 6px;
+        border-left: 4px solid #ef4444;
+        padding: 8px 8px 4px 8px;
+      }
+      .journal-table td:nth-child(3)::before {
+        content: "貸方（右側）- 勘定科目";
+        display: block;
+        font-size: 0.75rem;
+        font-weight: bold;
+        color: #991b1b;
+        margin-bottom: 4px;
+      }
+      .journal-table td:nth-child(4) {
+        border-bottom-left-radius: 6px;
+        border-bottom-right-radius: 6px;
+        border-left: 4px solid #ef4444;
+        padding: 0 8px 8px 8px;
+        margin-bottom: 8px;
+      }
+      .journal-table td:nth-child(4)::before {
+        content: "貸方金額";
+        display: block;
+        font-size: 0.75rem;
+        font-weight: bold;
+        color: #991b1b;
+        margin-bottom: 4px;
+      }
+
+      /* 削除ボタン */
+      .journal-table td:nth-child(5) {
         display: flex;
         justify-content: flex-end;
-        margin-top: 2px;
+        padding-top: 4px;
       }
-      .journal-row-footer .btn-remove-row {
+      .btn-remove-row {
         padding: 6px 14px;
       }
     }
@@ -712,16 +726,27 @@
     </div>
     <div class="hint-box" id="hint-box"></div>
 
-    <!-- 仕訳解答欄（PC:横並び / スマホ:縦スタック） -->
-    <div class="journal-container">
-      <div class="journal-header">
-        <div class="th-debit">借方（左側）</div>
-        <div class="th-credit">貸方（右側）</div>
-        <div class="th-del">削除</div>
-      </div>
-      <div class="journal-rows-container" id="journal-rows">
-        <!-- 動的に行を追加 -->
-      </div>
+    <!-- 仕訳解答欄（PC:横並びテーブル / スマホ:縦スタックカード） -->
+    <div class="journal-table-wrapper" id="journal-wrapper">
+      <table class="journal-table">
+        <thead>
+          <tr>
+            <th colspan="2" class="th-debit">借方（左側）</th>
+            <th colspan="2" class="th-credit">貸方（右側）</th>
+            <th class="th-del">削除</th>
+          </tr>
+          <tr>
+            <th style="width: 30%;">勘定科目</th>
+            <th style="width: 18%;">金額</th>
+            <th style="width: 30%;">勘定科目</th>
+            <th style="width: 18%;">金額</th>
+            <th class="th-del"></th>
+          </tr>
+        </thead>
+        <tbody id="journal-rows">
+          <!-- 動的に行を追加 -->
+        </tbody>
+      </table>
     </div>
 
     <button type="button" class="add-row-btn" id="add-row-btn" onclick="addJournalRow()">+ 複合仕訳用の行を追加する</button>
@@ -771,8 +796,8 @@
     
     <button type="button" class="calc-btn" onclick="calcAction('7')">7</button>
     <button type="button" class="calc-btn" onclick="calcAction('8')">8</button>
-    <button type="button" class="calc-btn" onclick="calcAction('9')">9</button>
     <button type="button" class="calc-btn op" onclick="calcAction('*')">×</button>
+    <button type="button" class="calc-btn" onclick="calcAction('9')">9</button>
     
     <button type="button" class="calc-btn" onclick="calcAction('4')">4</button>
     <button type="button" class="calc-btn" onclick="calcAction('5')">5</button>
@@ -1970,8 +1995,8 @@ function setEvalButtonsDisabled(disabled, isCorrect = false) {
 }
 
 function setInputFieldsDisabled(disabled) {
-  const selects = document.querySelectorAll('.journal-container select');
-  const inputs = document.querySelectorAll('.journal-container input');
+  const selects = document.querySelectorAll('.journal-table select');
+  const inputs = document.querySelectorAll('.journal-table input');
   const removeBtns = document.querySelectorAll('.btn-remove-row');
   const addBtn = document.getElementById('add-row-btn');
   const submitBtn = document.getElementById('submit-btn');
@@ -2076,9 +2101,9 @@ function loadQuestion(index) {
 
   document.getElementById('result-box').style.display = 'none';
 
-  const container = document.getElementById('journal-rows');
-  if (container) {
-    container.innerHTML = '';
+  const tbody = document.getElementById('journal-rows');
+  if (tbody) {
+    tbody.innerHTML = '';
     const initialRows = Math.max(q.debit.length, q.credit.length, 1);
     for (let i = 0; i < initialRows; i++) {
       addJournalRow();
@@ -2088,51 +2113,38 @@ function loadQuestion(index) {
   setInputFieldsDisabled(false);
 }
 
-// 行の生成（PC用横並び5列グリッド / スマホ用縦スタックカードを完全両立）
+// 5列標準テーブル行の生成（PCでは横並びテーブル／スマホではCSSで縦スタックカード化）
 function addJournalRow() {
-  const container = document.getElementById('journal-rows');
-  if (!container || currentQuestionIndex === -1 || isAnswered) return;
+  const tbody = document.getElementById('journal-rows');
+  if (!tbody || currentQuestionIndex === -1 || isAnswered) return;
   const q = QUESTION_DATABASE[currentQuestionIndex];
 
-  const row = document.createElement('div');
-  row.className = 'journal-row';
+  const tr = document.createElement('tr');
 
   let optionsHtml = '<option value="">(勘定科目を選択)</option>';
   q.options.forEach(opt => {
     optionsHtml += `<option value="${escapeHtml(opt)}">${escapeHtml(opt)}</option>`;
   });
 
-  row.innerHTML = `
-    <div class="journal-side-block debit">
-      <div class="mobile-side-label debit">借方（左側）</div>
-      <div class="journal-input-group">
-        <select class="debit-account">${optionsHtml}</select>
-        <input type="number" class="debit-amount" placeholder="金額" min="0" step="100">
-      </div>
-    </div>
-    <div class="journal-side-block credit">
-      <div class="mobile-side-label credit">貸方（右側）</div>
-      <div class="journal-input-group">
-        <select class="credit-account">${optionsHtml}</select>
-        <input type="number" class="credit-amount" placeholder="金額" min="0" step="100">
-      </div>
-    </div>
-    <div class="journal-row-footer">
-      <button type="button" class="btn-remove-row" onclick="removeJournalRow(this)">✕</button>
-    </div>
+  tr.innerHTML = `
+    <td><select class="debit-account">${optionsHtml}</select></td>
+    <td><input type="number" class="debit-amount" placeholder="金額" min="0" step="100"></td>
+    <td><select class="credit-account">${optionsHtml}</select></td>
+    <td><input type="number" class="credit-amount" placeholder="金額" min="0" step="100"></td>
+    <td><button type="button" class="btn-remove-row" onclick="removeJournalRow(this)">✕ 削除</button></td>
   `;
-  container.appendChild(row);
+  tbody.appendChild(tr);
 }
 
 function removeJournalRow(btn) {
-  const container = document.getElementById('journal-rows');
-  if (!container || isAnswered) return;
-  if (container.children.length > 1) {
-    btn.closest('.journal-row').remove();
+  const tbody = document.getElementById('journal-rows');
+  if (!tbody || isAnswered) return;
+  if (tbody.children.length > 1) {
+    btn.closest('tr').remove();
   } else {
-    const row = container.children[0];
-    row.querySelectorAll('select').forEach(s => s.value = '');
-    row.querySelectorAll('input').forEach(i => i.value = '');
+    const tr = tbody.children[0];
+    tr.querySelectorAll('select').forEach(s => s.value = '');
+    tr.querySelectorAll('input').forEach(i => i.value = '');
   }
 }
 
@@ -2250,7 +2262,7 @@ function checkAnswer() {
     }
   }
 
-  // 正解仕訳の表描画（常に必ず表示）
+  // 正解仕訳の表描画（正解・不正解問わず常に表示）
   if (correctJournalContent) {
     const debitHtml = q.debit.map(e => `<div style="display:flex; justify-content:space-between; margin-bottom:4px; gap:8px;"><span>${escapeHtml(e.account)}</span><span style="font-weight:600;">￥${e.amount.toLocaleString()}</span></div>`).join('');
     const creditHtml = q.credit.map(e => `<div style="display:flex; justify-content:space-between; margin-bottom:4px; gap:8px;"><span>${escapeHtml(e.account)}</span><span style="font-weight:600;">￥${e.amount.toLocaleString()}</span></div>`).join('');
