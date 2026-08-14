@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>日商簿記3級 仕訳特化型演習システム（2026年度出題区分対応・200問 教科書解説版）</title>
+  <title>日商簿記3級 総合演習システム（2026年度出題区分対応・仕訳200問＋表問題40問）</title>
   <style>
     :root {
       --bg-color: #f8fafc;
@@ -359,10 +359,13 @@
       margin-bottom: 10px;
       border: 1px solid var(--table-border);
       background-color: #ffffff;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
     .grid-table {
       width: 100%;
+      min-width: 760px; /* iPhoneでも金額欄を十分な幅で表示する */
       border-collapse: collapse;
       table-layout: fixed;
     }
@@ -403,8 +406,19 @@
 
     .grid-table input[type="number"] {
       text-align: right;
-      padding-right: 6px;
+      padding-right: 8px;
       font-weight: 600;
+      font-size: 1rem;
+      min-width: 120px;
+      font-variant-numeric: tabular-nums;
+      appearance: textfield;
+      -moz-appearance: textfield;
+    }
+
+    .grid-table input[type="number"]::-webkit-outer-spin-button,
+    .grid-table input[type="number"]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
     }
 
     .grid-table select:focus,
@@ -704,15 +718,143 @@
       gap: 4px;
       z-index: 999;
     }
+
+
+    /* ===== v8.0 モード切替・表問題 ===== */
+    .mode-switcher {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 15px;
+    }
+    .mode-btn {
+      border: 1px solid var(--border-color);
+      background: #fff;
+      color: #334155;
+      border-radius: 8px;
+      padding: 11px 8px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    .mode-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+    .mode-section[hidden] { display: none !important; }
+    .table-dashboard .value { color: #7c3aed; }
+    .table-exercise-wrapper {
+      width: 100%;
+      overflow-x: auto;
+      margin: 12px 0;
+      border: 1px solid var(--border-color);
+      border-radius: 7px;
+      -webkit-overflow-scrolling: touch;
+    }
+    .exercise-table {
+      border-collapse: collapse;
+      min-width: 620px;
+      width: 100%;
+      background: #fff;
+      font-size: 0.82rem;
+    }
+    .exercise-table.wide { min-width: 1180px; }
+    .exercise-table th, .exercise-table td {
+      border: 1px solid var(--border-color);
+      padding: 7px 8px;
+      text-align: right;
+      white-space: nowrap;
+      vertical-align: middle;
+    }
+    .exercise-table th {
+      background: #f1f5f9;
+      color: #334155;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+    .exercise-table th:first-child,
+    .exercise-table td:first-child {
+      text-align: left;
+      font-weight: 600;
+      position: sticky;
+      left: 0;
+      background: #fff;
+      z-index: 2;
+      min-width: 150px;
+    }
+    .exercise-table th:first-child { background: #f1f5f9; z-index: 3; }
+    .exercise-table tr.total-row td { font-weight: 800; background: #f8fafc; }
+    .exercise-table tr.total-row td:first-child { background: #f8fafc; }
+    .table-answer-input {
+      width: 128px;
+      min-width: 128px;
+      padding: 8px 9px;
+      border: 2px solid #94a3b8;
+      border-radius: 5px;
+      text-align: right;
+      font-size: 1rem;
+      font-variant-numeric: tabular-nums;
+      background: #fff;
+    }
+    .table-answer-input:focus { outline: none; border-color: var(--primary); background: #eff6ff; }
+    .table-answer-input.cell-correct { border-color: #16a34a; background: #f0fdf4; }
+    .table-answer-input.cell-wrong { border-color: #dc2626; background: #fef2f2; }
+    .table-given { font-variant-numeric: tabular-nums; font-weight: 600; }
+    .table-result-box {
+      display: none;
+      margin-top: 14px;
+      padding: 14px;
+      border-radius: 7px;
+      border: 1px solid var(--border-color);
+      background: #f8fafc;
+    }
+    .table-result-box.correct { display:block; border-color:#22c55e; background:#f0fdf4; }
+    .table-result-box.incorrect { display:block; border-color:#ef4444; background:#fef2f2; }
+    .table-explanation {
+      margin-top: 10px;
+      background: #fff;
+      border-left: 4px solid #7c3aed;
+      padding: 12px;
+      white-space: pre-line;
+      line-height: 1.75;
+      color: #334155;
+    }
+    .table-nav-row { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:12px; }
+    .table-secondary-btn {
+      border:1px solid var(--border-color); background:#fff; color:#334155;
+      padding:10px; border-radius:6px; font-weight:700; cursor:pointer;
+    }
+    .table-primary-btn {
+      border:none; background:#7c3aed; color:#fff;
+      padding:10px; border-radius:6px; font-weight:700; cursor:pointer;
+    }
+    .table-toc-question-btn.solved::after { content:'✓'; color:#16a34a; font-weight:800; margin-left:auto; }
+    .table-note { font-size:0.78rem; color:var(--text-muted); margin-top:6px; }
+    @media (max-width: 600px) {
+      .mode-btn { font-size:0.82rem; padding:10px 5px; }
+      .exercise-table { font-size:0.78rem; }
+      .table-answer-input { width:120px; min-width:120px; }
+    }
+
   </style>
 </head>
 <body>
 
 <div class="container">
   <header>
-    <h1>日商簿記3級 仕訳特化型演習システム（200問・教科書解説版）</h1>
-    <p>2026年度出題区分対応 (全200問) × 教科書型解説 × スマホ最適化 × 教材版 v7.4</p>
+    <h1>日商簿記3級 総合演習システム（仕訳200問＋表問題40問）</h1>
+    <p>2026年度出題区分対応 × 仕訳200問 × 表・決算演習40問 × 教科書型解説 × 教材版 v8.0</p>
   </header>
+
+  <div class="mode-switcher" aria-label="演習モード切替">
+    <button type="button" class="mode-btn active" id="mode-journal-btn" onclick="switchMode('journal')">仕訳演習 200問</button>
+    <button type="button" class="mode-btn" id="mode-table-btn" onclick="switchMode('table')">表・決算演習 40問</button>
+  </div>
+
+  <section id="journal-mode-section" class="mode-section">
 
   <!-- ダッシュボード -->
   <div class="dashboard">
@@ -826,6 +968,51 @@
       </div>
     </div>
   </div>
+  </section>
+
+  <section id="table-mode-section" class="mode-section" hidden>
+    <div class="dashboard table-dashboard">
+      <div class="dash-card"><div class="title">表問題数</div><div class="value" id="table-stat-total">40</div></div>
+      <div class="dash-card"><div class="title">正解済み</div><div class="value" id="table-stat-solved">0</div></div>
+      <div class="dash-card"><div class="title">未正解</div><div class="value" id="table-stat-remaining">40</div></div>
+      <div class="dash-card"><div class="title">挑戦済み</div><div class="value" id="table-stat-attempted">0</div></div>
+    </div>
+
+    <section class="toc-card" id="table-toc-card" aria-label="表問題目次">
+      <details class="toc-main-details" id="table-toc-details">
+        <summary><span>☰ 表・決算演習 目次</span><span class="toc-summary-sub">全40問・タップで直接移動</span></summary>
+        <div class="toc-body">
+          <p class="toc-help">残高試算表、合計試算表、8桁精算表、決算整理後残高試算表、損益計算書、貸借対照表を演習します。</p>
+          <div id="table-toc-groups"></div>
+        </div>
+      </details>
+    </section>
+
+    <div class="card" id="table-quiz-card">
+      <div class="problem-header">
+        <span class="category-badge" id="table-problem-category">表問題</span>
+        <span id="table-problem-id-text" style="color: var(--text-muted); font-size:0.75rem;">T001</span>
+      </div>
+      <div class="statement" id="table-problem-statement">問題文を読み込んでいます...</div>
+      <div class="tool-bar">
+        <button type="button" class="tool-btn hint-btn" onclick="toggleTableHint()">💡 解き方のヒント</button>
+        <button type="button" class="tool-btn" onclick="toggleCalculator()">🧮 計算機</button>
+      </div>
+      <div class="hint-box" id="table-hint-box"></div>
+      <div class="table-note">空欄セルに金額を入力してください。金額はカンマなしでも入力できます。</div>
+      <div class="table-exercise-wrapper" id="table-exercise-wrapper"><div id="table-exercise-host"></div></div>
+      <button type="button" class="btn-submit" id="table-submit-btn" onclick="checkTableAnswer()">決定（表を採点）</button>
+      <div class="table-result-box" id="table-result-box">
+        <div id="table-result-title" style="font-weight:800;"></div>
+        <div id="table-result-detail" style="margin-top:4px;font-size:0.82rem;white-space:pre-line;"></div>
+        <div class="table-explanation" id="table-explanation-box"></div>
+        <div class="table-nav-row">
+          <button type="button" class="table-secondary-btn" onclick="openTableOfContents()">目次へ</button>
+          <button type="button" class="table-primary-btn" onclick="nextTableQuestion()">次の表問題</button>
+        </div>
+      </div>
+    </div>
+  </section>
 </div>
 
 <!-- フローティング目次ボタン -->
@@ -847,6 +1034,7 @@
   <div class="calc-apply-bar">
     <button type="button" class="calc-apply-btn debit" onclick="applyCalcToJournal('debit')">📥 借方に反映</button>
     <button type="button" class="calc-apply-btn credit" onclick="applyCalcToJournal('credit')">📥 貸方に反映</button>
+    <button type="button" class="calc-apply-btn" onclick="applyCalcToTable()">📥 表に反映</button>
   </div>
 
   <div class="calc-grid">
@@ -879,7 +1067,7 @@
 <script>
 'use strict';
 
-// 全200問データベース（2026年度適用 出題区分対応・教科書型解説 v7.4）
+// 仕訳200問データベース（2026年度適用 出題区分対応・教科書型解説 v8.0）
 const QUESTION_DATABASE = [
   {
     "id": "Q001",
@@ -5848,6 +6036,3411 @@ const QUESTION_DATABASE = [
 ];
 
 
+// 表・決算演習40問（2026年度3級範囲：試算表、8桁精算表、決算整理後残高試算表、損益計算書、貸借対照表）
+const TABLE_DATABASE = [
+  {
+    "id": "T001",
+    "group": "残高試算表",
+    "category": "残高試算表①・基本",
+    "statement": "次の各勘定残高を、借方残高と貸方残高に正しく区分して残高試算表を完成させてください。\n現金 120,000円、売掛金 80,000円、仕入 100,000円、給料 50,000円、買掛金 50,000円、資本金 100,000円、売上 200,000円。",
+    "columns": [
+      {
+        "key": "debit",
+        "label": "借方残高"
+      },
+      {
+        "key": "credit",
+        "label": "貸方残高"
+      }
+    ],
+    "rows": [
+      {
+        "label": "現金",
+        "cells": {
+          "debit": {
+            "answer": 120000
+          },
+          "credit": {
+            "given": "—"
+          }
+        }
+      },
+      {
+        "label": "売掛金",
+        "cells": {
+          "debit": {
+            "answer": 80000
+          },
+          "credit": {
+            "given": "—"
+          }
+        }
+      },
+      {
+        "label": "仕入",
+        "cells": {
+          "debit": {
+            "answer": 100000
+          },
+          "credit": {
+            "given": "—"
+          }
+        }
+      },
+      {
+        "label": "給料",
+        "cells": {
+          "debit": {
+            "answer": 50000
+          },
+          "credit": {
+            "given": "—"
+          }
+        }
+      },
+      {
+        "label": "買掛金",
+        "cells": {
+          "debit": {
+            "given": "—"
+          },
+          "credit": {
+            "answer": 50000
+          }
+        }
+      },
+      {
+        "label": "資本金",
+        "cells": {
+          "debit": {
+            "given": "—"
+          },
+          "credit": {
+            "answer": 100000
+          }
+        }
+      },
+      {
+        "label": "売上",
+        "cells": {
+          "debit": {
+            "given": "—"
+          },
+          "credit": {
+            "answer": 200000
+          }
+        }
+      },
+      {
+        "label": "合計",
+        "isTotal": true,
+        "cells": {
+          "debit": {
+            "answer": 350000
+          },
+          "credit": {
+            "answer": 350000
+          }
+        }
+      }
+    ],
+    "explanation": "【考え方】残高試算表では、各勘定の期末残高を借方残高・貸方残高のどちらか一方に記入します。資産と費用は通常借方残高、負債・純資産・収益は通常貸方残高です。\n【検算】借方合計は120,000＋80,000＋100,000＋50,000＝350,000円、貸方合計は50,000＋100,000＋200,000＝350,000円です。貸借が一致することを確認します。"
+  },
+  {
+    "id": "T002",
+    "group": "残高試算表",
+    "category": "残高試算表②・固定資産",
+    "statement": "次の各勘定残高を、借方残高と貸方残高に正しく区分して残高試算表を完成させてください。\n当座預金 40,000円、売掛金 140,000円、備品 300,000円、仕入 120,000円、給料 20,000円、備品減価償却累計額 60,000円、買掛金 110,000円、資本金 200,000円、売上 250,000円。",
+    "columns": [
+      {
+        "key": "debit",
+        "label": "借方残高"
+      },
+      {
+        "key": "credit",
+        "label": "貸方残高"
+      }
+    ],
+    "rows": [
+      {
+        "label": "当座預金",
+        "cells": {
+          "debit": {
+            "answer": 40000
+          },
+          "credit": {
+            "given": "—"
+          }
+        }
+      },
+      {
+        "label": "売掛金",
+        "cells": {
+          "debit": {
+            "answer": 140000
+          },
+          "credit": {
+            "given": "—"
+          }
+        }
+      },
+      {
+        "label": "備品",
+        "cells": {
+          "debit": {
+            "answer": 300000
+          },
+          "credit": {
+            "given": "—"
+          }
+        }
+      },
+      {
+        "label": "仕入",
+        "cells": {
+          "debit": {
+            "answer": 120000
+          },
+          "credit": {
+            "given": "—"
+          }
+        }
+      },
+      {
+        "label": "給料",
+        "cells": {
+          "debit": {
+            "answer": 20000
+          },
+          "credit": {
+            "given": "—"
+          }
+        }
+      },
+      {
+        "label": "備品減価償却累計額",
+        "cells": {
+          "debit": {
+            "given": "—"
+          },
+          "credit": {
+            "answer": 60000
+          }
+        }
+      },
+      {
+        "label": "買掛金",
+        "cells": {
+          "debit": {
+            "given": "—"
+          },
+          "credit": {
+            "answer": 110000
+          }
+        }
+      },
+      {
+        "label": "資本金",
+        "cells": {
+          "debit": {
+            "given": "—"
+          },
+          "credit": {
+            "answer": 200000
+          }
+        }
+      },
+      {
+        "label": "売上",
+        "cells": {
+          "debit": {
+            "given": "—"
+          },
+          "credit": {
+            "answer": 250000
+          }
+        }
+      },
+      {
+        "label": "合計",
+        "isTotal": true,
+        "cells": {
+          "debit": {
+            "answer": 620000
+          },
+          "credit": {
+            "answer": 620000
+          }
+        }
+      }
+    ],
+    "explanation": "【考え方】備品は資産なので借方残高ですが、減価償却累計額は備品の取得原価から控除する評価勘定で、通常は貸方残高です。\n【検算】借方合計620,000円と貸方合計620,000円が一致します。"
+  },
+  {
+    "id": "T003",
+    "group": "残高試算表",
+    "category": "残高試算表③・経過勘定",
+    "statement": "次の各勘定残高を、借方残高と貸方残高に正しく区分して残高試算表を完成させてください。\n現金 90,000円、普通預金 160,000円、前払保険料 30,000円、未収利息 10,000円、未払利息 15,000円、前受家賃 25,000円、借入金 150,000円、資本金 100,000円。",
+    "columns": [
+      {
+        "key": "debit",
+        "label": "借方残高"
+      },
+      {
+        "key": "credit",
+        "label": "貸方残高"
+      }
+    ],
+    "rows": [
+      {
+        "label": "現金",
+        "cells": {
+          "debit": {
+            "answer": 90000
+          },
+          "credit": {
+            "given": "—"
+          }
+        }
+      },
+      {
+        "label": "普通預金",
+        "cells": {
+          "debit": {
+            "answer": 160000
+          },
+          "credit": {
+            "given": "—"
+          }
+        }
+      },
+      {
+        "label": "前払保険料",
+        "cells": {
+          "debit": {
+            "answer": 30000
+          },
+          "credit": {
+            "given": "—"
+          }
+        }
+      },
+      {
+        "label": "未収利息",
+        "cells": {
+          "debit": {
+            "answer": 10000
+          },
+          "credit": {
+            "given": "—"
+          }
+        }
+      },
+      {
+        "label": "未払利息",
+        "cells": {
+          "debit": {
+            "given": "—"
+          },
+          "credit": {
+            "answer": 15000
+          }
+        }
+      },
+      {
+        "label": "前受家賃",
+        "cells": {
+          "debit": {
+            "given": "—"
+          },
+          "credit": {
+            "answer": 25000
+          }
+        }
+      },
+      {
+        "label": "借入金",
+        "cells": {
+          "debit": {
+            "given": "—"
+          },
+          "credit": {
+            "answer": 150000
+          }
+        }
+      },
+      {
+        "label": "資本金",
+        "cells": {
+          "debit": {
+            "given": "—"
+          },
+          "credit": {
+            "answer": 100000
+          }
+        }
+      },
+      {
+        "label": "合計",
+        "isTotal": true,
+        "cells": {
+          "debit": {
+            "answer": 290000
+          },
+          "credit": {
+            "answer": 290000
+          }
+        }
+      }
+    ],
+    "explanation": "【考え方】前払保険料・未収利息は将来の便益または未回収額を表す資産なので借方残高です。未払利息・前受家賃は将来支払う義務または未履行分を表す負債なので貸方残高です。\n【検算】借方・貸方とも290,000円です。"
+  },
+  {
+    "id": "T004",
+    "group": "残高試算表",
+    "category": "残高試算表④・商品売買",
+    "statement": "次の各勘定残高を、借方残高と貸方残高に正しく区分して残高試算表を完成させてください。\n現金 50,000円、クレジット売掛金 180,000円、受取商品券 20,000円、仕入 120,000円、支払手数料 5,000円、発送費 25,000円、買掛金 70,000円、前受金 30,000円、売上 300,000円。",
+    "columns": [
+      {
+        "key": "debit",
+        "label": "借方残高"
+      },
+      {
+        "key": "credit",
+        "label": "貸方残高"
+      }
+    ],
+    "rows": [
+      {
+        "label": "現金",
+        "cells": {
+          "debit": {
+            "answer": 50000
+          },
+          "credit": {
+            "given": "—"
+          }
+        }
+      },
+      {
+        "label": "クレジット売掛金",
+        "cells": {
+          "debit": {
+            "answer": 180000
+          },
+          "credit": {
+            "given": "—"
+          }
+        }
+      },
+      {
+        "label": "受取商品券",
+        "cells": {
+          "debit": {
+            "answer": 20000
+          },
+          "credit": {
+            "given": "—"
+          }
+        }
+      },
+      {
+        "label": "仕入",
+        "cells": {
+          "debit": {
+            "answer": 120000
+          },
+          "credit": {
+            "given": "—"
+          }
+        }
+      },
+      {
+        "label": "支払手数料",
+        "cells": {
+          "debit": {
+            "answer": 5000
+          },
+          "credit": {
+            "given": "—"
+          }
+        }
+      },
+      {
+        "label": "発送費",
+        "cells": {
+          "debit": {
+            "answer": 25000
+          },
+          "credit": {
+            "given": "—"
+          }
+        }
+      },
+      {
+        "label": "買掛金",
+        "cells": {
+          "debit": {
+            "given": "—"
+          },
+          "credit": {
+            "answer": 70000
+          }
+        }
+      },
+      {
+        "label": "前受金",
+        "cells": {
+          "debit": {
+            "given": "—"
+          },
+          "credit": {
+            "answer": 30000
+          }
+        }
+      },
+      {
+        "label": "売上",
+        "cells": {
+          "debit": {
+            "given": "—"
+          },
+          "credit": {
+            "answer": 300000
+          }
+        }
+      },
+      {
+        "label": "合計",
+        "isTotal": true,
+        "cells": {
+          "debit": {
+            "answer": 400000
+          },
+          "credit": {
+            "answer": 400000
+          }
+        }
+      }
+    ],
+    "explanation": "【考え方】クレジット売掛金・受取商品券は回収前の資産です。仕入・支払手数料・発送費は費用なので借方残高、買掛金・前受金は負債、売上は収益なので貸方残高です。\n【検算】借方・貸方とも400,000円です。"
+  },
+  {
+    "id": "T005",
+    "group": "残高試算表",
+    "category": "残高試算表⑤・手形等",
+    "statement": "次の各勘定残高を、借方残高と貸方残高に正しく区分して残高試算表を完成させてください。\n電子記録債権 200,000円、受取手形 100,000円、普通預金 50,000円、電子記録債務 120,000円、支払手形 80,000円、資本金 150,000円。",
+    "columns": [
+      {
+        "key": "debit",
+        "label": "借方残高"
+      },
+      {
+        "key": "credit",
+        "label": "貸方残高"
+      }
+    ],
+    "rows": [
+      {
+        "label": "電子記録債権",
+        "cells": {
+          "debit": {
+            "answer": 200000
+          },
+          "credit": {
+            "given": "—"
+          }
+        }
+      },
+      {
+        "label": "受取手形",
+        "cells": {
+          "debit": {
+            "answer": 100000
+          },
+          "credit": {
+            "given": "—"
+          }
+        }
+      },
+      {
+        "label": "普通預金",
+        "cells": {
+          "debit": {
+            "answer": 50000
+          },
+          "credit": {
+            "given": "—"
+          }
+        }
+      },
+      {
+        "label": "電子記録債務",
+        "cells": {
+          "debit": {
+            "given": "—"
+          },
+          "credit": {
+            "answer": 120000
+          }
+        }
+      },
+      {
+        "label": "支払手形",
+        "cells": {
+          "debit": {
+            "given": "—"
+          },
+          "credit": {
+            "answer": 80000
+          }
+        }
+      },
+      {
+        "label": "資本金",
+        "cells": {
+          "debit": {
+            "given": "—"
+          },
+          "credit": {
+            "answer": 150000
+          }
+        }
+      },
+      {
+        "label": "合計",
+        "isTotal": true,
+        "cells": {
+          "debit": {
+            "answer": 350000
+          },
+          "credit": {
+            "answer": 350000
+          }
+        }
+      }
+    ],
+    "explanation": "【考え方】電子記録債権・受取手形は資産、電子記録債務・支払手形は負債です。\n【検算】借方350,000円＝貸方350,000円です。"
+  },
+  {
+    "id": "T006",
+    "group": "残高試算表",
+    "category": "残高試算表⑥・減価償却",
+    "statement": "次の各勘定残高を、借方残高と貸方残高に正しく区分して残高試算表を完成させてください。\n現金 70,000円、備品 400,000円、減価償却費 80,000円、給料 160,000円、備品減価償却累計額 160,000円、借入金 100,000円、資本金 200,000円、売上 250,000円。",
+    "columns": [
+      {
+        "key": "debit",
+        "label": "借方残高"
+      },
+      {
+        "key": "credit",
+        "label": "貸方残高"
+      }
+    ],
+    "rows": [
+      {
+        "label": "現金",
+        "cells": {
+          "debit": {
+            "answer": 70000
+          },
+          "credit": {
+            "given": "—"
+          }
+        }
+      },
+      {
+        "label": "備品",
+        "cells": {
+          "debit": {
+            "answer": 400000
+          },
+          "credit": {
+            "given": "—"
+          }
+        }
+      },
+      {
+        "label": "減価償却費",
+        "cells": {
+          "debit": {
+            "answer": 80000
+          },
+          "credit": {
+            "given": "—"
+          }
+        }
+      },
+      {
+        "label": "給料",
+        "cells": {
+          "debit": {
+            "answer": 160000
+          },
+          "credit": {
+            "given": "—"
+          }
+        }
+      },
+      {
+        "label": "備品減価償却累計額",
+        "cells": {
+          "debit": {
+            "given": "—"
+          },
+          "credit": {
+            "answer": 160000
+          }
+        }
+      },
+      {
+        "label": "借入金",
+        "cells": {
+          "debit": {
+            "given": "—"
+          },
+          "credit": {
+            "answer": 100000
+          }
+        }
+      },
+      {
+        "label": "資本金",
+        "cells": {
+          "debit": {
+            "given": "—"
+          },
+          "credit": {
+            "answer": 200000
+          }
+        }
+      },
+      {
+        "label": "売上",
+        "cells": {
+          "debit": {
+            "given": "—"
+          },
+          "credit": {
+            "answer": 250000
+          }
+        }
+      },
+      {
+        "label": "合計",
+        "isTotal": true,
+        "cells": {
+          "debit": {
+            "answer": 710000
+          },
+          "credit": {
+            "answer": 710000
+          }
+        }
+      }
+    ],
+    "explanation": "【考え方】減価償却費は当期の費用なので借方残高、減価償却累計額は固定資産の控除項目なので貸方残高です。\n【検算】借方・貸方とも710,000円です。"
+  },
+  {
+    "id": "T007",
+    "group": "残高試算表",
+    "category": "残高試算表⑦・仮勘定",
+    "statement": "次の各勘定残高を、借方残高と貸方残高に正しく区分して残高試算表を完成させてください。\n仮払金 40,000円、立替金 30,000円、売掛金 100,000円、仮受金 20,000円、預り金 10,000円、買掛金 60,000円、資本金 80,000円。",
+    "columns": [
+      {
+        "key": "debit",
+        "label": "借方残高"
+      },
+      {
+        "key": "credit",
+        "label": "貸方残高"
+      }
+    ],
+    "rows": [
+      {
+        "label": "仮払金",
+        "cells": {
+          "debit": {
+            "answer": 40000
+          },
+          "credit": {
+            "given": "—"
+          }
+        }
+      },
+      {
+        "label": "立替金",
+        "cells": {
+          "debit": {
+            "answer": 30000
+          },
+          "credit": {
+            "given": "—"
+          }
+        }
+      },
+      {
+        "label": "売掛金",
+        "cells": {
+          "debit": {
+            "answer": 100000
+          },
+          "credit": {
+            "given": "—"
+          }
+        }
+      },
+      {
+        "label": "仮受金",
+        "cells": {
+          "debit": {
+            "given": "—"
+          },
+          "credit": {
+            "answer": 20000
+          }
+        }
+      },
+      {
+        "label": "預り金",
+        "cells": {
+          "debit": {
+            "given": "—"
+          },
+          "credit": {
+            "answer": 10000
+          }
+        }
+      },
+      {
+        "label": "買掛金",
+        "cells": {
+          "debit": {
+            "given": "—"
+          },
+          "credit": {
+            "answer": 60000
+          }
+        }
+      },
+      {
+        "label": "資本金",
+        "cells": {
+          "debit": {
+            "given": "—"
+          },
+          "credit": {
+            "answer": 80000
+          }
+        }
+      },
+      {
+        "label": "合計",
+        "isTotal": true,
+        "cells": {
+          "debit": {
+            "answer": 170000
+          },
+          "credit": {
+            "answer": 170000
+          }
+        }
+      }
+    ],
+    "explanation": "【考え方】仮払金・立替金・売掛金は資産、仮受金・預り金・買掛金は負債です。\n【検算】借方・貸方とも170,000円です。"
+  },
+  {
+    "id": "T008",
+    "group": "残高試算表",
+    "category": "残高試算表⑧・決算整理項目",
+    "statement": "次の各勘定残高を、借方残高と貸方残高に正しく区分して残高試算表を完成させてください。\n貯蔵品 15,000円、消耗品 10,000円、前払家賃 60,000円、未収利息 5,000円、未払給料 30,000円、前受家賃 20,000円、資本金 40,000円。",
+    "columns": [
+      {
+        "key": "debit",
+        "label": "借方残高"
+      },
+      {
+        "key": "credit",
+        "label": "貸方残高"
+      }
+    ],
+    "rows": [
+      {
+        "label": "貯蔵品",
+        "cells": {
+          "debit": {
+            "answer": 15000
+          },
+          "credit": {
+            "given": "—"
+          }
+        }
+      },
+      {
+        "label": "消耗品",
+        "cells": {
+          "debit": {
+            "answer": 10000
+          },
+          "credit": {
+            "given": "—"
+          }
+        }
+      },
+      {
+        "label": "前払家賃",
+        "cells": {
+          "debit": {
+            "answer": 60000
+          },
+          "credit": {
+            "given": "—"
+          }
+        }
+      },
+      {
+        "label": "未収利息",
+        "cells": {
+          "debit": {
+            "answer": 5000
+          },
+          "credit": {
+            "given": "—"
+          }
+        }
+      },
+      {
+        "label": "未払給料",
+        "cells": {
+          "debit": {
+            "given": "—"
+          },
+          "credit": {
+            "answer": 30000
+          }
+        }
+      },
+      {
+        "label": "前受家賃",
+        "cells": {
+          "debit": {
+            "given": "—"
+          },
+          "credit": {
+            "answer": 20000
+          }
+        }
+      },
+      {
+        "label": "資本金",
+        "cells": {
+          "debit": {
+            "given": "—"
+          },
+          "credit": {
+            "answer": 40000
+          }
+        }
+      },
+      {
+        "label": "合計",
+        "isTotal": true,
+        "cells": {
+          "debit": {
+            "answer": 90000
+          },
+          "credit": {
+            "answer": 90000
+          }
+        }
+      }
+    ],
+    "explanation": "【考え方】貯蔵品・消耗品・前払家賃・未収利息はいずれも資産です。未払給料・前受家賃は負債、資本金は純資産です。\n【検算】借方・貸方とも90,000円です。"
+  },
+  {
+    "id": "T009",
+    "group": "合計試算表",
+    "category": "合計試算表①・基本",
+    "statement": "次の総勘定元帳の集計額をもとに、合計試算表を完成させてください。現金（借方合計500,000円・貸方合計320,000円）、売掛金（借方合計300,000円・貸方合計180,000円）、買掛金（借方合計140,000円・貸方合計260,000円）、売上（借方合計0円・貸方合計420,000円）、仕入（借方合計240,000円・貸方合計0円）。",
+    "columns": [
+      {
+        "key": "debit",
+        "label": "借方合計"
+      },
+      {
+        "key": "credit",
+        "label": "貸方合計"
+      }
+    ],
+    "rows": [
+      {
+        "label": "現金",
+        "cells": {
+          "debit": {
+            "answer": 500000
+          },
+          "credit": {
+            "answer": 320000
+          }
+        }
+      },
+      {
+        "label": "売掛金",
+        "cells": {
+          "debit": {
+            "answer": 300000
+          },
+          "credit": {
+            "answer": 180000
+          }
+        }
+      },
+      {
+        "label": "買掛金",
+        "cells": {
+          "debit": {
+            "answer": 140000
+          },
+          "credit": {
+            "answer": 260000
+          }
+        }
+      },
+      {
+        "label": "売上",
+        "cells": {
+          "debit": {
+            "answer": 0
+          },
+          "credit": {
+            "answer": 420000
+          }
+        }
+      },
+      {
+        "label": "仕入",
+        "cells": {
+          "debit": {
+            "answer": 240000
+          },
+          "credit": {
+            "answer": 0
+          }
+        }
+      },
+      {
+        "label": "合計",
+        "isTotal": true,
+        "cells": {
+          "debit": {
+            "answer": 1180000
+          },
+          "credit": {
+            "answer": 1180000
+          }
+        }
+      }
+    ],
+    "explanation": "【考え方】合計試算表では残高ではなく、各勘定の借方記入額・貸方記入額の累計をそのまま記載します。そのため同じ勘定に借方合計と貸方合計の両方が存在することがあります。\n【検算】全勘定の借方合計1,180,000円と貸方合計1,180,000円が一致します。"
+  },
+  {
+    "id": "T010",
+    "group": "合計試算表",
+    "category": "合計試算表②・商品売買",
+    "statement": "次の総勘定元帳の集計額をもとに、合計試算表を完成させてください。普通預金（借方合計600,000円・貸方合計350,000円）、売掛金（借方合計400,000円・貸方合計250,000円）、前受金（借方合計100,000円・貸方合計180,000円）、買掛金（借方合計220,000円・貸方合計300,000円）、売上（借方合計20,000円・貸方合計500,000円）、仕入（借方合計240,000円・貸方合計0円）。",
+    "columns": [
+      {
+        "key": "debit",
+        "label": "借方合計"
+      },
+      {
+        "key": "credit",
+        "label": "貸方合計"
+      }
+    ],
+    "rows": [
+      {
+        "label": "普通預金",
+        "cells": {
+          "debit": {
+            "answer": 600000
+          },
+          "credit": {
+            "answer": 350000
+          }
+        }
+      },
+      {
+        "label": "売掛金",
+        "cells": {
+          "debit": {
+            "answer": 400000
+          },
+          "credit": {
+            "answer": 250000
+          }
+        }
+      },
+      {
+        "label": "前受金",
+        "cells": {
+          "debit": {
+            "answer": 100000
+          },
+          "credit": {
+            "answer": 180000
+          }
+        }
+      },
+      {
+        "label": "買掛金",
+        "cells": {
+          "debit": {
+            "answer": 220000
+          },
+          "credit": {
+            "answer": 300000
+          }
+        }
+      },
+      {
+        "label": "売上",
+        "cells": {
+          "debit": {
+            "answer": 20000
+          },
+          "credit": {
+            "answer": 500000
+          }
+        }
+      },
+      {
+        "label": "仕入",
+        "cells": {
+          "debit": {
+            "answer": 240000
+          },
+          "credit": {
+            "answer": 0
+          }
+        }
+      },
+      {
+        "label": "合計",
+        "isTotal": true,
+        "cells": {
+          "debit": {
+            "answer": 1580000
+          },
+          "credit": {
+            "answer": 1580000
+          }
+        }
+      }
+    ],
+    "explanation": "【考え方】売掛金の回収や買掛金の支払いがあると、同じ勘定に借方・貸方双方の記入が生じます。合計試算表は差額にせず累計額を記載します。\n【検算】借方・貸方とも1,580,000円です。"
+  },
+  {
+    "id": "T011",
+    "group": "合計試算表",
+    "category": "合計試算表③・手形と電子記録",
+    "statement": "次の総勘定元帳の集計額をもとに、合計試算表を完成させてください。現金（借方合計420,000円・貸方合計300,000円）、受取手形（借方合計250,000円・貸方合計150,000円）、支払手形（借方合計100,000円・貸方合計220,000円）、電子記録債権（借方合計180,000円・貸方合計80,000円）、電子記録債務（借方合計60,000円・貸方合計160,000円）、売上（借方合計0円・貸方合計100,000円）。",
+    "columns": [
+      {
+        "key": "debit",
+        "label": "借方合計"
+      },
+      {
+        "key": "credit",
+        "label": "貸方合計"
+      }
+    ],
+    "rows": [
+      {
+        "label": "現金",
+        "cells": {
+          "debit": {
+            "answer": 420000
+          },
+          "credit": {
+            "answer": 300000
+          }
+        }
+      },
+      {
+        "label": "受取手形",
+        "cells": {
+          "debit": {
+            "answer": 250000
+          },
+          "credit": {
+            "answer": 150000
+          }
+        }
+      },
+      {
+        "label": "支払手形",
+        "cells": {
+          "debit": {
+            "answer": 100000
+          },
+          "credit": {
+            "answer": 220000
+          }
+        }
+      },
+      {
+        "label": "電子記録債権",
+        "cells": {
+          "debit": {
+            "answer": 180000
+          },
+          "credit": {
+            "answer": 80000
+          }
+        }
+      },
+      {
+        "label": "電子記録債務",
+        "cells": {
+          "debit": {
+            "answer": 60000
+          },
+          "credit": {
+            "answer": 160000
+          }
+        }
+      },
+      {
+        "label": "売上",
+        "cells": {
+          "debit": {
+            "answer": 0
+          },
+          "credit": {
+            "answer": 100000
+          }
+        }
+      },
+      {
+        "label": "合計",
+        "isTotal": true,
+        "cells": {
+          "debit": {
+            "answer": 1010000
+          },
+          "credit": {
+            "answer": 1010000
+          }
+        }
+      }
+    ],
+    "explanation": "【考え方】発生・決済によって債権債務勘定の両側に記入が生じます。合計試算表ではその累計を示します。\n【検算】借方・貸方とも1,010,000円です。"
+  },
+  {
+    "id": "T012",
+    "group": "合計試算表",
+    "category": "合計試算表④・固定資産",
+    "statement": "次の総勘定元帳の集計額をもとに、合計試算表を完成させてください。備品（借方合計500,000円・貸方合計100,000円）、備品減価償却累計額（借方合計20,000円・貸方合計120,000円）、減価償却費（借方合計100,000円・貸方合計0円）、固定資産売却損（借方合計30,000円・貸方合計0円）、現金（借方合計200,000円・貸方合計180,000円）、未収入金（借方合計80,000円・貸方合計0円）、資本金（借方合計0円・貸方合計530,000円）。",
+    "columns": [
+      {
+        "key": "debit",
+        "label": "借方合計"
+      },
+      {
+        "key": "credit",
+        "label": "貸方合計"
+      }
+    ],
+    "rows": [
+      {
+        "label": "備品",
+        "cells": {
+          "debit": {
+            "answer": 500000
+          },
+          "credit": {
+            "answer": 100000
+          }
+        }
+      },
+      {
+        "label": "備品減価償却累計額",
+        "cells": {
+          "debit": {
+            "answer": 20000
+          },
+          "credit": {
+            "answer": 120000
+          }
+        }
+      },
+      {
+        "label": "減価償却費",
+        "cells": {
+          "debit": {
+            "answer": 100000
+          },
+          "credit": {
+            "answer": 0
+          }
+        }
+      },
+      {
+        "label": "固定資産売却損",
+        "cells": {
+          "debit": {
+            "answer": 30000
+          },
+          "credit": {
+            "answer": 0
+          }
+        }
+      },
+      {
+        "label": "現金",
+        "cells": {
+          "debit": {
+            "answer": 200000
+          },
+          "credit": {
+            "answer": 180000
+          }
+        }
+      },
+      {
+        "label": "未収入金",
+        "cells": {
+          "debit": {
+            "answer": 80000
+          },
+          "credit": {
+            "answer": 0
+          }
+        }
+      },
+      {
+        "label": "資本金",
+        "cells": {
+          "debit": {
+            "answer": 0
+          },
+          "credit": {
+            "answer": 530000
+          }
+        }
+      },
+      {
+        "label": "合計",
+        "isTotal": true,
+        "cells": {
+          "debit": {
+            "answer": 930000
+          },
+          "credit": {
+            "answer": 930000
+          }
+        }
+      }
+    ],
+    "explanation": "【考え方】固定資産の取得・売却・減価償却を記帳すると、備品や累計額に借方・貸方双方の記入が生じます。\n【検算】借方・貸方とも930,000円です。"
+  },
+  {
+    "id": "T013",
+    "group": "合計試算表",
+    "category": "合計試算表⑤・給与",
+    "statement": "次の総勘定元帳の集計額をもとに、合計試算表を完成させてください。給料（借方合計300,000円・貸方合計0円）、所得税預り金（借方合計20,000円・貸方合計50,000円）、社会保険料預り金（借方合計30,000円・貸方合計70,000円）、法定福利費（借方合計100,000円・貸方合計0円）、普通預金（借方合計600,000円・貸方合計500,000円）、売上（借方合計0円・貸方合計430,000円）。",
+    "columns": [
+      {
+        "key": "debit",
+        "label": "借方合計"
+      },
+      {
+        "key": "credit",
+        "label": "貸方合計"
+      }
+    ],
+    "rows": [
+      {
+        "label": "給料",
+        "cells": {
+          "debit": {
+            "answer": 300000
+          },
+          "credit": {
+            "answer": 0
+          }
+        }
+      },
+      {
+        "label": "所得税預り金",
+        "cells": {
+          "debit": {
+            "answer": 20000
+          },
+          "credit": {
+            "answer": 50000
+          }
+        }
+      },
+      {
+        "label": "社会保険料預り金",
+        "cells": {
+          "debit": {
+            "answer": 30000
+          },
+          "credit": {
+            "answer": 70000
+          }
+        }
+      },
+      {
+        "label": "法定福利費",
+        "cells": {
+          "debit": {
+            "answer": 100000
+          },
+          "credit": {
+            "answer": 0
+          }
+        }
+      },
+      {
+        "label": "普通預金",
+        "cells": {
+          "debit": {
+            "answer": 600000
+          },
+          "credit": {
+            "answer": 500000
+          }
+        }
+      },
+      {
+        "label": "売上",
+        "cells": {
+          "debit": {
+            "answer": 0
+          },
+          "credit": {
+            "answer": 430000
+          }
+        }
+      },
+      {
+        "label": "合計",
+        "isTotal": true,
+        "cells": {
+          "debit": {
+            "answer": 1050000
+          },
+          "credit": {
+            "answer": 1050000
+          }
+        }
+      }
+    ],
+    "explanation": "【考え方】預り金は給与支給時に貸方へ発生し、納付時に借方へ減少します。そのため合計試算表では両側に累計額が表れます。\n【検算】借方・貸方とも1,050,000円です。"
+  },
+  {
+    "id": "T014",
+    "group": "合計試算表",
+    "category": "合計試算表⑥・仮勘定",
+    "statement": "次の総勘定元帳の集計額をもとに、合計試算表を完成させてください。仮払金（借方合計80,000円・貸方合計50,000円）、仮受金（借方合計40,000円・貸方合計70,000円）、前払金（借方合計100,000円・貸方合計60,000円）、前受金（借方合計30,000円・貸方合計90,000円）、現金過不足（借方合計20,000円・貸方合計10,000円）、現金（借方合計500,000円・貸方合計490,000円）。",
+    "columns": [
+      {
+        "key": "debit",
+        "label": "借方合計"
+      },
+      {
+        "key": "credit",
+        "label": "貸方合計"
+      }
+    ],
+    "rows": [
+      {
+        "label": "仮払金",
+        "cells": {
+          "debit": {
+            "answer": 80000
+          },
+          "credit": {
+            "answer": 50000
+          }
+        }
+      },
+      {
+        "label": "仮受金",
+        "cells": {
+          "debit": {
+            "answer": 40000
+          },
+          "credit": {
+            "answer": 70000
+          }
+        }
+      },
+      {
+        "label": "前払金",
+        "cells": {
+          "debit": {
+            "answer": 100000
+          },
+          "credit": {
+            "answer": 60000
+          }
+        }
+      },
+      {
+        "label": "前受金",
+        "cells": {
+          "debit": {
+            "answer": 30000
+          },
+          "credit": {
+            "answer": 90000
+          }
+        }
+      },
+      {
+        "label": "現金過不足",
+        "cells": {
+          "debit": {
+            "answer": 20000
+          },
+          "credit": {
+            "answer": 10000
+          }
+        }
+      },
+      {
+        "label": "現金",
+        "cells": {
+          "debit": {
+            "answer": 500000
+          },
+          "credit": {
+            "answer": 490000
+          }
+        }
+      },
+      {
+        "label": "合計",
+        "isTotal": true,
+        "cells": {
+          "debit": {
+            "answer": 770000
+          },
+          "credit": {
+            "answer": 770000
+          }
+        }
+      }
+    ],
+    "explanation": "【考え方】仮払金・仮受金などは発生時と精算時に反対側へ記入されるため、借方・貸方の累計がともに生じやすい勘定です。\n【検算】借方・貸方とも770,000円です。"
+  },
+  {
+    "id": "T015",
+    "group": "8桁精算表",
+    "category": "精算表①・前払保険料",
+    "statement": "決算日に、試算表の支払保険料120,000円のうち40,000円が次期分であることが判明しました。8桁精算表の抜粋を完成させてください。",
+    "columns": [
+      {
+        "key": "tbD",
+        "label": "試算表 借"
+      },
+      {
+        "key": "tbC",
+        "label": "試算表 貸"
+      },
+      {
+        "key": "adjD",
+        "label": "修正 借"
+      },
+      {
+        "key": "adjC",
+        "label": "修正 貸"
+      },
+      {
+        "key": "plD",
+        "label": "損益 借"
+      },
+      {
+        "key": "plC",
+        "label": "損益 貸"
+      },
+      {
+        "key": "bsD",
+        "label": "貸借 借"
+      },
+      {
+        "key": "bsC",
+        "label": "貸借 貸"
+      }
+    ],
+    "rows": [
+      {
+        "label": "支払保険料",
+        "cells": {
+          "tbD": {
+            "given": 120000
+          },
+          "tbC": {
+            "given": "—"
+          },
+          "adjD": {
+            "given": "—"
+          },
+          "adjC": {
+            "given": 40000
+          },
+          "plD": {
+            "answer": 80000
+          },
+          "plC": {
+            "given": "—"
+          },
+          "bsD": {
+            "given": "—"
+          },
+          "bsC": {
+            "given": "—"
+          }
+        }
+      },
+      {
+        "label": "前払保険料",
+        "cells": {
+          "tbD": {
+            "given": "—"
+          },
+          "tbC": {
+            "given": "—"
+          },
+          "adjD": {
+            "given": 40000
+          },
+          "adjC": {
+            "given": "—"
+          },
+          "plD": {
+            "given": "—"
+          },
+          "plC": {
+            "given": "—"
+          },
+          "bsD": {
+            "answer": 40000
+          },
+          "bsC": {
+            "given": "—"
+          }
+        }
+      }
+    ],
+    "explanation": "【考え方】次期分40,000円は当期の費用から除き、前払保険料という資産に振り替えます。\n【計算】支払保険料の当期費用＝120,000－40,000＝80,000円。前払保険料40,000円は貸借対照表の借方欄に入ります。"
+  },
+  {
+    "id": "T016",
+    "group": "8桁精算表",
+    "category": "精算表②・未払給料",
+    "statement": "決算日に、試算表の給料300,000円のほかに当期分50,000円が未払いであることが判明しました。精算表の抜粋を完成させてください。",
+    "columns": [
+      {
+        "key": "tbD",
+        "label": "試算表 借"
+      },
+      {
+        "key": "tbC",
+        "label": "試算表 貸"
+      },
+      {
+        "key": "adjD",
+        "label": "修正 借"
+      },
+      {
+        "key": "adjC",
+        "label": "修正 貸"
+      },
+      {
+        "key": "plD",
+        "label": "損益 借"
+      },
+      {
+        "key": "plC",
+        "label": "損益 貸"
+      },
+      {
+        "key": "bsD",
+        "label": "貸借 借"
+      },
+      {
+        "key": "bsC",
+        "label": "貸借 貸"
+      }
+    ],
+    "rows": [
+      {
+        "label": "給料",
+        "cells": {
+          "tbD": {
+            "given": 300000
+          },
+          "tbC": {
+            "given": "—"
+          },
+          "adjD": {
+            "given": 50000
+          },
+          "adjC": {
+            "given": "—"
+          },
+          "plD": {
+            "answer": 350000
+          },
+          "plC": {
+            "given": "—"
+          },
+          "bsD": {
+            "given": "—"
+          },
+          "bsC": {
+            "given": "—"
+          }
+        }
+      },
+      {
+        "label": "未払給料",
+        "cells": {
+          "tbD": {
+            "given": "—"
+          },
+          "tbC": {
+            "given": "—"
+          },
+          "adjD": {
+            "given": "—"
+          },
+          "adjC": {
+            "given": 50000
+          },
+          "plD": {
+            "given": "—"
+          },
+          "plC": {
+            "given": "—"
+          },
+          "bsD": {
+            "given": "—"
+          },
+          "bsC": {
+            "answer": 50000
+          }
+        }
+      }
+    ],
+    "explanation": "【考え方】当期に発生している未払給料50,000円を費用へ追加し、同額を負債として計上します。\n【計算】給料＝300,000＋50,000＝350,000円。未払給料50,000円は貸借対照表の貸方欄です。"
+  },
+  {
+    "id": "T017",
+    "group": "8桁精算表",
+    "category": "精算表③・前受家賃",
+    "statement": "試算表の受取家賃240,000円のうち、60,000円は次期分であることが判明しました。精算表の抜粋を完成させてください。",
+    "columns": [
+      {
+        "key": "tbD",
+        "label": "試算表 借"
+      },
+      {
+        "key": "tbC",
+        "label": "試算表 貸"
+      },
+      {
+        "key": "adjD",
+        "label": "修正 借"
+      },
+      {
+        "key": "adjC",
+        "label": "修正 貸"
+      },
+      {
+        "key": "plD",
+        "label": "損益 借"
+      },
+      {
+        "key": "plC",
+        "label": "損益 貸"
+      },
+      {
+        "key": "bsD",
+        "label": "貸借 借"
+      },
+      {
+        "key": "bsC",
+        "label": "貸借 貸"
+      }
+    ],
+    "rows": [
+      {
+        "label": "受取家賃",
+        "cells": {
+          "tbD": {
+            "given": "—"
+          },
+          "tbC": {
+            "given": 240000
+          },
+          "adjD": {
+            "given": 60000
+          },
+          "adjC": {
+            "given": "—"
+          },
+          "plD": {
+            "given": "—"
+          },
+          "plC": {
+            "answer": 180000
+          },
+          "bsD": {
+            "given": "—"
+          },
+          "bsC": {
+            "given": "—"
+          }
+        }
+      },
+      {
+        "label": "前受家賃",
+        "cells": {
+          "tbD": {
+            "given": "—"
+          },
+          "tbC": {
+            "given": "—"
+          },
+          "adjD": {
+            "given": "—"
+          },
+          "adjC": {
+            "given": 60000
+          },
+          "plD": {
+            "given": "—"
+          },
+          "plC": {
+            "given": "—"
+          },
+          "bsD": {
+            "given": "—"
+          },
+          "bsC": {
+            "answer": 60000
+          }
+        }
+      }
+    ],
+    "explanation": "【考え方】次期分の家賃60,000円は当期収益から除き、前受家賃という負債へ振り替えます。\n【計算】当期の受取家賃＝240,000－60,000＝180,000円です。"
+  },
+  {
+    "id": "T018",
+    "group": "8桁精算表",
+    "category": "精算表④・未収利息",
+    "statement": "試算表の受取利息20,000円のほかに、当期分5,000円が未収であることが判明しました。精算表の抜粋を完成させてください。",
+    "columns": [
+      {
+        "key": "tbD",
+        "label": "試算表 借"
+      },
+      {
+        "key": "tbC",
+        "label": "試算表 貸"
+      },
+      {
+        "key": "adjD",
+        "label": "修正 借"
+      },
+      {
+        "key": "adjC",
+        "label": "修正 貸"
+      },
+      {
+        "key": "plD",
+        "label": "損益 借"
+      },
+      {
+        "key": "plC",
+        "label": "損益 貸"
+      },
+      {
+        "key": "bsD",
+        "label": "貸借 借"
+      },
+      {
+        "key": "bsC",
+        "label": "貸借 貸"
+      }
+    ],
+    "rows": [
+      {
+        "label": "受取利息",
+        "cells": {
+          "tbD": {
+            "given": "—"
+          },
+          "tbC": {
+            "given": 20000
+          },
+          "adjD": {
+            "given": "—"
+          },
+          "adjC": {
+            "given": 5000
+          },
+          "plD": {
+            "given": "—"
+          },
+          "plC": {
+            "answer": 25000
+          },
+          "bsD": {
+            "given": "—"
+          },
+          "bsC": {
+            "given": "—"
+          }
+        }
+      },
+      {
+        "label": "未収利息",
+        "cells": {
+          "tbD": {
+            "given": "—"
+          },
+          "tbC": {
+            "given": "—"
+          },
+          "adjD": {
+            "given": 5000
+          },
+          "adjC": {
+            "given": "—"
+          },
+          "plD": {
+            "given": "—"
+          },
+          "plC": {
+            "given": "—"
+          },
+          "bsD": {
+            "answer": 5000
+          },
+          "bsC": {
+            "given": "—"
+          }
+        }
+      }
+    ],
+    "explanation": "【考え方】未収利息5,000円は当期に発生済みの収益なので受取利息へ加算し、未収利息という資産を計上します。\n【計算】受取利息＝20,000＋5,000＝25,000円です。"
+  },
+  {
+    "id": "T019",
+    "group": "8桁精算表",
+    "category": "精算表⑤・減価償却",
+    "statement": "備品600,000円、備品減価償却累計額100,000円について、当期の減価償却費60,000円を計上します。精算表の抜粋を完成させてください。",
+    "columns": [
+      {
+        "key": "tbD",
+        "label": "試算表 借"
+      },
+      {
+        "key": "tbC",
+        "label": "試算表 貸"
+      },
+      {
+        "key": "adjD",
+        "label": "修正 借"
+      },
+      {
+        "key": "adjC",
+        "label": "修正 貸"
+      },
+      {
+        "key": "plD",
+        "label": "損益 借"
+      },
+      {
+        "key": "plC",
+        "label": "損益 貸"
+      },
+      {
+        "key": "bsD",
+        "label": "貸借 借"
+      },
+      {
+        "key": "bsC",
+        "label": "貸借 貸"
+      }
+    ],
+    "rows": [
+      {
+        "label": "備品",
+        "cells": {
+          "tbD": {
+            "given": 600000
+          },
+          "tbC": {
+            "given": "—"
+          },
+          "adjD": {
+            "given": "—"
+          },
+          "adjC": {
+            "given": "—"
+          },
+          "plD": {
+            "given": "—"
+          },
+          "plC": {
+            "given": "—"
+          },
+          "bsD": {
+            "answer": 600000
+          },
+          "bsC": {
+            "given": "—"
+          }
+        }
+      },
+      {
+        "label": "備品減価償却累計額",
+        "cells": {
+          "tbD": {
+            "given": "—"
+          },
+          "tbC": {
+            "given": 100000
+          },
+          "adjD": {
+            "given": "—"
+          },
+          "adjC": {
+            "given": 60000
+          },
+          "plD": {
+            "given": "—"
+          },
+          "plC": {
+            "given": "—"
+          },
+          "bsD": {
+            "given": "—"
+          },
+          "bsC": {
+            "answer": 160000
+          }
+        }
+      },
+      {
+        "label": "減価償却費",
+        "cells": {
+          "tbD": {
+            "given": "—"
+          },
+          "tbC": {
+            "given": "—"
+          },
+          "adjD": {
+            "given": 60000
+          },
+          "adjC": {
+            "given": "—"
+          },
+          "plD": {
+            "answer": 60000
+          },
+          "plC": {
+            "given": "—"
+          },
+          "bsD": {
+            "given": "—"
+          },
+          "bsC": {
+            "given": "—"
+          }
+        }
+      }
+    ],
+    "explanation": "【考え方】間接法では備品の取得原価600,000円はそのまま残し、累計額を100,000＋60,000＝160,000円に増やします。減価償却費60,000円は当期費用です。"
+  },
+  {
+    "id": "T020",
+    "group": "8桁精算表",
+    "category": "精算表⑥・貸倒引当金",
+    "statement": "売掛金500,000円に対する必要な貸倒引当金は10,000円、試算表残高は5,000円です。差額補充法で精算表を完成させてください。",
+    "columns": [
+      {
+        "key": "tbD",
+        "label": "試算表 借"
+      },
+      {
+        "key": "tbC",
+        "label": "試算表 貸"
+      },
+      {
+        "key": "adjD",
+        "label": "修正 借"
+      },
+      {
+        "key": "adjC",
+        "label": "修正 貸"
+      },
+      {
+        "key": "plD",
+        "label": "損益 借"
+      },
+      {
+        "key": "plC",
+        "label": "損益 貸"
+      },
+      {
+        "key": "bsD",
+        "label": "貸借 借"
+      },
+      {
+        "key": "bsC",
+        "label": "貸借 貸"
+      }
+    ],
+    "rows": [
+      {
+        "label": "売掛金",
+        "cells": {
+          "tbD": {
+            "given": 500000
+          },
+          "tbC": {
+            "given": "—"
+          },
+          "adjD": {
+            "given": "—"
+          },
+          "adjC": {
+            "given": "—"
+          },
+          "plD": {
+            "given": "—"
+          },
+          "plC": {
+            "given": "—"
+          },
+          "bsD": {
+            "answer": 500000
+          },
+          "bsC": {
+            "given": "—"
+          }
+        }
+      },
+      {
+        "label": "貸倒引当金",
+        "cells": {
+          "tbD": {
+            "given": "—"
+          },
+          "tbC": {
+            "given": 5000
+          },
+          "adjD": {
+            "given": "—"
+          },
+          "adjC": {
+            "given": 5000
+          },
+          "plD": {
+            "given": "—"
+          },
+          "plC": {
+            "given": "—"
+          },
+          "bsD": {
+            "given": "—"
+          },
+          "bsC": {
+            "answer": 10000
+          }
+        }
+      },
+      {
+        "label": "貸倒引当金繰入",
+        "cells": {
+          "tbD": {
+            "given": "—"
+          },
+          "tbC": {
+            "given": "—"
+          },
+          "adjD": {
+            "given": 5000
+          },
+          "adjC": {
+            "given": "—"
+          },
+          "plD": {
+            "answer": 5000
+          },
+          "plC": {
+            "given": "—"
+          },
+          "bsD": {
+            "given": "—"
+          },
+          "bsC": {
+            "given": "—"
+          }
+        }
+      }
+    ],
+    "explanation": "【考え方】必要額10,000円から既存残高5,000円を差し引いた5,000円だけ追加します。\n【計算】追加繰入額＝10,000－5,000＝5,000円。貸倒引当金の決算後残高は10,000円です。"
+  },
+  {
+    "id": "T021",
+    "group": "8桁精算表",
+    "category": "精算表⑦・消耗品",
+    "statement": "試算表の消耗品費40,000円のうち、決算日に10,000円が未使用で残っていました。精算表の抜粋を完成させてください。",
+    "columns": [
+      {
+        "key": "tbD",
+        "label": "試算表 借"
+      },
+      {
+        "key": "tbC",
+        "label": "試算表 貸"
+      },
+      {
+        "key": "adjD",
+        "label": "修正 借"
+      },
+      {
+        "key": "adjC",
+        "label": "修正 貸"
+      },
+      {
+        "key": "plD",
+        "label": "損益 借"
+      },
+      {
+        "key": "plC",
+        "label": "損益 貸"
+      },
+      {
+        "key": "bsD",
+        "label": "貸借 借"
+      },
+      {
+        "key": "bsC",
+        "label": "貸借 貸"
+      }
+    ],
+    "rows": [
+      {
+        "label": "消耗品費",
+        "cells": {
+          "tbD": {
+            "given": 40000
+          },
+          "tbC": {
+            "given": "—"
+          },
+          "adjD": {
+            "given": "—"
+          },
+          "adjC": {
+            "given": 10000
+          },
+          "plD": {
+            "answer": 30000
+          },
+          "plC": {
+            "given": "—"
+          },
+          "bsD": {
+            "given": "—"
+          },
+          "bsC": {
+            "given": "—"
+          }
+        }
+      },
+      {
+        "label": "消耗品",
+        "cells": {
+          "tbD": {
+            "given": "—"
+          },
+          "tbC": {
+            "given": "—"
+          },
+          "adjD": {
+            "given": 10000
+          },
+          "adjC": {
+            "given": "—"
+          },
+          "plD": {
+            "given": "—"
+          },
+          "plC": {
+            "given": "—"
+          },
+          "bsD": {
+            "answer": 10000
+          },
+          "bsC": {
+            "given": "—"
+          }
+        }
+      }
+    ],
+    "explanation": "【考え方】未使用分10,000円は当期費用ではないため消耗品費から控除し、資産の消耗品へ振り替えます。\n【計算】当期消耗品費＝40,000－10,000＝30,000円です。"
+  },
+  {
+    "id": "T022",
+    "group": "8桁精算表",
+    "category": "精算表⑧・現金過不足",
+    "statement": "現金過不足3,000円（借方残高）の原因が決算日まで判明しなかったため、雑損失へ振り替えます。精算表の抜粋を完成させてください。",
+    "columns": [
+      {
+        "key": "tbD",
+        "label": "試算表 借"
+      },
+      {
+        "key": "tbC",
+        "label": "試算表 貸"
+      },
+      {
+        "key": "adjD",
+        "label": "修正 借"
+      },
+      {
+        "key": "adjC",
+        "label": "修正 貸"
+      },
+      {
+        "key": "plD",
+        "label": "損益 借"
+      },
+      {
+        "key": "plC",
+        "label": "損益 貸"
+      },
+      {
+        "key": "bsD",
+        "label": "貸借 借"
+      },
+      {
+        "key": "bsC",
+        "label": "貸借 貸"
+      }
+    ],
+    "rows": [
+      {
+        "label": "現金過不足",
+        "cells": {
+          "tbD": {
+            "given": 3000
+          },
+          "tbC": {
+            "given": "—"
+          },
+          "adjD": {
+            "given": "—"
+          },
+          "adjC": {
+            "given": 3000
+          },
+          "plD": {
+            "given": "—"
+          },
+          "plC": {
+            "given": "—"
+          },
+          "bsD": {
+            "given": "—"
+          },
+          "bsC": {
+            "given": "—"
+          }
+        }
+      },
+      {
+        "label": "雑損失",
+        "cells": {
+          "tbD": {
+            "given": "—"
+          },
+          "tbC": {
+            "given": "—"
+          },
+          "adjD": {
+            "given": 3000
+          },
+          "adjC": {
+            "given": "—"
+          },
+          "plD": {
+            "answer": 3000
+          },
+          "plC": {
+            "given": "—"
+          },
+          "bsD": {
+            "given": "—"
+          },
+          "bsC": {
+            "given": "—"
+          }
+        }
+      }
+    ],
+    "explanation": "【考え方】決算日まで原因不明の現金不足は雑損失へ振り替えます。現金過不足は修正欄の貸方3,000円で消去され、雑損失3,000円だけが損益計算書欄に残ります。"
+  },
+  {
+    "id": "T023",
+    "group": "8桁精算表",
+    "category": "精算表⑨・売上原価",
+    "statement": "期首商品棚卸高100,000円、当期仕入高500,000円、期末商品棚卸高120,000円です。「仕入」勘定で売上原価を算定する場合の精算表抜粋を完成させてください。",
+    "columns": [
+      {
+        "key": "tbD",
+        "label": "試算表 借"
+      },
+      {
+        "key": "tbC",
+        "label": "試算表 貸"
+      },
+      {
+        "key": "adjD",
+        "label": "修正 借"
+      },
+      {
+        "key": "adjC",
+        "label": "修正 貸"
+      },
+      {
+        "key": "plD",
+        "label": "損益 借"
+      },
+      {
+        "key": "plC",
+        "label": "損益 貸"
+      },
+      {
+        "key": "bsD",
+        "label": "貸借 借"
+      },
+      {
+        "key": "bsC",
+        "label": "貸借 貸"
+      }
+    ],
+    "rows": [
+      {
+        "label": "繰越商品",
+        "cells": {
+          "tbD": {
+            "given": 100000
+          },
+          "tbC": {
+            "given": "—"
+          },
+          "adjD": {
+            "given": 120000
+          },
+          "adjC": {
+            "given": 100000
+          },
+          "plD": {
+            "given": "—"
+          },
+          "plC": {
+            "given": "—"
+          },
+          "bsD": {
+            "answer": 120000
+          },
+          "bsC": {
+            "given": "—"
+          }
+        }
+      },
+      {
+        "label": "仕入",
+        "cells": {
+          "tbD": {
+            "given": 500000
+          },
+          "tbC": {
+            "given": "—"
+          },
+          "adjD": {
+            "given": 100000
+          },
+          "adjC": {
+            "given": 120000
+          },
+          "plD": {
+            "answer": 480000
+          },
+          "plC": {
+            "given": "—"
+          },
+          "bsD": {
+            "given": "—"
+          },
+          "bsC": {
+            "given": "—"
+          }
+        }
+      }
+    ],
+    "explanation": "【考え方】期首商品100,000円を仕入へ加算し、期末商品120,000円を仕入から控除します。\n【計算】売上原価＝100,000＋500,000－120,000＝480,000円。期末商品120,000円は貸借対照表欄の借方です。"
+  },
+  {
+    "id": "T024",
+    "group": "8桁精算表",
+    "category": "精算表⑩・当期純利益",
+    "statement": "損益計算書欄に売上900,000円、仕入500,000円、給料200,000円、減価償却費50,000円が集計されています。当期純利益を求め、精算表の最下段を完成させてください。",
+    "columns": [
+      {
+        "key": "tbD",
+        "label": "試算表 借"
+      },
+      {
+        "key": "tbC",
+        "label": "試算表 貸"
+      },
+      {
+        "key": "adjD",
+        "label": "修正 借"
+      },
+      {
+        "key": "adjC",
+        "label": "修正 貸"
+      },
+      {
+        "key": "plD",
+        "label": "損益 借"
+      },
+      {
+        "key": "plC",
+        "label": "損益 貸"
+      },
+      {
+        "key": "bsD",
+        "label": "貸借 借"
+      },
+      {
+        "key": "bsC",
+        "label": "貸借 貸"
+      }
+    ],
+    "rows": [
+      {
+        "label": "売上",
+        "cells": {
+          "tbD": {
+            "given": "—"
+          },
+          "tbC": {
+            "given": "—"
+          },
+          "adjD": {
+            "given": "—"
+          },
+          "adjC": {
+            "given": "—"
+          },
+          "plD": {
+            "given": "—"
+          },
+          "plC": {
+            "given": 900000
+          },
+          "bsD": {
+            "given": "—"
+          },
+          "bsC": {
+            "given": "—"
+          }
+        }
+      },
+      {
+        "label": "仕入",
+        "cells": {
+          "tbD": {
+            "given": "—"
+          },
+          "tbC": {
+            "given": "—"
+          },
+          "adjD": {
+            "given": "—"
+          },
+          "adjC": {
+            "given": "—"
+          },
+          "plD": {
+            "given": 500000
+          },
+          "plC": {
+            "given": "—"
+          },
+          "bsD": {
+            "given": "—"
+          },
+          "bsC": {
+            "given": "—"
+          }
+        }
+      },
+      {
+        "label": "給料",
+        "cells": {
+          "tbD": {
+            "given": "—"
+          },
+          "tbC": {
+            "given": "—"
+          },
+          "adjD": {
+            "given": "—"
+          },
+          "adjC": {
+            "given": "—"
+          },
+          "plD": {
+            "given": 200000
+          },
+          "plC": {
+            "given": "—"
+          },
+          "bsD": {
+            "given": "—"
+          },
+          "bsC": {
+            "given": "—"
+          }
+        }
+      },
+      {
+        "label": "減価償却費",
+        "cells": {
+          "tbD": {
+            "given": "—"
+          },
+          "tbC": {
+            "given": "—"
+          },
+          "adjD": {
+            "given": "—"
+          },
+          "adjC": {
+            "given": "—"
+          },
+          "plD": {
+            "given": 50000
+          },
+          "plC": {
+            "given": "—"
+          },
+          "bsD": {
+            "given": "—"
+          },
+          "bsC": {
+            "given": "—"
+          }
+        }
+      },
+      {
+        "label": "当期純利益",
+        "cells": {
+          "tbD": {
+            "given": "—"
+          },
+          "tbC": {
+            "given": "—"
+          },
+          "adjD": {
+            "given": "—"
+          },
+          "adjC": {
+            "given": "—"
+          },
+          "plD": {
+            "answer": 150000
+          },
+          "plC": {
+            "given": "—"
+          },
+          "bsD": {
+            "given": "—"
+          },
+          "bsC": {
+            "answer": 150000
+          }
+        },
+        "isTotal": true
+      }
+    ],
+    "explanation": "【考え方】損益計算書欄では収益合計と費用合計の差額が当期純利益です。利益の場合、損益計算書欄の借方と貸借対照表欄の貸方に同額を記入して両欄を一致させます。\n【計算】900,000－（500,000＋200,000＋50,000）＝150,000円です。"
+  },
+  {
+    "id": "T025",
+    "group": "決算整理後残高試算表",
+    "category": "決算整理後残高試算表①・前払費用",
+    "statement": "支払保険料120,000円のうち40,000円を前払保険料へ振り替えました。決算整理後残高試算表の抜粋を完成させてください。",
+    "columns": [
+      {
+        "key": "debit",
+        "label": "借方残高"
+      },
+      {
+        "key": "credit",
+        "label": "貸方残高"
+      }
+    ],
+    "rows": [
+      {
+        "label": "支払保険料",
+        "cells": {
+          "debit": {
+            "answer": 80000
+          },
+          "credit": {
+            "given": "—"
+          }
+        }
+      },
+      {
+        "label": "前払保険料",
+        "cells": {
+          "debit": {
+            "answer": 40000
+          },
+          "credit": {
+            "given": "—"
+          }
+        }
+      }
+    ],
+    "explanation": "【計算】支払保険料＝120,000－40,000＝80,000円。前払保険料40,000円は資産なので借方残高です。"
+  },
+  {
+    "id": "T026",
+    "group": "決算整理後残高試算表",
+    "category": "決算整理後残高試算表②・未払費用",
+    "statement": "試算表の給料300,000円に当期未払分50,000円を追加しました。決算整理後残高を求めてください。",
+    "columns": [
+      {
+        "key": "debit",
+        "label": "借方残高"
+      },
+      {
+        "key": "credit",
+        "label": "貸方残高"
+      }
+    ],
+    "rows": [
+      {
+        "label": "給料",
+        "cells": {
+          "debit": {
+            "answer": 350000
+          },
+          "credit": {
+            "given": "—"
+          }
+        }
+      },
+      {
+        "label": "未払給料",
+        "cells": {
+          "debit": {
+            "given": "—"
+          },
+          "credit": {
+            "answer": 50000
+          }
+        }
+      }
+    ],
+    "explanation": "【計算】給料＝300,000＋50,000＝350,000円。未払給料50,000円は負債なので貸方残高です。"
+  },
+  {
+    "id": "T027",
+    "group": "決算整理後残高試算表",
+    "category": "決算整理後残高試算表③・未収収益",
+    "statement": "受取利息20,000円に未収利息5,000円を追加しました。決算整理後残高を求めてください。",
+    "columns": [
+      {
+        "key": "debit",
+        "label": "借方残高"
+      },
+      {
+        "key": "credit",
+        "label": "貸方残高"
+      }
+    ],
+    "rows": [
+      {
+        "label": "未収利息",
+        "cells": {
+          "debit": {
+            "answer": 5000
+          },
+          "credit": {
+            "given": "—"
+          }
+        }
+      },
+      {
+        "label": "受取利息",
+        "cells": {
+          "debit": {
+            "given": "—"
+          },
+          "credit": {
+            "answer": 25000
+          }
+        }
+      }
+    ],
+    "explanation": "【計算】受取利息＝20,000＋5,000＝25,000円。未収利息5,000円は資産です。"
+  },
+  {
+    "id": "T028",
+    "group": "決算整理後残高試算表",
+    "category": "決算整理後残高試算表④・減価償却",
+    "statement": "備品600,000円、減価償却累計額100,000円に対し、当期減価償却費60,000円を計上しました。決算整理後残高を求めてください。",
+    "columns": [
+      {
+        "key": "debit",
+        "label": "借方残高"
+      },
+      {
+        "key": "credit",
+        "label": "貸方残高"
+      }
+    ],
+    "rows": [
+      {
+        "label": "備品",
+        "cells": {
+          "debit": {
+            "answer": 600000
+          },
+          "credit": {
+            "given": "—"
+          }
+        }
+      },
+      {
+        "label": "備品減価償却累計額",
+        "cells": {
+          "debit": {
+            "given": "—"
+          },
+          "credit": {
+            "answer": 160000
+          }
+        }
+      },
+      {
+        "label": "減価償却費",
+        "cells": {
+          "debit": {
+            "answer": 60000
+          },
+          "credit": {
+            "given": "—"
+          }
+        }
+      }
+    ],
+    "explanation": "【計算】間接法なので備品600,000円は変えません。累計額＝100,000＋60,000＝160,000円、減価償却費は60,000円です。"
+  },
+  {
+    "id": "T029",
+    "group": "決算整理後残高試算表",
+    "category": "決算整理後残高試算表⑤・貸倒引当金",
+    "statement": "売掛金500,000円、貸倒引当金5,000円について、必要額10,000円まで差額補充しました。決算整理後残高を求めてください。",
+    "columns": [
+      {
+        "key": "debit",
+        "label": "借方残高"
+      },
+      {
+        "key": "credit",
+        "label": "貸方残高"
+      }
+    ],
+    "rows": [
+      {
+        "label": "売掛金",
+        "cells": {
+          "debit": {
+            "answer": 500000
+          },
+          "credit": {
+            "given": "—"
+          }
+        }
+      },
+      {
+        "label": "貸倒引当金",
+        "cells": {
+          "debit": {
+            "given": "—"
+          },
+          "credit": {
+            "answer": 10000
+          }
+        }
+      },
+      {
+        "label": "貸倒引当金繰入",
+        "cells": {
+          "debit": {
+            "answer": 5000
+          },
+          "credit": {
+            "given": "—"
+          }
+        }
+      }
+    ],
+    "explanation": "【計算】追加額＝10,000－5,000＝5,000円。決算後の貸倒引当金残高は10,000円、貸倒引当金繰入は5,000円です。"
+  },
+  {
+    "id": "T030",
+    "group": "決算整理後残高試算表",
+    "category": "決算整理後残高試算表⑥・複合整理",
+    "statement": "売掛金400,000円に対して貸倒引当金を8,000円（整理前4,000円）にし、備品300,000円について減価償却費30,000円（整理前累計額60,000円）を計上しました。抜粋を完成させてください。",
+    "columns": [
+      {
+        "key": "debit",
+        "label": "借方残高"
+      },
+      {
+        "key": "credit",
+        "label": "貸方残高"
+      }
+    ],
+    "rows": [
+      {
+        "label": "売掛金",
+        "cells": {
+          "debit": {
+            "answer": 400000
+          },
+          "credit": {
+            "given": "—"
+          }
+        }
+      },
+      {
+        "label": "貸倒引当金",
+        "cells": {
+          "debit": {
+            "given": "—"
+          },
+          "credit": {
+            "answer": 8000
+          }
+        }
+      },
+      {
+        "label": "貸倒引当金繰入",
+        "cells": {
+          "debit": {
+            "answer": 4000
+          },
+          "credit": {
+            "given": "—"
+          }
+        }
+      },
+      {
+        "label": "備品",
+        "cells": {
+          "debit": {
+            "answer": 300000
+          },
+          "credit": {
+            "given": "—"
+          }
+        }
+      },
+      {
+        "label": "備品減価償却累計額",
+        "cells": {
+          "debit": {
+            "given": "—"
+          },
+          "credit": {
+            "answer": 90000
+          }
+        }
+      },
+      {
+        "label": "減価償却費",
+        "cells": {
+          "debit": {
+            "answer": 30000
+          },
+          "credit": {
+            "given": "—"
+          }
+        }
+      }
+    ],
+    "explanation": "【計算】貸倒引当金の追加額＝8,000－4,000＝4,000円。減価償却累計額＝60,000＋30,000＝90,000円です。"
+  },
+  {
+    "id": "T031",
+    "group": "損益計算書",
+    "category": "損益計算書①・基本",
+    "statement": "売上800,000円、受取利息10,000円、仕入500,000円、給料150,000円、支払家賃50,000円です。収益合計・費用合計・当期純利益を求めてください。",
+    "columns": [
+      {
+        "key": "amount",
+        "label": "金額"
+      }
+    ],
+    "rows": [
+      {
+        "label": "収益合計",
+        "cells": {
+          "amount": {
+            "answer": 810000
+          }
+        }
+      },
+      {
+        "label": "費用合計",
+        "cells": {
+          "amount": {
+            "answer": 700000
+          }
+        }
+      },
+      {
+        "label": "当期純利益",
+        "cells": {
+          "amount": {
+            "answer": 110000
+          }
+        }
+      }
+    ],
+    "explanation": "【計算】収益合計＝800,000＋10,000＝810,000円。費用合計＝500,000＋150,000＋50,000＝700,000円。当期純利益＝810,000－700,000＝110,000円です。"
+  },
+  {
+    "id": "T032",
+    "group": "損益計算書",
+    "category": "損益計算書②・複数費用",
+    "statement": "売上1,200,000円、受取手数料20,000円、仕入700,000円、給料250,000円、広告宣伝費80,000円、支払利息10,000円です。",
+    "columns": [
+      {
+        "key": "amount",
+        "label": "金額"
+      }
+    ],
+    "rows": [
+      {
+        "label": "収益合計",
+        "cells": {
+          "amount": {
+            "answer": 1220000
+          }
+        }
+      },
+      {
+        "label": "費用合計",
+        "cells": {
+          "amount": {
+            "answer": 1040000
+          }
+        }
+      },
+      {
+        "label": "当期純利益",
+        "cells": {
+          "amount": {
+            "answer": 180000
+          }
+        }
+      }
+    ],
+    "explanation": "【計算】収益1,220,000円、費用1,040,000円なので、当期純利益は180,000円です。"
+  },
+  {
+    "id": "T033",
+    "group": "損益計算書",
+    "category": "損益計算書③・当期純損失",
+    "statement": "売上600,000円、受取利息5,000円、仕入450,000円、給料120,000円、支払家賃60,000円、水道光熱費30,000円です。",
+    "columns": [
+      {
+        "key": "amount",
+        "label": "金額"
+      }
+    ],
+    "rows": [
+      {
+        "label": "収益合計",
+        "cells": {
+          "amount": {
+            "answer": 605000
+          }
+        }
+      },
+      {
+        "label": "費用合計",
+        "cells": {
+          "amount": {
+            "answer": 660000
+          }
+        }
+      },
+      {
+        "label": "当期純損失",
+        "cells": {
+          "amount": {
+            "answer": 55000
+          }
+        }
+      }
+    ],
+    "explanation": "【計算】収益合計605,000円に対し費用合計660,000円なので、差額55,000円は当期純損失です。"
+  },
+  {
+    "id": "T034",
+    "group": "損益計算書",
+    "category": "損益計算書④・決算整理後",
+    "statement": "売上1,000,000円、受取利息5,000円、仕入500,000円、給料200,000円、減価償却費50,000円、貸倒引当金繰入10,000円、支払家賃100,000円です。",
+    "columns": [
+      {
+        "key": "amount",
+        "label": "金額"
+      }
+    ],
+    "rows": [
+      {
+        "label": "収益合計",
+        "cells": {
+          "amount": {
+            "answer": 1005000
+          }
+        }
+      },
+      {
+        "label": "費用合計",
+        "cells": {
+          "amount": {
+            "answer": 860000
+          }
+        }
+      },
+      {
+        "label": "当期純利益",
+        "cells": {
+          "amount": {
+            "answer": 145000
+          }
+        }
+      }
+    ],
+    "explanation": "【計算】収益合計＝1,005,000円。費用合計＝500,000＋200,000＋50,000＋10,000＋100,000＝860,000円。当期純利益＝145,000円です。"
+  },
+  {
+    "id": "T035",
+    "group": "損益計算書",
+    "category": "損益計算書⑤・売上原価を含む",
+    "statement": "売上1,500,000円、売上原価900,000円、給料250,000円、広告宣伝費100,000円、通信費30,000円、受取利息10,000円です。",
+    "columns": [
+      {
+        "key": "amount",
+        "label": "金額"
+      }
+    ],
+    "rows": [
+      {
+        "label": "収益合計",
+        "cells": {
+          "amount": {
+            "answer": 1510000
+          }
+        }
+      },
+      {
+        "label": "費用合計",
+        "cells": {
+          "amount": {
+            "answer": 1280000
+          }
+        }
+      },
+      {
+        "label": "当期純利益",
+        "cells": {
+          "amount": {
+            "answer": 230000
+          }
+        }
+      }
+    ],
+    "explanation": "【計算】収益合計1,510,000円、費用合計1,280,000円、差額230,000円が当期純利益です。"
+  },
+  {
+    "id": "T036",
+    "group": "貸借対照表",
+    "category": "貸借対照表①・基本",
+    "statement": "現金100,000円、売掛金200,000円、貸倒引当金5,000円、備品300,000円、備品減価償却累計額60,000円、買掛金150,000円、借入金100,000円、資本金200,000円、繰越利益剰余金85,000円です。",
+    "columns": [
+      {
+        "key": "amount",
+        "label": "金額"
+      }
+    ],
+    "rows": [
+      {
+        "label": "資産合計",
+        "cells": {
+          "amount": {
+            "answer": 535000
+          }
+        }
+      },
+      {
+        "label": "負債合計",
+        "cells": {
+          "amount": {
+            "answer": 250000
+          }
+        }
+      },
+      {
+        "label": "純資産合計",
+        "cells": {
+          "amount": {
+            "answer": 285000
+          }
+        }
+      },
+      {
+        "label": "負債・純資産合計",
+        "cells": {
+          "amount": {
+            "answer": 535000
+          }
+        }
+      }
+    ],
+    "explanation": "【計算】資産＝100,000＋（200,000－5,000）＋（300,000－60,000）＝535,000円。負債＝150,000＋100,000＝250,000円。純資産＝200,000＋85,000＝285,000円です。"
+  },
+  {
+    "id": "T037",
+    "group": "貸借対照表",
+    "category": "貸借対照表②・経過勘定",
+    "statement": "普通預金250,000円、売掛金150,000円、前払保険料20,000円、消耗品10,000円、買掛金80,000円、未払給料30,000円、前受家賃20,000円、資本金250,000円、繰越利益剰余金50,000円です。",
+    "columns": [
+      {
+        "key": "amount",
+        "label": "金額"
+      }
+    ],
+    "rows": [
+      {
+        "label": "資産合計",
+        "cells": {
+          "amount": {
+            "answer": 430000
+          }
+        }
+      },
+      {
+        "label": "負債合計",
+        "cells": {
+          "amount": {
+            "answer": 130000
+          }
+        }
+      },
+      {
+        "label": "純資産合計",
+        "cells": {
+          "amount": {
+            "answer": 300000
+          }
+        }
+      },
+      {
+        "label": "負債・純資産合計",
+        "cells": {
+          "amount": {
+            "answer": 430000
+          }
+        }
+      }
+    ],
+    "explanation": "【計算】資産＝250,000＋150,000＋20,000＋10,000＝430,000円。負債130,000円、純資産300,000円で合計430,000円です。"
+  },
+  {
+    "id": "T038",
+    "group": "貸借対照表",
+    "category": "貸借対照表③・手形等",
+    "statement": "現金80,000円、電子記録債権120,000円、受取手形100,000円、備品400,000円、備品減価償却累計額160,000円、電子記録債務100,000円、支払手形80,000円、借入金160,000円、資本金200,000円です。",
+    "columns": [
+      {
+        "key": "amount",
+        "label": "金額"
+      }
+    ],
+    "rows": [
+      {
+        "label": "資産合計",
+        "cells": {
+          "amount": {
+            "answer": 540000
+          }
+        }
+      },
+      {
+        "label": "負債合計",
+        "cells": {
+          "amount": {
+            "answer": 340000
+          }
+        }
+      },
+      {
+        "label": "純資産合計",
+        "cells": {
+          "amount": {
+            "answer": 200000
+          }
+        }
+      },
+      {
+        "label": "負債・純資産合計",
+        "cells": {
+          "amount": {
+            "answer": 540000
+          }
+        }
+      }
+    ],
+    "explanation": "【計算】備品の帳簿価額は400,000－160,000＝240,000円。資産合計＝80,000＋120,000＋100,000＋240,000＝540,000円です。"
+  },
+  {
+    "id": "T039",
+    "group": "貸借対照表",
+    "category": "貸借対照表④・商品と引当金",
+    "statement": "現金100,000円、売掛金300,000円、貸倒引当金6,000円、繰越商品120,000円、前払家賃40,000円、買掛金150,000円、未払利息4,000円、前受金50,000円、資本金250,000円、繰越利益剰余金100,000円です。",
+    "columns": [
+      {
+        "key": "amount",
+        "label": "金額"
+      }
+    ],
+    "rows": [
+      {
+        "label": "資産合計",
+        "cells": {
+          "amount": {
+            "answer": 554000
+          }
+        }
+      },
+      {
+        "label": "負債合計",
+        "cells": {
+          "amount": {
+            "answer": 204000
+          }
+        }
+      },
+      {
+        "label": "純資産合計",
+        "cells": {
+          "amount": {
+            "answer": 350000
+          }
+        }
+      },
+      {
+        "label": "負債・純資産合計",
+        "cells": {
+          "amount": {
+            "answer": 554000
+          }
+        }
+      }
+    ],
+    "explanation": "【計算】売掛金の表示額＝300,000－6,000＝294,000円。資産合計＝100,000＋294,000＋120,000＋40,000＝554,000円です。"
+  },
+  {
+    "id": "T040",
+    "group": "貸借対照表",
+    "category": "貸借対照表⑤・当期純利益の反映",
+    "statement": "決算前の繰越利益剰余金100,000円、当期純利益50,000円、資本金300,000円、負債合計250,000円です。決算後の貸借対照表は資産合計700,000円となります。",
+    "columns": [
+      {
+        "key": "amount",
+        "label": "金額"
+      }
+    ],
+    "rows": [
+      {
+        "label": "決算後の繰越利益剰余金",
+        "cells": {
+          "amount": {
+            "answer": 150000
+          }
+        }
+      },
+      {
+        "label": "純資産合計",
+        "cells": {
+          "amount": {
+            "answer": 450000
+          }
+        }
+      },
+      {
+        "label": "負債・純資産合計",
+        "cells": {
+          "amount": {
+            "answer": 700000
+          }
+        }
+      }
+    ],
+    "explanation": "【計算】決算後の繰越利益剰余金＝100,000＋50,000＝150,000円。純資産＝資本金300,000＋繰越利益剰余金150,000＝450,000円。負債250,000円と合わせて700,000円です。"
+  }
+];
+
+const VALID_TABLE_IDS = new Set(TABLE_DATABASE.map(q => q.id));
+const TABLE_TOC_GROUPS = [
+  { title: "残高試算表", start: 1, end: 8 },
+  { title: "合計試算表", start: 9, end: 14 },
+  { title: "8桁精算表", start: 15, end: 24 },
+  { title: "決算整理後残高試算表", start: 25, end: 30 },
+  { title: "損益計算書", start: 31, end: 35 },
+  { title: "貸借対照表", start: 36, end: 40 }
+];
+
 // 項目別目次（問題番号の範囲で分類）
 const TOC_GROUPS = [
   { title: "商品売買・手付金・諸掛り", start: 1, end: 20 },
@@ -5936,11 +9529,80 @@ function goToQuestion(questionId) {
   });
 }
 
+function renderTableToc() {
+  const host = document.getElementById('table-toc-groups');
+  if (!host) return;
+  host.innerHTML = '';
+  TABLE_TOC_GROUPS.forEach(group => {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'toc-group';
+    const details = document.createElement('details');
+    const summary = document.createElement('summary');
+    const label = document.createElement('span'); label.textContent = group.title;
+    const count = document.createElement('span'); count.className = 'toc-group-count';
+    count.textContent = `T${String(group.start).padStart(3,'0')}〜T${String(group.end).padStart(3,'0')}`;
+    summary.append(label, count); details.appendChild(summary);
+    const list = document.createElement('div'); list.className = 'toc-question-list';
+    for (let no=group.start; no<=group.end; no++) {
+      const q = TABLE_DATABASE[no-1]; if (!q) continue;
+      const button = document.createElement('button');
+      button.type='button'; button.className='toc-question-btn table-toc-question-btn';
+      if (state && state.tableProgress && state.tableProgress[q.id] && state.tableProgress[q.id].correct) button.classList.add('solved');
+      button.dataset.tableQuestionId=q.id;
+      button.innerHTML=`<span class="toc-question-id">${escapeHtml(q.id)}</span>${escapeHtml(q.category)}`;
+      button.addEventListener('click',()=>goToTableQuestion(q.id));
+      list.appendChild(button);
+    }
+    details.appendChild(list); wrapper.appendChild(details); host.appendChild(wrapper);
+  });
+}
+
+function updateTableTocActive(tableId) {
+  document.querySelectorAll('.table-toc-question-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.tableQuestionId === tableId);
+    const p = state.tableProgress && state.tableProgress[btn.dataset.tableQuestionId];
+    btn.classList.toggle('solved', !!(p && p.correct));
+  });
+}
+
+function switchMode(mode, shouldScroll=true) {
+  currentMode = mode === 'table' ? 'table' : 'journal';
+  const journal = document.getElementById('journal-mode-section');
+  const table = document.getElementById('table-mode-section');
+  if (journal) journal.hidden = currentMode !== 'journal';
+  if (table) table.hidden = currentMode !== 'table';
+  const jb = document.getElementById('mode-journal-btn');
+  const tb = document.getElementById('mode-table-btn');
+  if (jb) jb.classList.toggle('active', currentMode==='journal');
+  if (tb) tb.classList.toggle('active', currentMode==='table');
+  if (currentMode === 'table') {
+    updateTableDashboard();
+    renderTableToc();
+    if (currentTableIndex < 0 || !TABLE_DATABASE[currentTableIndex]) loadTableQuestion(getNextTableQuestionIndex());
+  }
+  if (shouldScroll) {
+    const target = currentMode==='table' ? document.getElementById('table-mode-section') : document.getElementById('journal-mode-section');
+    if (target) target.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+}
+
+function goToTableQuestion(tableId) {
+  const idx = TABLE_DATABASE.findIndex(q=>q.id===tableId);
+  if (idx<0) return;
+  switchMode('table', false);
+  loadTableQuestion(idx);
+  const d=document.getElementById('table-toc-details'); if(d) d.open=false;
+  requestAnimationFrame(()=>{ const c=document.getElementById('table-quiz-card'); if(c)c.scrollIntoView({behavior:'smooth',block:'start'}); });
+}
+
 function openTableOfContents() {
-  const tocDetails = document.getElementById('toc-details');
-  if (tocDetails) tocDetails.open = true;
-  const tocCard = document.getElementById('toc-card');
-  if (tocCard) tocCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  if (currentMode === 'table') {
+    const d=document.getElementById('table-toc-details'); if(d)d.open=true;
+    const c=document.getElementById('table-toc-card'); if(c)c.scrollIntoView({behavior:'smooth',block:'start'});
+  } else {
+    const d=document.getElementById('toc-details'); if(d)d.open=true;
+    const c=document.getElementById('toc-card'); if(c)c.scrollIntoView({behavior:'smooth',block:'start'});
+  }
 }
 
 // 有効問題IDマップの生成
@@ -5952,7 +9614,7 @@ const UPDATED_FROM_V7_0_IDS = new Set(["Q012","Q024","Q029","Q036","Q039","Q052"
 // --- 堅牢な LocalStorage 管理クラス ---
 class StorageManager {
   static KEY_200 = 'boki3_system_state_v6_200';
-  // 教材表示はv7.4だが、問題文・正答の対応はv7.1と同一のため、学習履歴互換性を保つためbankVersionはv7.1のままとする。
+  // 教材表示はv8.0だが、問題文・正答の対応はv7.1と同一のため、学習履歴互換性を保つためbankVersionはv7.1のままとする。
   static VERSION = 'v7.1';
 
   static loadState() {
@@ -6001,6 +9663,20 @@ class StorageManager {
         });
       }
 
+      const sanitizedTableProgress = {};
+      if (typeof parsed.tableProgress === 'object' && parsed.tableProgress !== null) {
+        Object.keys(parsed.tableProgress).forEach(id => {
+          if (!VALID_TABLE_IDS.has(id)) return;
+          const item = parsed.tableProgress[id];
+          if (!item || typeof item !== 'object') return;
+          sanitizedTableProgress[id] = {
+            attempts: Number.isFinite(item.attempts) && item.attempts >= 0 ? Math.floor(item.attempts) : 0,
+            correct: item.correct === true,
+            lastAttempt: typeof item.lastAttempt === 'string' && !isNaN(Date.parse(item.lastAttempt)) ? item.lastAttempt : null
+          };
+        });
+      }
+
       const streakVal = Number.isFinite(parsed.streak) && parsed.streak >= 0 ? Math.floor(parsed.streak) : 0;
       const todayVal = Number.isFinite(parsed.todayCount) && parsed.todayCount >= 0 ? Math.floor(parsed.todayCount) : 0;
       const lastDateVal = typeof parsed.lastStudyDate === 'string' && !isNaN(Date.parse(parsed.lastStudyDate)) ? parsed.lastStudyDate : null;
@@ -6008,6 +9684,7 @@ class StorageManager {
       return {
         bankVersion: this.VERSION,
         progress: sanitizedProgress,
+        tableProgress: sanitizedTableProgress,
         streak: streakVal,
         lastStudyDate: lastDateVal,
         todayCount: todayVal
@@ -6029,7 +9706,7 @@ class StorageManager {
   }
 
   static getDefaultState() {
-    return { bankVersion: this.VERSION, progress: {}, streak: 0, lastStudyDate: null, todayCount: 0 };
+    return { bankVersion: this.VERSION, progress: {}, tableProgress: {}, streak: 0, lastStudyDate: null, todayCount: 0 };
   }
 }
 
@@ -6040,6 +9717,10 @@ let currentErrorType = 'NONE';
 let isAnswered = false;
 let isEvalCompleted = false;
 let lastFocusedInput = null;
+let currentMode = 'journal';
+let currentTableIndex = -1;
+let tableAnswered = false;
+let lastFocusedTableInput = null;
 
 function getTodayString() {
   const d = new Date();
@@ -6471,6 +10152,139 @@ function nextQuestion() {
   loadQuestion(nextIdx);
 }
 
+
+// === 表・決算演習ロジック ===
+function formatTableValue(v) {
+  if (typeof v === 'number') return v.toLocaleString();
+  return String(v);
+}
+
+function renderTableQuestionTable(q) {
+  const host=document.getElementById('table-exercise-host'); if(!host)return;
+  const wide=q.columns.length>=6;
+  let out=`<table class="exercise-table${wide?' wide':''}"><thead><tr><th>勘定科目・項目</th>`;
+  q.columns.forEach(c=>{ out += `<th>${escapeHtml(c.label)}</th>`; });
+  out += `</tr></thead><tbody>`;
+  q.rows.forEach((r,ri)=>{
+    out += `<tr class="${r.isTotal?'total-row':''}"><td>${escapeHtml(r.label)}</td>`;
+    q.columns.forEach(c=>{
+      const cell=(r.cells||{})[c.key] || {given:'—'};
+      if (Object.prototype.hasOwnProperty.call(cell,'answer')) {
+        out += `<td><input type="number" inputmode="numeric" class="table-answer-input" data-row="${ri}" data-key="${escapeHtml(c.key)}" data-answer="${cell.answer}" min="0" step="1" autocomplete="off"></td>`;
+      } else {
+        out += `<td><span class="table-given">${escapeHtml(formatTableValue(cell.given))}</span></td>`;
+      }
+    });
+    out += `</tr>`;
+  });
+  out += `</tbody></table>`;
+  host.innerHTML=out;
+  host.querySelectorAll('.table-answer-input').forEach(inp=>{
+    inp.addEventListener('focus',()=>{ lastFocusedTableInput=inp; });
+  });
+}
+
+function loadTableQuestion(index) {
+  if (index<0 || index>=TABLE_DATABASE.length) index=0;
+  currentTableIndex=index; tableAnswered=false; lastFocusedTableInput=null;
+  const q=TABLE_DATABASE[index];
+  document.getElementById('table-problem-category').innerText=q.category;
+  document.getElementById('table-problem-id-text').innerText=`ID: ${q.id} (${index+1} / ${TABLE_DATABASE.length})`;
+  document.getElementById('table-problem-statement').innerText=q.statement;
+  const hint=document.getElementById('table-hint-box');
+  hint.innerText = tableHintFor(q); hint.style.display='none';
+  renderTableQuestionTable(q);
+  const rb=document.getElementById('table-result-box'); rb.className='table-result-box'; rb.style.display='none';
+  document.getElementById('table-submit-btn').disabled=false;
+  updateTableTocActive(q.id);
+}
+
+function tableHintFor(q) {
+  const map={
+    '残高試算表':'資産・費用は通常借方残高、負債・純資産・収益は通常貸方残高です。最後に借方合計と貸方合計を照合します。',
+    '合計試算表':'残高ではなく、各勘定の借方記入額・貸方記入額の累計をそのまま記入します。',
+    '8桁精算表':'試算表→修正記入→損益計算書・貸借対照表の順に、各勘定の性質と決算整理後の残高を追います。',
+    '決算整理後残高試算表':'決算整理仕訳を反映した後の各勘定残高を求めます。資産・費用は借方、負債・純資産・収益は貸方が基本です。',
+    '損益計算書':'収益合計から費用合計を差し引きます。収益＞費用なら当期純利益、収益＜費用なら当期純損失です。',
+    '貸借対照表':'資産＝負債＋純資産になることを最後に確認します。貸倒引当金や減価償却累計額は関連する資産から控除して考えます。'
+  };
+  return map[q.group] || '表の各列の意味を確認し、与えられた数値から空欄を計算します。';
+}
+
+function toggleTableHint() {
+  const box=document.getElementById('table-hint-box'); if(!box)return;
+  box.style.display = box.style.display==='block' ? 'none' : 'block';
+}
+
+function checkTableAnswer() {
+  if (currentTableIndex<0 || tableAnswered) return;
+  const q=TABLE_DATABASE[currentTableIndex];
+  const inputs=[...document.querySelectorAll('#table-exercise-host .table-answer-input')];
+  if (inputs.some(i=>i.value==='')) { alert('【注意】空欄が残っています。すべての入力欄に金額を入力してください。'); return; }
+  let wrong=0;
+  const wrongItems=[];
+  inputs.forEach(inp=>{
+    const raw=inp.value; const num=Number(raw); const ans=Number(inp.dataset.answer);
+    const ok=raw!=='' && Number.isInteger(num) && num>=0 && num===ans;
+    inp.classList.toggle('cell-correct',ok); inp.classList.toggle('cell-wrong',!ok); inp.disabled=true;
+    if(!ok) {
+      wrong++;
+      const ri=Number(inp.dataset.row);
+      const key=inp.dataset.key;
+      const rowLabel=q.rows[ri] ? q.rows[ri].label : '';
+      const col=q.columns.find(c=>c.key===key);
+      wrongItems.push(`${rowLabel}・${col ? col.label : key}：正答 ${ans.toLocaleString()}円`);
+    }
+  });
+  tableAnswered=true;
+  document.getElementById('table-submit-btn').disabled=true;
+  const isCorrect=wrong===0;
+  const prev=state.tableProgress[q.id] || {attempts:0,correct:false,lastAttempt:null};
+  state.tableProgress[q.id]={attempts:prev.attempts+1,correct:prev.correct||isCorrect,lastAttempt:new Date().toISOString()};
+  StorageManager.saveState(state);
+  const box=document.getElementById('table-result-box');
+  box.className=`table-result-box ${isCorrect?'correct':'incorrect'}`; box.style.display='block';
+  document.getElementById('table-result-title').innerText=isCorrect?'正解':'不正解';
+  document.getElementById('table-result-detail').innerText=isCorrect?'すべての空欄が一致しています。':`${wrong}か所不一致です。\n${wrongItems.join('\n')}`;
+  document.getElementById('table-explanation-box').innerText=q.explanation;
+  updateTableDashboard(); renderTableToc(); updateTableTocActive(q.id);
+}
+
+function updateTableDashboard() {
+  const progress=state.tableProgress || {};
+  let solved=0, attempted=0;
+  TABLE_DATABASE.forEach(q=>{ const p=progress[q.id]; if(p){attempted++; if(p.correct)solved++;} });
+  const total=TABLE_DATABASE.length;
+  const el=(id,v)=>{const x=document.getElementById(id); if(x)x.innerText=v;};
+  el('table-stat-total',total); el('table-stat-solved',solved); el('table-stat-remaining',total-solved); el('table-stat-attempted',attempted);
+}
+
+function getNextTableQuestionIndex() {
+  const unsolved=TABLE_DATABASE.findIndex(q=>!(state.tableProgress[q.id]&&state.tableProgress[q.id].correct));
+  if(unsolved>=0) return unsolved;
+  if(currentTableIndex>=0) return (currentTableIndex+1)%TABLE_DATABASE.length;
+  return 0;
+}
+
+function nextTableQuestion() {
+  if (currentTableIndex<0) return loadTableQuestion(getNextTableQuestionIndex());
+  for(let step=1; step<=TABLE_DATABASE.length; step++) {
+    const idx=(currentTableIndex+step)%TABLE_DATABASE.length;
+    const p=state.tableProgress[TABLE_DATABASE[idx].id];
+    if(!p || !p.correct) { loadTableQuestion(idx); return; }
+  }
+  loadTableQuestion((currentTableIndex+1)%TABLE_DATABASE.length);
+}
+
+function applyCalcToTable() {
+  if (currentMode!=='table' || tableAnswered) return;
+  const num=Math.round(Number(calcCurrent));
+  if(isNaN(num) || num<0){ alert('有効な金額を計算してから反映してください。'); return; }
+  let target=lastFocusedTableInput;
+  if(!target || target.disabled) target=document.querySelector('#table-exercise-host .table-answer-input:not(:disabled)');
+  if(target){ target.value=num; target.style.backgroundColor='#fef08a'; setTimeout(()=>target.style.backgroundColor='',400); toggleCalculator(); }
+}
+
 // === 内蔵電卓（計算機）ロジック ===
 let calcCurrent = '0';
 let calcPrev = null;
@@ -6545,7 +10359,7 @@ function calcAction(val) {
 }
 
 function applyCalcToJournal(side) {
-  if (isAnswered) return;
+  if (currentMode !== 'journal' || isAnswered) return;
   const num = Math.round(Number(calcCurrent));
   if (isNaN(num) || num <= 0) {
     alert('有効な金額（1以上の数値）を計算してから反映してください。');
@@ -6585,6 +10399,10 @@ window.addEventListener('DOMContentLoaded', () => {
   renderTableOfContents();
   updateDashboard();
   nextQuestion();
+  updateTableDashboard();
+  renderTableToc();
+  loadTableQuestion(getNextTableQuestionIndex());
+  switchMode('journal', false);
 });
 </script>
 
