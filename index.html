@@ -41,6 +41,8 @@
       max-width: 700px;
       margin: 0 auto;
       padding-bottom: 70px;
+      container-type: inline-size;
+      container-name: app;
     }
 
     header {
@@ -271,6 +273,12 @@
     }
 
     @media (min-width: 640px) {
+      .toc-question-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @container app (min-width: 640px) {
       .toc-question-list {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
@@ -731,7 +739,7 @@
     }
 
 
-    /* ===== v8.3 モード切替・表問題 ===== */
+    /* ===== v8.4 モード切替・表問題 ===== */
     .mode-switcher {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -850,6 +858,31 @@
       .table-answer-input { width:120px; min-width:120px; }
     }
 
+    @container app (max-width: 600px) {
+      .mode-btn { font-size:0.82rem; padding:10px 5px; }
+      .exercise-table { font-size:0.78rem; }
+      .table-answer-input { width:120px; min-width:120px; }
+    }
+
+    .data-integrity-banner {
+      display: none;
+      margin: 0 0 10px;
+      padding: 9px 11px;
+      border: 1px solid #dc2626;
+      border-radius: 7px;
+      background: #fef2f2;
+      color: #991b1b;
+      font-size: 0.78rem;
+      white-space: pre-line;
+    }
+    .data-integrity-banner.visible { display: block; }
+    .table-toc-question-btn.due::after {
+      content: '↻';
+      color: #d97706;
+      font-weight: 800;
+      margin-left: auto;
+    }
+
   </style>
 </head>
 <body>
@@ -857,12 +890,13 @@
 <div class="container">
   <header>
     <h1>日商簿記3級 総合演習システム（仕訳200問＋表問題40問）</h1>
-    <p>2026年度出題区分対応 × 仕訳200問 × 表・決算演習40問 × 教科書型解説 × 教材版 v8.3</p>
+    <p>2026年度出題区分対応 × 仕訳200問 × 表・決算演習40問 × 教科書型解説 × 教材版 v8.4</p>
   </header>
+  <div id="data-integrity-banner" class="data-integrity-banner" role="alert" aria-live="polite"></div>
 
   <div class="mode-switcher" aria-label="演習モード切替">
-    <button type="button" class="mode-btn active" id="mode-journal-btn" onclick="switchMode('journal')">仕訳演習 200問</button>
-    <button type="button" class="mode-btn" id="mode-table-btn" onclick="switchMode('table')">表・決算演習 40問</button>
+    <button type="button" class="mode-btn active" id="mode-journal-btn" data-action="switch-mode" data-mode="journal">仕訳演習 200問</button>
+    <button type="button" class="mode-btn" id="mode-table-btn" data-action="switch-mode" data-mode="table">表・決算演習 40問</button>
   </div>
 
   <section id="journal-mode-section" class="mode-section">
@@ -928,10 +962,10 @@
     </div>
 
     <div class="tool-bar">
-      <button type="button" class="tool-btn hint-btn" onclick="toggleHint()">
+      <button type="button" class="tool-btn hint-btn" data-action="toggle-hint">
         💡 ヒント
       </button>
-      <button type="button" class="tool-btn" onclick="toggleCalculator()">
+      <button type="button" class="tool-btn" data-action="toggle-calculator">
         🧮 計算機
       </button>
     </div>
@@ -955,8 +989,8 @@
       </table>
     </div>
 
-    <button type="button" class="add-row-btn" id="add-row-btn" onclick="addJournalRow()">+ 行を追加する</button>
-    <button type="button" class="btn-submit" id="submit-btn" onclick="checkAnswer()">決定（解答を提出）</button>
+    <button type="button" class="add-row-btn" id="add-row-btn" data-action="add-journal-row">+ 行を追加する</button>
+    <button type="button" class="btn-submit" id="submit-btn" data-action="check-journal">決定（解答を提出）</button>
 
     <!-- 解答・解説エリア -->
     <div class="result-box" id="result-box">
@@ -973,9 +1007,9 @@
 
       <div style="margin-top: 10px; font-weight: bold; font-size: 0.75rem;" id="eval-instruction">自覚難易度の選択:</div>
       <div class="self-eval-buttons">
-        <button type="button" class="eval-btn" id="eval-btn-0" onclick="applySelfEval(0)" disabled>要復習 / 不正解<br>(1日後)</button>
-        <button type="button" class="eval-btn" id="eval-btn-2" onclick="applySelfEval(2)" disabled>正解・やや不安<br>(標準)</button>
-        <button type="button" class="eval-btn" id="eval-btn-3" onclick="applySelfEval(3)" disabled>正解・即答できた<br>(長期延長)</button>
+        <button type="button" class="eval-btn" id="eval-btn-0" data-action="journal-eval" data-quality="0" disabled>要復習 / 不正解<br>(1日後)</button>
+        <button type="button" class="eval-btn" id="eval-btn-2" data-action="journal-eval" data-quality="2" disabled>正解・やや不安<br>(標準)</button>
+        <button type="button" class="eval-btn" id="eval-btn-3" data-action="journal-eval" data-quality="3" disabled>正解・即答できた<br>(長期延長)</button>
       </div>
     </div>
   </div>
@@ -987,6 +1021,7 @@
       <div class="dash-card"><div class="title">正解済み</div><div class="value" id="table-stat-solved">0</div></div>
       <div class="dash-card"><div class="title">未正解</div><div class="value" id="table-stat-remaining">40</div></div>
       <div class="dash-card"><div class="title">挑戦済み</div><div class="value" id="table-stat-attempted">0</div></div>
+      <div class="dash-card"><div class="title">復習期限</div><div class="value" id="table-stat-due">0</div></div>
     </div>
 
     <section class="toc-card" id="table-toc-card" aria-label="表問題目次">
@@ -1006,20 +1041,20 @@
       </div>
       <div class="statement" id="table-problem-statement">問題文を読み込んでいます...</div>
       <div class="tool-bar">
-        <button type="button" class="tool-btn hint-btn" onclick="toggleTableHint()">💡 解き方のヒント</button>
-        <button type="button" class="tool-btn" onclick="toggleCalculator()">🧮 計算機</button>
+        <button type="button" class="tool-btn hint-btn" data-action="toggle-table-hint">💡 解き方のヒント</button>
+        <button type="button" class="tool-btn" data-action="toggle-calculator">🧮 計算機</button>
       </div>
       <div class="hint-box" id="table-hint-box"></div>
       <div class="table-note">空欄セルに金額を入力してください。金額はカンマなしでも入力できます。</div>
       <div class="table-exercise-wrapper" id="table-exercise-wrapper"><div id="table-exercise-host"></div></div>
-      <button type="button" class="btn-submit" id="table-submit-btn" onclick="checkTableAnswer()">決定（表を採点）</button>
+      <button type="button" class="btn-submit" id="table-submit-btn" data-action="check-table">決定（表を採点）</button>
       <div class="table-result-box" id="table-result-box">
         <div id="table-result-title" style="font-weight:800;"></div>
         <div id="table-result-detail" style="margin-top:4px;font-size:0.82rem;white-space:pre-line;"></div>
         <div class="table-explanation" id="table-explanation-box"></div>
         <div class="table-nav-row">
-          <button type="button" class="table-secondary-btn" onclick="openTableOfContents()">目次へ</button>
-          <button type="button" class="table-primary-btn" onclick="nextTableQuestion()">次の表問題</button>
+          <button type="button" class="table-secondary-btn" data-action="open-toc">目次へ</button>
+          <button type="button" class="table-primary-btn" data-action="next-table">次の表問題</button>
         </div>
       </div>
     </div>
@@ -1027,10 +1062,10 @@
 </div>
 
 <!-- フローティング目次ボタン -->
-<button type="button" class="toc-fab" onclick="openTableOfContents()">☰ 目次</button>
+<button type="button" class="toc-fab" data-action="open-toc">☰ 目次</button>
 
 <!-- フローティング電卓ボタン -->
-<button type="button" class="calc-fab" onclick="toggleCalculator()">
+<button type="button" class="calc-fab" data-action="toggle-calculator">
   🧮 電卓
 </button>
 
@@ -1038,47 +1073,47 @@
 <div class="calculator-modal" id="calculator-modal">
   <div class="calc-header">
     <span>計算機（電卓）</span>
-    <button type="button" class="calc-close-btn" onclick="toggleCalculator()">✕</button>
+    <button type="button" class="calc-close-btn" data-action="toggle-calculator">✕</button>
   </div>
   <div class="calc-display" id="calc-display">0</div>
   
   <div class="calc-apply-bar">
-    <button type="button" class="calc-apply-btn debit" onclick="applyCalcToJournal('debit')">📥 借方に反映</button>
-    <button type="button" class="calc-apply-btn credit" onclick="applyCalcToJournal('credit')">📥 貸方に反映</button>
-    <button type="button" class="calc-apply-btn" onclick="applyCalcToTable()">📥 表に反映</button>
+    <button type="button" class="calc-apply-btn debit" data-action="apply-calc-journal" data-side="debit">📥 借方に反映</button>
+    <button type="button" class="calc-apply-btn credit" data-action="apply-calc-journal" data-side="credit">📥 貸方に反映</button>
+    <button type="button" class="calc-apply-btn" data-action="apply-calc-table">📥 表に反映</button>
   </div>
 
   <div class="calc-grid">
-    <button type="button" class="calc-btn clear" onclick="calcAction('C')">C</button>
-    <button type="button" class="calc-btn" onclick="calcAction('DEL')">⌫</button>
-    <button type="button" class="calc-btn op" onclick="calcAction('%')">%</button>
-    <button type="button" class="calc-btn op" onclick="calcAction('/')">÷</button>
+    <button type="button" class="calc-btn clear" data-action="calc-key" data-value="C">C</button>
+    <button type="button" class="calc-btn" data-action="calc-key" data-value="DEL">⌫</button>
+    <button type="button" class="calc-btn op" data-action="calc-key" data-value="%">%</button>
+    <button type="button" class="calc-btn op" data-action="calc-key" data-value="/">÷</button>
     
-    <button type="button" class="calc-btn" onclick="calcAction('7')">7</button>
-    <button type="button" class="calc-btn" onclick="calcAction('8')">8</button>
-    <button type="button" class="calc-btn op" onclick="calcAction('*')">×</button>
-    <button type="button" class="calc-btn" onclick="calcAction('9')">9</button>
+    <button type="button" class="calc-btn" data-action="calc-key" data-value="7">7</button>
+    <button type="button" class="calc-btn" data-action="calc-key" data-value="8">8</button>
+    <button type="button" class="calc-btn op" data-action="calc-key" data-value="*">×</button>
+    <button type="button" class="calc-btn" data-action="calc-key" data-value="9">9</button>
     
-    <button type="button" class="calc-btn" onclick="calcAction('4')">4</button>
-    <button type="button" class="calc-btn" onclick="calcAction('5')">5</button>
-    <button type="button" class="calc-btn" onclick="calcAction('6')">6</button>
-    <button type="button" class="calc-btn op" onclick="calcAction('-')">-</button>
+    <button type="button" class="calc-btn" data-action="calc-key" data-value="4">4</button>
+    <button type="button" class="calc-btn" data-action="calc-key" data-value="5">5</button>
+    <button type="button" class="calc-btn" data-action="calc-key" data-value="6">6</button>
+    <button type="button" class="calc-btn op" data-action="calc-key" data-value="-">-</button>
     
-    <button type="button" class="calc-btn" onclick="calcAction('1')">1</button>
-    <button type="button" class="calc-btn" onclick="calcAction('2')">2</button>
-    <button type="button" class="calc-btn" onclick="calcAction('3')">3</button>
-    <button type="button" class="calc-btn op" onclick="calcAction('+')">+</button>
+    <button type="button" class="calc-btn" data-action="calc-key" data-value="1">1</button>
+    <button type="button" class="calc-btn" data-action="calc-key" data-value="2">2</button>
+    <button type="button" class="calc-btn" data-action="calc-key" data-value="3">3</button>
+    <button type="button" class="calc-btn op" data-action="calc-key" data-value="+">+</button>
     
-    <button type="button" class="calc-btn" onclick="calcAction('0')">0</button>
-    <button type="button" class="calc-btn" onclick="calcAction('00')">00</button>
-    <button type="button" class="calc-btn eq" onclick="calcAction('=')">=</button>
+    <button type="button" class="calc-btn" data-action="calc-key" data-value="0">0</button>
+    <button type="button" class="calc-btn" data-action="calc-key" data-value="00">00</button>
+    <button type="button" class="calc-btn eq" data-action="calc-key" data-value="=">=</button>
   </div>
 </div>
 
-<script>
+<script type="module">
 'use strict';
 
-// 仕訳200問データベース（2026年度適用 出題区分対応・教科書型解説 v8.3）
+// 仕訳200問データベース（2026年度適用 出題区分対応・教科書型解説 v8.4）
 const QUESTION_DATABASE = [
   {
     "id": "Q001",
@@ -6047,7 +6082,7 @@ const QUESTION_DATABASE = [
 ];
 
 
-// v8.3: T009〜T014では0円側を入力対象にせず「—」固定表示に変更。T024の当期純利益行の合計行指定を解除。
+// v8.4: 教材データはv8.3から変更せず、アーキテクチャ・保存仕様・検証・電卓・復習ロジックを改修。
 // 表・決算演習40問（2026年度3級範囲：試算表、8桁精算表、決算整理後残高試算表、損益計算書、貸借対照表）
 const TABLE_DATABASE = [
   {
@@ -9468,17 +9503,16 @@ const TOC_GROUPS = [
   { title: "総合演習", start: 161, end: 200 }
 ];
 
-let quizCardTemplate = '';
 
 function renderTableOfContents() {
   const host = document.getElementById('toc-groups');
   if (!host) return;
-  host.innerHTML = '';
+  host.replaceChildren();
+  const fragment = document.createDocumentFragment();
 
   TOC_GROUPS.forEach(group => {
     const wrapper = document.createElement('div');
     wrapper.className = 'toc-group';
-
     const details = document.createElement('details');
     const summary = document.createElement('summary');
     const label = document.createElement('span');
@@ -9491,23 +9525,25 @@ function renderTableOfContents() {
 
     const list = document.createElement('div');
     list.className = 'toc-question-list';
-
     for (let no = group.start; no <= group.end; no++) {
       const q = QUESTION_DATABASE[no - 1];
       if (!q) continue;
       const button = document.createElement('button');
       button.type = 'button';
       button.className = 'toc-question-btn';
+      button.dataset.action = 'goto-journal-question';
       button.dataset.questionId = q.id;
-      button.innerHTML = `<span class="toc-question-id">${escapeHtml(q.id)}</span>${escapeHtml(q.category)}`;
-      button.addEventListener('click', () => goToQuestion(q.id));
+      const idSpan = document.createElement('span');
+      idSpan.className = 'toc-question-id';
+      idSpan.textContent = q.id;
+      button.append(idSpan, document.createTextNode(q.category));
       list.appendChild(button);
     }
-
     details.appendChild(list);
     wrapper.appendChild(details);
-    host.appendChild(wrapper);
+    fragment.appendChild(wrapper);
   });
+  host.appendChild(fragment);
 }
 
 function updateTocActive(questionId) {
@@ -9519,8 +9555,9 @@ function updateTocActive(questionId) {
 function ensureQuizCardShell() {
   const quizCard = document.getElementById('quiz-card');
   if (!quizCard) return;
-  if (!document.getElementById('problem-category') && quizCardTemplate) {
-    quizCard.innerHTML = quizCardTemplate;
+  if (!document.getElementById('problem-category') && Runtime.ui.quizCardTemplate) {
+    const clone = Runtime.ui.quizCardTemplate.cloneNode(true);
+    quizCard.replaceChildren(...Array.from(clone.childNodes));
   }
 }
 
@@ -9543,56 +9580,76 @@ function goToQuestion(questionId) {
 function renderTableToc() {
   const host = document.getElementById('table-toc-groups');
   if (!host) return;
-  host.innerHTML = '';
+  host.replaceChildren();
+  const fragment = document.createDocumentFragment();
+  const now = new Date();
+
   TABLE_TOC_GROUPS.forEach(group => {
     const wrapper = document.createElement('div');
     wrapper.className = 'toc-group';
     const details = document.createElement('details');
     const summary = document.createElement('summary');
-    const label = document.createElement('span'); label.textContent = group.title;
-    const count = document.createElement('span'); count.className = 'toc-group-count';
-    count.textContent = `T${String(group.start).padStart(3,'0')}〜T${String(group.end).padStart(3,'0')}`;
-    summary.append(label, count); details.appendChild(summary);
-    const list = document.createElement('div'); list.className = 'toc-question-list';
-    for (let no=group.start; no<=group.end; no++) {
-      const q = TABLE_DATABASE[no-1]; if (!q) continue;
+    const label = document.createElement('span');
+    label.textContent = group.title;
+    const count = document.createElement('span');
+    count.className = 'toc-group-count';
+    count.textContent = `T${String(group.start).padStart(3, '0')}〜T${String(group.end).padStart(3, '0')}`;
+    summary.append(label, count);
+    details.appendChild(summary);
+    const list = document.createElement('div');
+    list.className = 'toc-question-list';
+
+    for (let no = group.start; no <= group.end; no++) {
+      const q = TABLE_DATABASE[no - 1];
+      if (!q) continue;
       const button = document.createElement('button');
-      button.type='button'; button.className='toc-question-btn table-toc-question-btn';
-      if (state && state.tableProgress && state.tableProgress[q.id] && state.tableProgress[q.id].correct) button.classList.add('solved');
-      button.dataset.tableQuestionId=q.id;
-      button.innerHTML=`<span class="toc-question-id">${escapeHtml(q.id)}</span>${escapeHtml(q.category)}`;
-      button.addEventListener('click',()=>goToTableQuestion(q.id));
+      button.type = 'button';
+      button.className = 'toc-question-btn table-toc-question-btn';
+      button.dataset.action = 'goto-table-question';
+      button.dataset.tableQuestionId = q.id;
+      const p = Runtime.state.tableProgress?.[q.id];
+      if (p?.correct) button.classList.add('solved');
+      if (p?.nextReviewDate && new Date(p.nextReviewDate) <= now) button.classList.add('due');
+      const idSpan = document.createElement('span');
+      idSpan.className = 'toc-question-id';
+      idSpan.textContent = q.id;
+      button.append(idSpan, document.createTextNode(q.category));
       list.appendChild(button);
     }
-    details.appendChild(list); wrapper.appendChild(details); host.appendChild(wrapper);
+    details.appendChild(list);
+    wrapper.appendChild(details);
+    fragment.appendChild(wrapper);
   });
+  host.appendChild(fragment);
 }
 
 function updateTableTocActive(tableId) {
+  const now = new Date();
   document.querySelectorAll('.table-toc-question-btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.tableQuestionId === tableId);
-    const p = state.tableProgress && state.tableProgress[btn.dataset.tableQuestionId];
-    btn.classList.toggle('solved', !!(p && p.correct));
+    const p = Runtime.state.tableProgress?.[btn.dataset.tableQuestionId];
+    btn.classList.toggle('solved', Boolean(p?.correct));
+    btn.classList.toggle('due', Boolean(p?.nextReviewDate && new Date(p.nextReviewDate) <= now));
   });
 }
 
 function switchMode(mode, shouldScroll=true) {
-  currentMode = mode === 'table' ? 'table' : 'journal';
+  Runtime.mode = mode === 'table' ? 'table' : 'journal';
   const journal = document.getElementById('journal-mode-section');
   const table = document.getElementById('table-mode-section');
-  if (journal) journal.hidden = currentMode !== 'journal';
-  if (table) table.hidden = currentMode !== 'table';
+  if (journal) journal.hidden = Runtime.mode !== 'journal';
+  if (table) table.hidden = Runtime.mode !== 'table';
   const jb = document.getElementById('mode-journal-btn');
   const tb = document.getElementById('mode-table-btn');
-  if (jb) jb.classList.toggle('active', currentMode==='journal');
-  if (tb) tb.classList.toggle('active', currentMode==='table');
-  if (currentMode === 'table') {
+  if (jb) jb.classList.toggle('active', Runtime.mode==='journal');
+  if (tb) tb.classList.toggle('active', Runtime.mode==='table');
+  if (Runtime.mode === 'table') {
     updateTableDashboard();
     renderTableToc();
-    if (currentTableIndex < 0 || !TABLE_DATABASE[currentTableIndex]) loadTableQuestion(getNextTableQuestionIndex());
+    if (Runtime.table.currentIndex < 0 || !TABLE_DATABASE[Runtime.table.currentIndex]) loadTableQuestion(getNextTableQuestionIndex());
   }
   if (shouldScroll) {
-    const target = currentMode==='table' ? document.getElementById('table-mode-section') : document.getElementById('journal-mode-section');
+    const target = Runtime.mode==='table' ? document.getElementById('table-mode-section') : document.getElementById('journal-mode-section');
     if (target) target.scrollIntoView({behavior:'smooth',block:'start'});
   }
 }
@@ -9607,7 +9664,7 @@ function goToTableQuestion(tableId) {
 }
 
 function openTableOfContents() {
-  if (currentMode === 'table') {
+  if (Runtime.mode === 'table') {
     const d=document.getElementById('table-toc-details'); if(d)d.open=true;
     const c=document.getElementById('table-toc-card'); if(c)c.scrollIntoView({behavior:'smooth',block:'start'});
   } else {
@@ -9623,115 +9680,220 @@ const VALID_QUESTION_IDS = new Set(QUESTION_DATABASE.map(q => q.id));
 const UPDATED_FROM_V7_0_IDS = new Set(["Q012","Q024","Q029","Q036","Q039","Q052","Q053","Q055","Q056","Q067","Q074","Q075","Q076","Q079","Q111","Q120","Q121","Q122","Q124","Q125","Q126","Q128","Q140","Q142","Q143","Q145","Q151","Q152","Q153","Q154","Q155","Q156","Q157","Q158","Q159","Q162","Q163","Q164","Q165","Q169","Q170","Q171","Q173","Q174","Q175","Q176","Q177","Q181","Q182","Q185","Q186","Q190","Q192","Q193","Q196","Q197","Q198","Q200"]);
 
 // --- 堅牢な LocalStorage 管理クラス ---
+function stableBankHash(value) {
+  const text = JSON.stringify(value);
+  let hash = 0x811c9dc5;
+  for (let i = 0; i < text.length; i++) {
+    hash ^= text.charCodeAt(i);
+    hash = Math.imul(hash, 0x01000193) >>> 0;
+  }
+  return hash.toString(16).padStart(8, '0');
+}
+
+function validateQuestionBanks() {
+  const issues = [];
+  if (QUESTION_DATABASE.length !== 200) issues.push(`仕訳問題数: ${QUESTION_DATABASE.length}（期待値200）`);
+  const seenJournal = new Set();
+  QUESTION_DATABASE.forEach((q, index) => {
+    const expectedId = `Q${String(index + 1).padStart(3, '0')}`;
+    if (q.id !== expectedId) issues.push(`仕訳ID不整合: index ${index} = ${q.id}, expected ${expectedId}`);
+    if (seenJournal.has(q.id)) issues.push(`仕訳ID重複: ${q.id}`);
+    seenJournal.add(q.id);
+    if (!Array.isArray(q.options) || !Array.isArray(q.debit) || !Array.isArray(q.credit)) issues.push(`${q.id}: 必須配列不足`);
+    const debitTotal = Array.isArray(q.debit) ? q.debit.reduce((sum, e) => sum + Number(e.amount || 0), 0) : NaN;
+    const creditTotal = Array.isArray(q.credit) ? q.credit.reduce((sum, e) => sum + Number(e.amount || 0), 0) : NaN;
+    if (debitTotal !== creditTotal) issues.push(`${q.id}: 貸借不一致 ${debitTotal} / ${creditTotal}`);
+    [...(q.debit || []), ...(q.credit || [])].forEach(e => {
+      if (!Number.isInteger(e.amount) || e.amount <= 0) issues.push(`${q.id}: 不正金額 ${e.amount}`);
+      if (!q.options?.includes(e.account)) issues.push(`${q.id}: 正答科目が選択肢にない ${e.account}`);
+    });
+    if (typeof q.statement !== 'string' || !q.statement.trim()) issues.push(`${q.id}: 問題文なし`);
+    if (typeof q.explanation !== 'string' || !q.explanation.trim()) issues.push(`${q.id}: 解説なし`);
+  });
+
+  if (TABLE_DATABASE.length !== 40) issues.push(`表問題数: ${TABLE_DATABASE.length}（期待値40）`);
+  const seenTable = new Set();
+  let answerCells = 0;
+  TABLE_DATABASE.forEach((q, index) => {
+    const expectedId = `T${String(index + 1).padStart(3, '0')}`;
+    if (q.id !== expectedId) issues.push(`表ID不整合: index ${index} = ${q.id}, expected ${expectedId}`);
+    if (seenTable.has(q.id)) issues.push(`表ID重複: ${q.id}`);
+    seenTable.add(q.id);
+    const keys = new Set();
+    (q.columns || []).forEach(c => { if (keys.has(c.key)) issues.push(`${q.id}: 列キー重複 ${c.key}`); keys.add(c.key); });
+    (q.rows || []).forEach(row => {
+      Object.values(row.cells || {}).forEach(cell => {
+        if (Object.prototype.hasOwnProperty.call(cell, 'answer')) {
+          answerCells += 1;
+          if (!Number.isInteger(cell.answer) || cell.answer < 0) issues.push(`${q.id}: 表の不正金額 ${cell.answer}`);
+          if (cell.answer === 0) issues.push(`${q.id}: 0円セルは入力欄ではなく固定表示にする`);
+        }
+      });
+    });
+    if (typeof q.statement !== 'string' || !q.statement.trim()) issues.push(`${q.id}: 問題文なし`);
+    if (typeof q.explanation !== 'string' || !q.explanation.trim()) issues.push(`${q.id}: 解説なし`);
+  });
+  if (answerCells !== 223) issues.push(`表問題の入力セル数: ${answerCells}（期待値223）`);
+  const t024 = TABLE_DATABASE.find(q => q.id === 'T024');
+  const profitRow = t024?.rows?.find(row => row.label === '当期純利益');
+  if (profitRow?.isTotal) issues.push('T024: 当期純利益行がisTotalになっている');
+
+  const journalHash = stableBankHash(QUESTION_DATABASE);
+  const tableHash = stableBankHash(TABLE_DATABASE);
+  if (journalHash !== EXPECTED_QUESTION_BANK_HASH) issues.push(`仕訳問題バンクhash不一致: ${journalHash}`);
+  if (tableHash !== EXPECTED_TABLE_BANK_HASH) issues.push(`表問題バンクhash不一致: ${tableHash}`);
+  return { issues, journalHash, tableHash, answerCells };
+}
+
+function deepFreeze(value) {
+  if (!value || typeof value !== 'object' || Object.isFrozen(value)) return value;
+  Object.freeze(value);
+  Object.values(value).forEach(deepFreeze);
+  return value;
+}
+
+function runIntegrityCheck() {
+  const result = validateQuestionBanks();
+  const banner = document.getElementById('data-integrity-banner');
+  if (result.issues.length) {
+    console.error('教材データ整合性エラー', result);
+    if (banner) {
+      banner.textContent = `教材データの整合性エラーを検出しました。\n${result.issues.join('\n')}`;
+      banner.classList.add('visible');
+    }
+  } else {
+    console.info('教材データ整合性チェック OK', result);
+    if (banner) banner.classList.remove('visible');
+  }
+  return result;
+}
+
+deepFreeze(QUESTION_DATABASE);
+deepFreeze(TABLE_DATABASE);
+
+const APP_VERSION = 'v8.4';
+const STORAGE_SCHEMA_VERSION = 2;
+const JOURNAL_BANK_VERSION = 'v7.1';
+const TABLE_BANK_VERSION = 'v8.3';
+const EXPECTED_QUESTION_BANK_HASH = '1d8740e5';
+const EXPECTED_TABLE_BANK_HASH = 'ffad1361';
+
 class StorageManager {
-  static KEY_200 = 'boki3_system_state_v6_200';
-  // 教材表示はv8.3。仕訳問題文・正答の対応はv7.1から変更していないため、既存の学習履歴互換性を保つためbankVersionはv7.1のままとする。
-  static VERSION = 'v7.1';
+  static KEY = 'boki3_system_state_v6_200';
+
+  static addDaysIso(iso, days) {
+    const base = (typeof iso === 'string' && !Number.isNaN(Date.parse(iso))) ? new Date(iso) : new Date();
+    base.setDate(base.getDate() + days);
+    return base.toISOString();
+  }
 
   static loadState() {
     const defaultState = this.getDefaultState();
     try {
-      const serialized = localStorage.getItem(this.KEY_200);
+      const serialized = localStorage.getItem(this.KEY);
       if (!serialized) return defaultState;
-
       const parsed = JSON.parse(serialized);
       if (typeof parsed !== 'object' || parsed === null) return defaultState;
+      if (parsed.schemaVersion != null && parsed.schemaVersion !== STORAGE_SCHEMA_VERSION) return defaultState;
 
-      // v7.0の200問版からは、今回内容を変更した問題だけ履歴を破棄する。
-      // それ以外の未知バージョンは問題IDと内容の対応を保証できないため、安全側で初期化する。
+      const legacyJournalVersion = typeof parsed.journalBankVersion === 'string'
+        ? parsed.journalBankVersion
+        : parsed.bankVersion;
       let purgeSet = new Set();
-      if (parsed.bankVersion === 'v7.0') {
-        purgeSet = UPDATED_FROM_V7_0_IDS;
-      } else if (parsed.bankVersion !== this.VERSION) {
-        return defaultState;
-      }
+      let journalCompatible = true;
+      if (legacyJournalVersion === 'v7.0') purgeSet = UPDATED_FROM_V7_0_IDS;
+      else if (legacyJournalVersion !== JOURNAL_BANK_VERSION) journalCompatible = false;
 
+      const tableCompatible = !parsed.tableBankVersion || parsed.tableBankVersion === TABLE_BANK_VERSION;
       const sanitizedProgress = {};
-      if (typeof parsed.progress === 'object' && parsed.progress !== null) {
+      if (journalCompatible && typeof parsed.progress === 'object' && parsed.progress !== null) {
         Object.keys(parsed.progress).forEach(id => {
-          if (VALID_QUESTION_IDS.has(id)) {
-            if (purgeSet && purgeSet.has(id)) {
-              return;
-            }
-
-            const item = parsed.progress[id];
-            if (item && typeof item === 'object') {
-              const interval = Number.isFinite(item.intervalDays) && item.intervalDays >= 0 ? Math.floor(item.intervalDays) : 0;
-              const rep = Number.isFinite(item.repetitionCount) && item.repetitionCount >= 0 ? Math.floor(item.repetitionCount) : 0;
-              const ease = Number.isFinite(item.easeFactor) && item.easeFactor >= 1.3 && item.easeFactor <= 5.0 ? item.easeFactor : 2.50;
-              const nextDate = typeof item.nextReviewDate === 'string' && !isNaN(Date.parse(item.nextReviewDate)) ? item.nextReviewDate : new Date().toISOString();
-              const lastRev = typeof item.lastReviewed === 'string' && !isNaN(Date.parse(item.lastReviewed)) ? item.lastReviewed : new Date().toISOString();
-
-              sanitizedProgress[id] = {
-                intervalDays: interval,
-                repetitionCount: rep,
-                easeFactor: parseFloat(ease.toFixed(2)),
-                nextReviewDate: nextDate,
-                lastReviewed: lastRev
-              };
-            }
-          }
+          if (!VALID_QUESTION_IDS.has(id) || purgeSet.has(id)) return;
+          const item = parsed.progress[id];
+          if (!item || typeof item !== 'object') return;
+          const interval = Number.isFinite(item.intervalDays) && item.intervalDays >= 0 ? Math.floor(item.intervalDays) : 0;
+          const rep = Number.isFinite(item.repetitionCount) && item.repetitionCount >= 0 ? Math.floor(item.repetitionCount) : 0;
+          const ease = Number.isFinite(item.easeFactor) && item.easeFactor >= 1.3 && item.easeFactor <= 5.0 ? item.easeFactor : 2.50;
+          const nextDate = typeof item.nextReviewDate === 'string' && !Number.isNaN(Date.parse(item.nextReviewDate)) ? item.nextReviewDate : new Date().toISOString();
+          const lastRev = typeof item.lastReviewed === 'string' && !Number.isNaN(Date.parse(item.lastReviewed)) ? item.lastReviewed : new Date().toISOString();
+          sanitizedProgress[id] = { intervalDays: interval, repetitionCount: rep, easeFactor: Number(ease.toFixed(2)), nextReviewDate: nextDate, lastReviewed: lastRev };
         });
       }
 
       const sanitizedTableProgress = {};
-      if (typeof parsed.tableProgress === 'object' && parsed.tableProgress !== null) {
+      if (tableCompatible && typeof parsed.tableProgress === 'object' && parsed.tableProgress !== null) {
         Object.keys(parsed.tableProgress).forEach(id => {
           if (!VALID_TABLE_IDS.has(id)) return;
           const item = parsed.tableProgress[id];
           if (!item || typeof item !== 'object') return;
+          const attempts = Number.isFinite(item.attempts) && item.attempts >= 0 ? Math.floor(item.attempts) : 0;
+          const correct = item.correct === true;
+          const lastAttempt = typeof item.lastAttempt === 'string' && !Number.isNaN(Date.parse(item.lastAttempt)) ? item.lastAttempt : null;
+          const hasSrs = Number.isFinite(item.intervalDays) && Number.isFinite(item.repetitionCount) && Number.isFinite(item.easeFactor)
+            && typeof item.nextReviewDate === 'string' && !Number.isNaN(Date.parse(item.nextReviewDate));
           sanitizedTableProgress[id] = {
-            attempts: Number.isFinite(item.attempts) && item.attempts >= 0 ? Math.floor(item.attempts) : 0,
-            correct: item.correct === true,
-            lastAttempt: typeof item.lastAttempt === 'string' && !isNaN(Date.parse(item.lastAttempt)) ? item.lastAttempt : null
+            attempts,
+            correct,
+            lastResultCorrect: item.lastResultCorrect === true,
+            intervalDays: hasSrs ? Math.max(0, Math.floor(item.intervalDays)) : (attempts > 0 ? 1 : 0),
+            repetitionCount: hasSrs ? Math.max(0, Math.floor(item.repetitionCount)) : (correct ? 1 : 0),
+            easeFactor: hasSrs && item.easeFactor >= 1.3 && item.easeFactor <= 5.0 ? Number(item.easeFactor.toFixed(2)) : 2.50,
+            nextReviewDate: hasSrs ? item.nextReviewDate : (attempts > 0 ? this.addDaysIso(lastAttempt, 1) : new Date().toISOString()),
+            lastAttempt,
+            lastReviewed: typeof item.lastReviewed === 'string' && !Number.isNaN(Date.parse(item.lastReviewed)) ? item.lastReviewed : lastAttempt
           };
         });
       }
 
-      const streakVal = Number.isFinite(parsed.streak) && parsed.streak >= 0 ? Math.floor(parsed.streak) : 0;
-      const todayVal = Number.isFinite(parsed.todayCount) && parsed.todayCount >= 0 ? Math.floor(parsed.todayCount) : 0;
-      const lastDateVal = typeof parsed.lastStudyDate === 'string' && !isNaN(Date.parse(parsed.lastStudyDate)) ? parsed.lastStudyDate : null;
-
       return {
-        bankVersion: this.VERSION,
+        schemaVersion: STORAGE_SCHEMA_VERSION,
+        appVersion: APP_VERSION,
+        journalBankVersion: JOURNAL_BANK_VERSION,
+        tableBankVersion: TABLE_BANK_VERSION,
         progress: sanitizedProgress,
         tableProgress: sanitizedTableProgress,
-        streak: streakVal,
-        lastStudyDate: lastDateVal,
-        todayCount: todayVal
+        streak: Number.isFinite(parsed.streak) && parsed.streak >= 0 ? Math.floor(parsed.streak) : 0,
+        lastStudyDate: typeof parsed.lastStudyDate === 'string' && !Number.isNaN(Date.parse(parsed.lastStudyDate)) ? parsed.lastStudyDate : null,
+        todayCount: Number.isFinite(parsed.todayCount) && parsed.todayCount >= 0 ? Math.floor(parsed.todayCount) : 0
       };
-    } catch (e) {
-      console.error('LocalStorage load failed, fallback to default state:', e);
+    } catch (error) {
+      console.error('LocalStorage load failed; using default state.', error);
       return defaultState;
     }
   }
 
-  static saveState(state) {
+  static saveState(appState) {
     try {
-      state.bankVersion = this.VERSION;
-      localStorage.setItem(this.KEY_200, JSON.stringify(state));
-    } catch (e) {
-      console.error('Failed to save state to LocalStorage:', e);
+      appState.schemaVersion = STORAGE_SCHEMA_VERSION;
+      appState.appVersion = APP_VERSION;
+      appState.journalBankVersion = JOURNAL_BANK_VERSION;
+      appState.tableBankVersion = TABLE_BANK_VERSION;
+      localStorage.setItem(this.KEY, JSON.stringify(appState));
+    } catch (error) {
+      console.error('Failed to save state to LocalStorage.', error);
       alert('【警告】ブラウザの保存領域（LocalStorage）に空きがないため、学習履歴が更新できません。');
     }
   }
 
   static getDefaultState() {
-    return { bankVersion: this.VERSION, progress: {}, tableProgress: {}, streak: 0, lastStudyDate: null, todayCount: 0 };
+    return {
+      schemaVersion: STORAGE_SCHEMA_VERSION,
+      appVersion: APP_VERSION,
+      journalBankVersion: JOURNAL_BANK_VERSION,
+      tableBankVersion: TABLE_BANK_VERSION,
+      progress: {}, tableProgress: {}, streak: 0, lastStudyDate: null, todayCount: 0
+    };
   }
 }
 
-// アプリケーション状態変数
-let state = StorageManager.loadState();
-let currentQuestionIndex = -1;
-let currentErrorType = 'NONE';
-let isAnswered = false;
-let isEvalCompleted = false;
-let lastFocusedInput = null;
-let currentMode = 'journal';
-let currentTableIndex = -1;
-let tableAnswered = false;
-let lastFocusedTableInput = null;
+const Runtime = {
+  state: StorageManager.loadState(),
+  mode: 'journal',
+  journal: { currentQuestionIndex: -1, currentErrorType: 'NONE', isAnswered: false, isEvalCompleted: false, lastFocusedInput: null },
+  table: { currentIndex: -1, answered: false, lastFocusedInput: null },
+  calculator: { current: '0', prev: null, op: null, resetOnNext: false, error: false },
+  ui: { quizCardTemplate: null, journalResizeTimer: null }
+};
 
 function getTodayString() {
   const d = new Date();
@@ -9740,19 +9902,19 @@ function getTodayString() {
 
 function checkDailyStreak() {
   const today = getTodayString();
-  if (!state.lastStudyDate) return;
+  if (!Runtime.state.lastStudyDate) return;
 
-  const lastDate = new Date(state.lastStudyDate);
+  const lastDate = new Date(Runtime.state.lastStudyDate);
   const currentDate = new Date(today);
   const diffDays = Math.round((currentDate - lastDate) / (1000 * 60 * 60 * 24));
 
   if (diffDays > 1) {
-    state.streak = 0;
-    state.todayCount = 0;
-    StorageManager.saveState(state);
-  } else if (state.lastStudyDate !== today) {
-    state.todayCount = 0;
-    StorageManager.saveState(state);
+    Runtime.state.streak = 0;
+    Runtime.state.todayCount = 0;
+    StorageManager.saveState(Runtime.state);
+  } else if (Runtime.state.lastStudyDate !== today) {
+    Runtime.state.todayCount = 0;
+    StorageManager.saveState(Runtime.state);
   }
 }
 
@@ -9805,7 +9967,7 @@ function updateDashboard() {
   const now = new Date();
 
   QUESTION_DATABASE.forEach(q => {
-    const p = state.progress[q.id];
+    const p = Runtime.state.progress[q.id];
     if (p) {
       if (new Date(p.nextReviewDate) <= now) dueCount++;
       totalEase += p.easeFactor;
@@ -9818,13 +9980,13 @@ function updateDashboard() {
   document.getElementById('stat-total').innerText = total;
   document.getElementById('stat-due').innerText = dueCount;
   document.getElementById('stat-unstudied').innerText = unstudiedCount;
-  document.getElementById('stat-streak').innerText = `${state.streak} 日`;
+  document.getElementById('stat-streak').innerText = `${Runtime.state.streak} 日`;
   document.getElementById('stat-ease').innerText = (totalEase / total).toFixed(2);
 
   const dailyTarget = 10;
-  const percent = Math.min(Math.round((state.todayCount / dailyTarget) * 100), 100);
+  const percent = Math.min(Math.round((Runtime.state.todayCount / dailyTarget) * 100), 100);
   document.getElementById('progress-bar').style.width = `${percent}%`;
-  document.getElementById('progress-text').innerText = `${state.todayCount} / ${dailyTarget} 問完了`;
+  document.getElementById('progress-text').innerText = `${Runtime.state.todayCount} / ${dailyTarget} 問完了`;
 }
 
 function getNextQuestionIndex() {
@@ -9833,7 +9995,7 @@ function getNextQuestionIndex() {
   const unstudiedIndices = [];
 
   QUESTION_DATABASE.forEach((q, idx) => {
-    const p = state.progress[q.id];
+    const p = Runtime.state.progress[q.id];
     if (!p) {
       unstudiedIndices.push(idx);
     } else if (new Date(p.nextReviewDate) <= now) {
@@ -9842,12 +10004,12 @@ function getNextQuestionIndex() {
   });
 
   if (dueIndices.length > 0) {
-    const candidates = dueIndices.filter(i => i !== currentQuestionIndex);
+    const candidates = dueIndices.filter(i => i !== Runtime.journal.currentQuestionIndex);
     return candidates.length > 0 ? candidates[Math.floor(Math.random() * candidates.length)] : dueIndices[0];
   }
 
   if (unstudiedIndices.length > 0) {
-    const candidates = unstudiedIndices.filter(i => i !== currentQuestionIndex);
+    const candidates = unstudiedIndices.filter(i => i !== Runtime.journal.currentQuestionIndex);
     return candidates.length > 0 ? candidates[Math.floor(Math.random() * candidates.length)] : unstudiedIndices[0];
   }
 
@@ -9858,7 +10020,7 @@ function loadQuestion(index) {
   const quizCard = document.getElementById('quiz-card');
 
   if (index === -1) {
-    currentQuestionIndex = -1;
+    Runtime.journal.currentQuestionIndex = -1;
     quizCard.innerHTML = `
       <div class="completion-message">
         <h2>本日の学習・復習はすべて完了しました。</h2>
@@ -9872,10 +10034,10 @@ function loadQuestion(index) {
   ensureQuizCardShell();
 
   if (index < 0 || index >= QUESTION_DATABASE.length) index = 0;
-  currentQuestionIndex = index;
-  isAnswered = false;
-  isEvalCompleted = false;
-  lastFocusedInput = null;
+  Runtime.journal.currentQuestionIndex = index;
+  Runtime.journal.isAnswered = false;
+  Runtime.journal.isEvalCompleted = false;
+  Runtime.journal.lastFocusedInput = null;
 
   setEvalButtonsDisabled(true);
 
@@ -9972,49 +10134,66 @@ function refitAllJournalAmountFonts() {
 // 5列標準テーブル行の生成
 function addJournalRow() {
   const tbody = document.getElementById('journal-rows');
-  if (!tbody || currentQuestionIndex === -1 || isAnswered) return;
-  const q = QUESTION_DATABASE[currentQuestionIndex];
-
+  if (!tbody || Runtime.journal.currentQuestionIndex === -1 || Runtime.journal.isAnswered) return;
+  const q = QUESTION_DATABASE[Runtime.journal.currentQuestionIndex];
   const tr = document.createElement('tr');
 
-  let optionsHtml = '<option value="">(選択)</option>';
-  q.options.forEach(opt => {
-    optionsHtml += `<option value="${escapeHtml(opt)}">${escapeHtml(opt)}</option>`;
-  });
+  const createAccountCell = (className) => {
+    const td = document.createElement('td');
+    const select = document.createElement('select');
+    select.className = className;
+    const blank = document.createElement('option');
+    blank.value = '';
+    blank.textContent = '(選択)';
+    select.appendChild(blank);
+    q.options.forEach(opt => {
+      const option = document.createElement('option');
+      option.value = opt;
+      option.textContent = opt;
+      select.appendChild(option);
+    });
+    td.appendChild(select);
+    return td;
+  };
 
-  tr.innerHTML = `
-    <td><select class="debit-account">${optionsHtml}</select></td>
-    <td><input type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" class="debit-amount" placeholder="" aria-label="借方金額"></td>
-    <td><select class="credit-account">${optionsHtml}</select></td>
-    <td><input type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" class="credit-amount" placeholder="" aria-label="貸方金額"></td>
-    <td><button type="button" class="btn-row-del" onclick="removeJournalRow(this)">✕</button></td>
-  `;
-
-  const debitInput = tr.querySelector('.debit-amount');
-  const creditInput = tr.querySelector('.credit-amount');
-  const bindAmountInput = (input) => {
-    if (!input) return;
-    input.addEventListener('focus', () => { lastFocusedInput = input; });
+  const createAmountCell = (className, label) => {
+    const td = document.createElement('td');
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.inputMode = 'numeric';
+    input.pattern = '[0-9]*';
+    input.autocomplete = 'off';
+    input.className = className;
+    input.setAttribute('aria-label', label);
+    input.addEventListener('focus', () => { Runtime.journal.lastFocusedInput = input; });
     input.addEventListener('input', () => {
-      // 外付けキーボード等から記号・小数が入った場合も正の整数入力に限定する。
       const sanitized = String(input.value || '').replace(/[^0-9]/g, '');
       if (input.value !== sanitized) input.value = sanitized;
       fitJournalAmountFont(input);
     });
+    td.appendChild(input);
+    return { td, input };
   };
-  bindAmountInput(debitInput);
-  bindAmountInput(creditInput);
 
+  const debit = createAmountCell('debit-amount', '借方金額');
+  const credit = createAmountCell('credit-amount', '貸方金額');
+  const deleteTd = document.createElement('td');
+  const deleteButton = document.createElement('button');
+  deleteButton.type = 'button';
+  deleteButton.className = 'btn-row-del';
+  deleteButton.dataset.action = 'remove-journal-row';
+  deleteButton.setAttribute('aria-label', 'この行を削除');
+  deleteButton.textContent = '✕';
+  deleteTd.appendChild(deleteButton);
+
+  tr.append(createAccountCell('debit-account'), debit.td, createAccountCell('credit-account'), credit.td, deleteTd);
   tbody.appendChild(tr);
-  requestAnimationFrame(() => {
-    fitJournalAmountFont(debitInput);
-    fitJournalAmountFont(creditInput);
-  });
+  requestAnimationFrame(() => { fitJournalAmountFont(debit.input); fitJournalAmountFont(credit.input); });
 }
 
 function removeJournalRow(btn) {
   const tbody = document.getElementById('journal-rows');
-  if (!tbody || isAnswered) return;
+  if (!tbody || Runtime.journal.isAnswered) return;
   if (tbody.children.length > 1) {
     btn.closest('tr').remove();
   } else {
@@ -10084,9 +10263,9 @@ function normalizeAndCompare(userEntries, correctEntries) {
 }
 
 function checkAnswer() {
-  if (currentQuestionIndex === -1 || isAnswered) return;
+  if (Runtime.journal.currentQuestionIndex === -1 || Runtime.journal.isAnswered) return;
 
-  const q = QUESTION_DATABASE[currentQuestionIndex];
+  const q = QUESTION_DATABASE[Runtime.journal.currentQuestionIndex];
   const debitRes = getEntries('debit');
   const creditRes = getEntries('credit');
 
@@ -10106,7 +10285,7 @@ function checkAnswer() {
   const expBox = document.getElementById('explanation-box');
 
   resultBox.style.display = 'block';
-  isAnswered = true;
+  Runtime.journal.isAnswered = true;
 
   setInputFieldsDisabled(true);
   setEvalButtonsDisabled(false, isAllCorrect);
@@ -10115,7 +10294,7 @@ function checkAnswer() {
     resultBox.className = 'result-box correct';
     resultTitle.innerText = '正解';
     resultDetail.innerText = '借方・貸方の勘定科目および金額が完全に一致しています。';
-    currentErrorType = 'NONE';
+    Runtime.journal.currentErrorType = 'NONE';
   } else {
     resultBox.className = 'result-box incorrect';
     resultTitle.innerText = '不正解';
@@ -10127,13 +10306,13 @@ function checkAnswer() {
     };
 
     if (isAccountsMatch(debitRes.entries, q.debit) && isAccountsMatch(creditRes.entries, q.credit)) {
-      currentErrorType = 'CALCULATION';
+      Runtime.journal.currentErrorType = 'CALCULATION';
       resultDetail.innerText = '勘定科目は正解ですが、計算金額に誤りがあります。';
     } else if (!debitCorrect && !creditCorrect) {
-      currentErrorType = 'CONCEPT';
+      Runtime.journal.currentErrorType = 'CONCEPT';
       resultDetail.innerText = '借方・貸方ともに不一致です。問題文の仕訳構造と取引概念を確認してください。';
     } else {
-      currentErrorType = 'ACCOUNT_ITEM';
+      Runtime.journal.currentErrorType = 'ACCOUNT_ITEM';
       resultDetail.innerText = '勘定科目の選択にミスがあります。指定された許容科目を確認してください。';
     }
   }
@@ -10164,43 +10343,12 @@ function checkAnswer() {
   expBox.innerText = q.explanation;
 }
 
-function applySelfEval(quality) {
-  if (!isAnswered || currentQuestionIndex === -1 || isEvalCompleted) {
-    alert('「解答を提出する」ボタンを押して採点を行ってから自己評価を選択してください。');
-    return;
-  }
-
-  const q = QUESTION_DATABASE[currentQuestionIndex];
-  const today = getTodayString();
-
-  if (!state.lastStudyDate) {
-    state.streak = 1;
-    state.todayCount = 1;
-    state.lastStudyDate = today;
-  } else if (state.lastStudyDate !== today) {
-    const last = new Date(state.lastStudyDate);
-    const current = new Date(today);
-    const diffDays = Math.round((current - last) / (1000 * 3600 * 24));
-    
-    if (diffDays === 1) {
-      state.streak += 1;
-    } else {
-      state.streak = 1;
-    }
-    state.todayCount = 1;
-    state.lastStudyDate = today;
-  } else {
-    state.todayCount += 1;
-  }
-
-  let p = state.progress[q.id] || {
-    intervalDays: 0,
-    repetitionCount: 0,
-    easeFactor: 2.50,
-    nextReviewDate: new Date().toISOString()
-  };
-
-  let { intervalDays, repetitionCount, easeFactor } = p;
+// SM-2 inspired: 簿記学習向けに3段階自己評価とエラー種別補正を組み合わせた独自間隔反復。
+function computeSrsProgress(previous, quality, errorType = 'NONE', now = new Date()) {
+  const prior = previous || {};
+  let intervalDays = Number.isFinite(prior.intervalDays) ? Math.max(0, Math.floor(prior.intervalDays)) : 0;
+  let repetitionCount = Number.isFinite(prior.repetitionCount) ? Math.max(0, Math.floor(prior.repetitionCount)) : 0;
+  let easeFactor = Number.isFinite(prior.easeFactor) ? prior.easeFactor : 2.50;
 
   if (quality < 2) {
     repetitionCount = 0;
@@ -10208,31 +10356,58 @@ function applySelfEval(quality) {
   } else {
     if (repetitionCount === 0) intervalDays = 1;
     else if (repetitionCount === 1) intervalDays = 3;
-    else intervalDays = Math.round(intervalDays * easeFactor);
-    repetitionCount++;
+    else intervalDays = Math.max(1, Math.round(intervalDays * easeFactor));
+    repetitionCount += 1;
   }
 
-  easeFactor = easeFactor + (0.1 - (3 - quality) * (0.08 + (3 - quality) * 0.02));
-  if (currentErrorType === 'ACCOUNT_ITEM') easeFactor -= 0.05;
-  if (currentErrorType === 'CONCEPT') easeFactor -= 0.10;
-  if (currentErrorType === 'CALCULATION') easeFactor -= 0.03;
-  if (easeFactor < 1.3) easeFactor = 1.3;
-  if (easeFactor > 5.0) easeFactor = 5.0;
-
-  const nextDate = new Date();
+  easeFactor += 0.1 - (3 - quality) * (0.08 + (3 - quality) * 0.02);
+  if (errorType === 'ACCOUNT_ITEM') easeFactor -= 0.05;
+  if (errorType === 'CONCEPT') easeFactor -= 0.10;
+  if (errorType === 'CALCULATION') easeFactor -= 0.03;
+  easeFactor = Math.min(5.0, Math.max(1.3, easeFactor));
+  const nextDate = new Date(now);
   nextDate.setDate(nextDate.getDate() + intervalDays);
-
-  state.progress[q.id] = {
-    intervalDays,
-    repetitionCount,
-    easeFactor: parseFloat(easeFactor.toFixed(2)),
-    nextReviewDate: nextDate.toISOString(),
-    lastReviewed: new Date().toISOString()
+  return {
+    intervalDays, repetitionCount, easeFactor: Number(easeFactor.toFixed(2)),
+    nextReviewDate: nextDate.toISOString(), lastReviewed: now.toISOString()
   };
+}
 
-  isEvalCompleted = true;
+function applySelfEval(quality) {
+  if (!Runtime.journal.isAnswered || Runtime.journal.currentQuestionIndex === -1 || Runtime.journal.isEvalCompleted) {
+    alert('「解答を提出する」ボタンを押して採点を行ってから自己評価を選択してください。');
+    return;
+  }
 
-  StorageManager.saveState(state);
+  const q = QUESTION_DATABASE[Runtime.journal.currentQuestionIndex];
+  const today = getTodayString();
+
+  if (!Runtime.state.lastStudyDate) {
+    Runtime.state.streak = 1;
+    Runtime.state.todayCount = 1;
+    Runtime.state.lastStudyDate = today;
+  } else if (Runtime.state.lastStudyDate !== today) {
+    const last = new Date(Runtime.state.lastStudyDate);
+    const current = new Date(today);
+    const diffDays = Math.round((current - last) / (1000 * 3600 * 24));
+    
+    if (diffDays === 1) {
+      Runtime.state.streak += 1;
+    } else {
+      Runtime.state.streak = 1;
+    }
+    Runtime.state.todayCount = 1;
+    Runtime.state.lastStudyDate = today;
+  } else {
+    Runtime.state.todayCount += 1;
+  }
+
+  const previous = Runtime.state.progress[q.id] || null;
+  Runtime.state.progress[q.id] = computeSrsProgress(previous, quality, Runtime.journal.currentErrorType);
+
+  Runtime.journal.isEvalCompleted = true;
+
+  StorageManager.saveState(Runtime.state);
   updateDashboard();
   nextQuestion();
 }
@@ -10250,33 +10425,68 @@ function formatTableValue(v) {
 }
 
 function renderTableQuestionTable(q) {
-  const host=document.getElementById('table-exercise-host'); if(!host)return;
-  const wide=q.columns.length>=6;
-  let out=`<table class="exercise-table${wide?' wide':''}"><thead><tr><th>勘定科目・項目</th>`;
-  q.columns.forEach(c=>{ out += `<th>${escapeHtml(c.label)}</th>`; });
-  out += `</tr></thead><tbody>`;
-  q.rows.forEach((r,ri)=>{
-    out += `<tr class="${r.isTotal?'total-row':''}"><td>${escapeHtml(r.label)}</td>`;
-    q.columns.forEach(c=>{
-      const cell=(r.cells||{})[c.key] || {given:'—'};
-      if (Object.prototype.hasOwnProperty.call(cell,'answer')) {
-        out += `<td><input type="number" inputmode="numeric" class="table-answer-input" data-row="${ri}" data-key="${escapeHtml(c.key)}" data-answer="${cell.answer}" min="0" step="1" autocomplete="off"></td>`;
+  const host = document.getElementById('table-exercise-host');
+  if (!host) return;
+  const table = document.createElement('table');
+  table.className = `exercise-table${q.columns.length >= 6 ? ' wide' : ''}`;
+  const thead = document.createElement('thead');
+  const headRow = document.createElement('tr');
+  const firstTh = document.createElement('th');
+  firstTh.textContent = '勘定科目・項目';
+  headRow.appendChild(firstTh);
+  q.columns.forEach(column => {
+    const th = document.createElement('th');
+    th.textContent = column.label;
+    headRow.appendChild(th);
+  });
+  thead.appendChild(headRow);
+  table.appendChild(thead);
+
+  const tbody = document.createElement('tbody');
+  const fragment = document.createDocumentFragment();
+  q.rows.forEach((row, rowIndex) => {
+    const tr = document.createElement('tr');
+    if (row.isTotal) tr.classList.add('total-row');
+    const labelTd = document.createElement('td');
+    labelTd.textContent = row.label;
+    tr.appendChild(labelTd);
+    q.columns.forEach(column => {
+      const td = document.createElement('td');
+      const cell = (row.cells || {})[column.key] || { given: '—' };
+      if (Object.prototype.hasOwnProperty.call(cell, 'answer')) {
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.inputMode = 'numeric';
+        input.pattern = '[0-9]*';
+        input.autocomplete = 'off';
+        input.className = 'table-answer-input';
+        input.dataset.row = String(rowIndex);
+        input.dataset.key = column.key;
+        input.dataset.answer = String(cell.answer);
+        input.addEventListener('focus', () => { Runtime.table.lastFocusedInput = input; });
+        input.addEventListener('input', () => {
+          const sanitized = String(input.value || '').replace(/[^0-9]/g, '');
+          if (input.value !== sanitized) input.value = sanitized;
+        });
+        td.appendChild(input);
       } else {
-        out += `<td><span class="table-given">${escapeHtml(formatTableValue(cell.given))}</span></td>`;
+        const span = document.createElement('span');
+        span.className = 'table-given';
+        span.textContent = formatTableValue(cell.given);
+        td.appendChild(span);
       }
+      tr.appendChild(td);
     });
-    out += `</tr>`;
+    fragment.appendChild(tr);
   });
-  out += `</tbody></table>`;
-  host.innerHTML=out;
-  host.querySelectorAll('.table-answer-input').forEach(inp=>{
-    inp.addEventListener('focus',()=>{ lastFocusedTableInput=inp; });
-  });
+  tbody.appendChild(fragment);
+  table.appendChild(tbody);
+  host.replaceChildren(table);
 }
 
 function loadTableQuestion(index) {
   if (index<0 || index>=TABLE_DATABASE.length) index=0;
-  currentTableIndex=index; tableAnswered=false; lastFocusedTableInput=null;
+  Runtime.table.currentIndex=index; Runtime.table.answered=false; Runtime.table.lastFocusedInput=null;
   const q=TABLE_DATABASE[index];
   document.getElementById('table-problem-category').innerText=q.category;
   document.getElementById('table-problem-id-text').innerText=`ID: ${q.id} (${index+1} / ${TABLE_DATABASE.length})`;
@@ -10307,8 +10517,8 @@ function toggleTableHint() {
 }
 
 function checkTableAnswer() {
-  if (currentTableIndex<0 || tableAnswered) return;
-  const q=TABLE_DATABASE[currentTableIndex];
+  if (Runtime.table.currentIndex<0 || Runtime.table.answered) return;
+  const q=TABLE_DATABASE[Runtime.table.currentIndex];
   const inputs=[...document.querySelectorAll('#table-exercise-host .table-answer-input')];
   if (inputs.some(i=>i.value==='')) { alert('【注意】空欄が残っています。すべての入力欄に金額を入力してください。'); return; }
   let wrong=0;
@@ -10326,12 +10536,20 @@ function checkTableAnswer() {
       wrongItems.push(`${rowLabel}・${col ? col.label : key}：正答 ${ans.toLocaleString()}円`);
     }
   });
-  tableAnswered=true;
-  document.getElementById('table-submit-btn').disabled=true;
-  const isCorrect=wrong===0;
-  const prev=state.tableProgress[q.id] || {attempts:0,correct:false,lastAttempt:null};
-  state.tableProgress[q.id]={attempts:prev.attempts+1,correct:prev.correct||isCorrect,lastAttempt:new Date().toISOString()};
-  StorageManager.saveState(state);
+  Runtime.table.answered = true;
+  document.getElementById('table-submit-btn').disabled = true;
+  const isCorrect = wrong === 0;
+  const now = new Date();
+  const prev = Runtime.state.tableProgress[q.id] || { attempts: 0, correct: false };
+  const srs = computeSrsProgress(prev, isCorrect ? 2 : 0, 'NONE', now);
+  Runtime.state.tableProgress[q.id] = {
+    ...prev, ...srs,
+    attempts: (Number.isFinite(prev.attempts) ? prev.attempts : 0) + 1,
+    correct: Boolean(prev.correct || isCorrect),
+    lastResultCorrect: isCorrect,
+    lastAttempt: now.toISOString()
+  };
+  StorageManager.saveState(Runtime.state);
   const box=document.getElementById('table-result-box');
   box.className=`table-result-box ${isCorrect?'correct':'incorrect'}`; box.style.display='block';
   document.getElementById('table-result-title').innerText=isCorrect?'正解':'不正解';
@@ -10341,45 +10559,63 @@ function checkTableAnswer() {
 }
 
 function updateTableDashboard() {
-  const progress=state.tableProgress || {};
-  let solved=0, attempted=0;
-  TABLE_DATABASE.forEach(q=>{ const p=progress[q.id]; if(p){attempted++; if(p.correct)solved++;} });
-  const total=TABLE_DATABASE.length;
-  const el=(id,v)=>{const x=document.getElementById(id); if(x)x.innerText=v;};
-  el('table-stat-total',total); el('table-stat-solved',solved); el('table-stat-remaining',total-solved); el('table-stat-attempted',attempted);
+  const progress = Runtime.state.tableProgress || {};
+  const now = new Date();
+  let solved = 0;
+  let attempted = 0;
+  let due = 0;
+  TABLE_DATABASE.forEach(q => {
+    const p = progress[q.id];
+    if (!p) return;
+    attempted += 1;
+    if (p.correct) solved += 1;
+    if (p.nextReviewDate && new Date(p.nextReviewDate) <= now) due += 1;
+  });
+  const total = TABLE_DATABASE.length;
+  const setText = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = String(value); };
+  setText('table-stat-total', total);
+  setText('table-stat-solved', solved);
+  setText('table-stat-remaining', total - solved);
+  setText('table-stat-attempted', attempted);
+  setText('table-stat-due', due);
 }
 
 function getNextTableQuestionIndex() {
-  const unsolved=TABLE_DATABASE.findIndex(q=>!(state.tableProgress[q.id]&&state.tableProgress[q.id].correct));
-  if(unsolved>=0) return unsolved;
-  if(currentTableIndex>=0) return (currentTableIndex+1)%TABLE_DATABASE.length;
+  const now = new Date();
+  const dueIndices = [];
+  const unstudiedIndices = [];
+  TABLE_DATABASE.forEach((q, index) => {
+    const p = Runtime.state.tableProgress[q.id];
+    if (!p || !p.attempts) unstudiedIndices.push(index);
+    else if (p.nextReviewDate && new Date(p.nextReviewDate) <= now) dueIndices.push(index);
+  });
+  const pick = list => {
+    const alternatives = list.filter(index => index !== Runtime.table.currentIndex);
+    const pool = alternatives.length ? alternatives : list;
+    return pool.length ? pool[Math.floor(Math.random() * pool.length)] : -1;
+  };
+  const due = pick(dueIndices);
+  if (due >= 0) return due;
+  const fresh = pick(unstudiedIndices);
+  if (fresh >= 0) return fresh;
+  if (Runtime.table.currentIndex >= 0) return (Runtime.table.currentIndex + 1) % TABLE_DATABASE.length;
   return 0;
 }
 
 function nextTableQuestion() {
-  if (currentTableIndex<0) return loadTableQuestion(getNextTableQuestionIndex());
-  for(let step=1; step<=TABLE_DATABASE.length; step++) {
-    const idx=(currentTableIndex+step)%TABLE_DATABASE.length;
-    const p=state.tableProgress[TABLE_DATABASE[idx].id];
-    if(!p || !p.correct) { loadTableQuestion(idx); return; }
-  }
-  loadTableQuestion((currentTableIndex+1)%TABLE_DATABASE.length);
+  loadTableQuestion(getNextTableQuestionIndex());
 }
 
 function applyCalcToTable() {
-  if (currentMode!=='table' || tableAnswered) return;
-  const num=Math.round(Number(calcCurrent));
+  if (Runtime.mode!=='table' || Runtime.table.answered) return;
+  const num=Math.round(Number(Runtime.calculator.current));
   if(isNaN(num) || num<0){ alert('有効な金額を計算してから反映してください。'); return; }
-  let target=lastFocusedTableInput;
+  let target=Runtime.table.lastFocusedInput;
   if(!target || target.disabled) target=document.querySelector('#table-exercise-host .table-answer-input:not(:disabled)');
   if(target){ target.value=num; target.style.backgroundColor='#fef08a'; setTimeout(()=>target.style.backgroundColor='',400); toggleCalculator(); }
 }
 
 // === 内蔵電卓（計算機）ロジック ===
-let calcCurrent = '0';
-let calcPrev = null;
-let calcOp = null;
-let calcResetOnNext = false;
 
 function toggleCalculator() {
   const modal = document.getElementById('calculator-modal');
@@ -10389,77 +10625,104 @@ function toggleCalculator() {
 
 function updateCalcDisplay() {
   const disp = document.getElementById('calc-display');
-  if (disp) {
-    const num = Number(calcCurrent);
-    if (!isNaN(num) && !calcCurrent.includes('.')) {
-      disp.innerText = num.toLocaleString();
-    } else {
-      disp.innerText = calcCurrent;
-    }
+  if (!disp) return;
+  if (Runtime.calculator.error) { disp.textContent = Runtime.calculator.current; return; }
+  const num = Number(Runtime.calculator.current);
+  disp.textContent = Number.isFinite(num) && !Runtime.calculator.current.includes('.')
+    ? num.toLocaleString()
+    : Runtime.calculator.current;
+}
+
+function setCalculatorError(message) {
+  Runtime.calculator.current = message;
+  Runtime.calculator.prev = null;
+  Runtime.calculator.op = null;
+  Runtime.calculator.resetOnNext = true;
+  Runtime.calculator.error = true;
+}
+
+function roundCalculatorValue(value) {
+  if (!Number.isFinite(value)) return value;
+  return Math.round((value + Number.EPSILON) * 1e10) / 1e10;
+}
+
+function evaluatePendingCalculatorOperation() {
+  const calc = Runtime.calculator;
+  if (!calc.op || calc.prev === null) return true;
+  const current = Number(calc.current);
+  if (!Number.isFinite(current)) { setCalculatorError('Error'); return false; }
+  let result;
+  if (calc.op === '+') result = calc.prev + current;
+  else if (calc.op === '-') result = calc.prev - current;
+  else if (calc.op === '*') result = calc.prev * current;
+  else if (calc.op === '/') {
+    if (current === 0) { setCalculatorError('0除算不可'); return false; }
+    result = calc.prev / current;
   }
+  result = roundCalculatorValue(result);
+  if (!Number.isFinite(result)) { setCalculatorError('Error'); return false; }
+  calc.current = String(result);
+  calc.prev = null;
+  calc.op = null;
+  calc.error = false;
+  return true;
 }
 
 function calcAction(val) {
+  const calc = Runtime.calculator;
   if (val === 'C') {
-    calcCurrent = '0';
-    calcPrev = null;
-    calcOp = null;
-    calcResetOnNext = false;
+    calc.current = '0'; calc.prev = null; calc.op = null; calc.resetOnNext = false; calc.error = false;
   } else if (val === 'DEL') {
-    if (calcCurrent.length > 1) {
-      calcCurrent = calcCurrent.slice(0, -1);
-    } else {
-      calcCurrent = '0';
-    }
+    if (calc.error) { calc.current = '0'; calc.error = false; calc.resetOnNext = false; }
+    else calc.current = calc.current.length > 1 ? calc.current.slice(0, -1) : '0';
   } else if (['+', '-', '*', '/'].includes(val)) {
-    calcPrev = Number(calcCurrent);
-    calcOp = val;
-    calcResetOnNext = true;
+    if (calc.error) return updateCalcDisplay();
+    if (calc.op && calc.prev !== null && !calc.resetOnNext) {
+      if (!evaluatePendingCalculatorOperation()) return updateCalcDisplay();
+    }
+    if (calc.op && calc.prev !== null && calc.resetOnNext) {
+      calc.op = val; // 演算子の連続入力は直前の演算子を置き換える。
+    } else {
+      calc.prev = Number(calc.current);
+      calc.op = val;
+    }
+    calc.resetOnNext = true;
   } else if (val === '%') {
-    const num = Number(calcCurrent);
-    calcCurrent = String(num / 100);
+    if (calc.error) return updateCalcDisplay();
+    const num = Number(calc.current);
+    if (Number.isFinite(num)) calc.current = String(roundCalculatorValue(num / 100));
+    calc.resetOnNext = true;
   } else if (val === '=') {
-    if (calcOp && calcPrev !== null) {
-      const current = Number(calcCurrent);
-      let res = 0;
-      if (calcOp === '+') res = calcPrev + current;
-      if (calcOp === '-') res = calcPrev - current;
-      if (calcOp === '*') res = calcPrev * current;
-      if (calcOp === '/') res = current !== 0 ? calcPrev / current : 0;
-      calcCurrent = String(Math.round(res * 100000) / 100000);
-      calcOp = null;
-      calcPrev = null;
-      calcResetOnNext = true;
+    if (!calc.error && calc.op && calc.prev !== null) {
+      evaluatePendingCalculatorOperation();
+      calc.resetOnNext = true;
     }
   } else {
-    if (calcResetOnNext) {
-      calcCurrent = (val === '00') ? '0' : val;
-      calcResetOnNext = false;
-    } else {
-      if (calcCurrent === '0') {
-        calcCurrent = (val === '00') ? '0' : val;
-      } else {
-        if (calcCurrent.length < 12) {
-          calcCurrent += val;
-        }
-      }
+    if (calc.error || calc.resetOnNext) {
+      calc.current = val === '00' ? '0' : val;
+      calc.resetOnNext = false;
+      calc.error = false;
+    } else if (calc.current === '0') {
+      calc.current = val === '00' ? '0' : val;
+    } else if (calc.current.length < 12) {
+      calc.current += val;
     }
   }
   updateCalcDisplay();
 }
 
 function applyCalcToJournal(side) {
-  if (currentMode !== 'journal' || isAnswered) return;
-  const num = Math.round(Number(calcCurrent));
-  if (isNaN(num) || num <= 0) {
+  if (Runtime.mode !== 'journal' || Runtime.journal.isAnswered) return;
+  const num = Math.round(Number(Runtime.calculator.current));
+  if (Runtime.calculator.error || !Number.isFinite(num) || num <= 0) {
     alert('有効な金額（1以上の数値）を計算してから反映してください。');
     return;
   }
 
   let targetInput = null;
 
-  if (lastFocusedInput && lastFocusedInput.classList.contains(`${side}-amount`) && !lastFocusedInput.disabled) {
-    targetInput = lastFocusedInput;
+  if (Runtime.journal.lastFocusedInput && Runtime.journal.lastFocusedInput.classList.contains(`${side}-amount`) && !Runtime.journal.lastFocusedInput.disabled) {
+    targetInput = Runtime.journal.lastFocusedInput;
   } else {
     const inputs = document.querySelectorAll(`.${side}-amount`);
     for (let i = 0; i < inputs.length; i++) {
@@ -10484,28 +10747,43 @@ function applyCalcToJournal(side) {
   }
 }
 
-let journalResizeTimer = null;
 window.addEventListener('resize', () => {
-  clearTimeout(journalResizeTimer);
-  journalResizeTimer = setTimeout(refitAllJournalAmountFonts, 80);
+  clearTimeout(Runtime.ui.journalResizeTimer);
+  Runtime.ui.journalResizeTimer = setTimeout(refitAllJournalAmountFonts, 80);
 });
-window.addEventListener('orientationchange', () => {
-  setTimeout(refitAllJournalAmountFonts, 180);
-});
+window.addEventListener('orientationchange', () => setTimeout(refitAllJournalAmountFonts, 180));
 
-// 親要素の幅が変化した場合にも再計測する。対応ブラウザではResizeObserverを利用する。
-if (typeof ResizeObserver !== 'undefined') {
-  window.addEventListener('DOMContentLoaded', () => {
-    const wrapper = document.querySelector('.grid-table-wrapper');
-    if (!wrapper) return;
-    const observer = new ResizeObserver(() => refitAllJournalAmountFonts());
-    observer.observe(wrapper);
-  });
+function handleDelegatedAction(event) {
+  const trigger = event.target.closest('[data-action]');
+  if (!trigger || trigger.disabled) return;
+  const action = trigger.dataset.action;
+  switch (action) {
+    case 'switch-mode': switchMode(trigger.dataset.mode); break;
+    case 'toggle-hint': toggleHint(); break;
+    case 'toggle-calculator': toggleCalculator(); break;
+    case 'add-journal-row': addJournalRow(); break;
+    case 'remove-journal-row': removeJournalRow(trigger); break;
+    case 'check-journal': checkAnswer(); break;
+    case 'journal-eval': applySelfEval(Number(trigger.dataset.quality)); break;
+    case 'toggle-table-hint': toggleTableHint(); break;
+    case 'check-table': checkTableAnswer(); break;
+    case 'open-toc': openTableOfContents(); break;
+    case 'next-table': nextTableQuestion(); break;
+    case 'apply-calc-journal': applyCalcToJournal(trigger.dataset.side); break;
+    case 'apply-calc-table': applyCalcToTable(); break;
+    case 'calc-key': calcAction(trigger.dataset.value); break;
+    case 'goto-journal-question': goToQuestion(trigger.dataset.questionId); break;
+    case 'goto-table-question': goToTableQuestion(trigger.dataset.tableQuestionId); break;
+    default: break;
+  }
 }
 
-window.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('click', handleDelegatedAction);
+
+function initializeApp() {
+  runIntegrityCheck();
   const quizCard = document.getElementById('quiz-card');
-  quizCardTemplate = quizCard ? quizCard.innerHTML : '';
+  Runtime.ui.quizCardTemplate = quizCard ? quizCard.cloneNode(true) : null;
   renderTableOfContents();
   updateDashboard();
   nextQuestion();
@@ -10514,7 +10792,17 @@ window.addEventListener('DOMContentLoaded', () => {
   renderTableToc();
   loadTableQuestion(getNextTableQuestionIndex());
   switchMode('journal', false);
-});
+
+  const wrapper = document.querySelector('.grid-table-wrapper');
+  if (wrapper && typeof ResizeObserver !== 'undefined') {
+    const observer = new ResizeObserver(() => refitAllJournalAmountFonts());
+    observer.observe(wrapper);
+    Runtime.ui.resizeObserver = observer;
+  }
+}
+
+initializeApp();
+
 </script>
 
 </body>
