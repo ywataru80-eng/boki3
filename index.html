@@ -13,6 +13,7 @@
       --text-main: #1e293b;
       --text-muted: #64748b;
       --border-color: #cbd5e1;
+      --table-border: #475569;
       --success-bg: #f0fdf4;
       --success-border: #22c55e;
       --error-bg: #fef2f2;
@@ -24,6 +25,7 @@
 
     *, *::before, *::after {
       box-sizing: border-box;
+      -webkit-text-size-adjust: 100%;
     }
 
     body {
@@ -31,58 +33,58 @@
       background-color: var(--bg-color);
       color: var(--text-main);
       margin: 0;
-      padding: 12px;
-      line-height: 1.5;
+      padding: 10px;
+      line-height: 1.4;
     }
 
     .container {
-      max-width: 950px;
+      max-width: 700px;
       margin: 0 auto;
-      padding-bottom: 60px;
+      padding-bottom: 70px;
     }
 
     header {
       background-color: #0f172a;
       color: #ffffff;
-      padding: 16px;
+      padding: 12px 16px;
       border-radius: 8px;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
 
     header h1 {
       margin: 0;
-      font-size: 1.25rem;
+      font-size: 1.15rem;
     }
 
     header p {
-      margin: 4px 0 0;
+      margin: 2px 0 0;
       color: #94a3b8;
-      font-size: 0.8rem;
+      font-size: 0.75rem;
     }
 
     /* ダッシュボード */
     .dashboard {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
-      gap: 8px;
-      margin-bottom: 12px;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      gap: 6px;
+      margin-bottom: 10px;
     }
 
     .dash-card {
       background: var(--card-bg);
-      padding: 10px 12px;
+      padding: 8px 10px;
       border-radius: 6px;
       border: 1px solid var(--border-color);
     }
 
     .dash-card .title {
-      font-size: 0.7rem;
+      font-size: 0.65rem;
       color: var(--text-muted);
       font-weight: 600;
     }
 
     .dash-card .value {
-      font-size: 1.15rem;
+      font-size: 1.1rem;
       font-weight: bold;
       color: var(--primary);
     }
@@ -96,22 +98,22 @@
       background: var(--card-bg);
       border: 1px solid var(--border-color);
       border-radius: 6px;
-      padding: 10px 12px;
-      margin-bottom: 12px;
+      padding: 8px 10px;
+      margin-bottom: 10px;
     }
 
     .progress-header {
       display: flex;
       justify-content: space-between;
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       font-weight: bold;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
 
     .progress-bar-bg {
       background-color: #e2e8f0;
-      height: 8px;
-      border-radius: 4px;
+      height: 6px;
+      border-radius: 3px;
       overflow: hidden;
     }
 
@@ -126,8 +128,8 @@
       background: var(--card-bg);
       border: 1px solid var(--border-color);
       border-radius: 8px;
-      padding: 16px;
-      margin-bottom: 12px;
+      padding: 12px;
+      margin-bottom: 10px;
     }
 
     .problem-header {
@@ -135,8 +137,8 @@
       justify-content: space-between;
       align-items: center;
       border-bottom: 2px solid var(--border-color);
-      padding-bottom: 8px;
-      margin-bottom: 12px;
+      padding-bottom: 6px;
+      margin-bottom: 10px;
     }
 
     .category-badge {
@@ -150,33 +152,33 @@
 
     .statement {
       font-size: 0.95rem;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       background-color: #f1f5f9;
       padding: 12px;
       border-radius: 6px;
       word-break: break-word;
+      font-weight: 500;
     }
 
     /* ツールバー */
     .tool-bar {
       display: flex;
-      gap: 8px;
-      margin-bottom: 12px;
-      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 10px;
     }
 
     .tool-btn {
       background: #ffffff;
       border: 1px solid var(--border-color);
       color: #334155;
-      padding: 6px 10px;
+      padding: 5px 8px;
       border-radius: 4px;
       cursor: pointer;
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       font-weight: bold;
       display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: 3px;
     }
 
     .tool-btn:hover {
@@ -188,222 +190,114 @@
       color: #b45309;
     }
 
-    .tool-btn.hint-btn:hover {
-      background-color: #fef3c7;
-    }
-
     .hint-box {
       background-color: var(--hint-bg);
       border-left: 4px solid var(--hint-border);
-      padding: 10px 12px;
+      padding: 8px 10px;
       border-radius: 0 4px 4px 0;
-      margin-bottom: 12px;
-      font-size: 0.85rem;
+      margin-bottom: 10px;
+      font-size: 0.8rem;
       color: #78350f;
       display: none;
     }
 
-    /* === 仕訳テーブル（PC表示） === */
-    .journal-table-wrapper {
+    /* === マス目型仕訳テーブル（画像デザイン完全対応） === */
+    .grid-table-wrapper {
       width: 100%;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
+      border: 1px solid var(--table-border);
+      background-color: #ffffff;
     }
 
-    .journal-table {
+    .grid-table {
       width: 100%;
       border-collapse: collapse;
-      background-color: #ffffff;
+      table-layout: fixed;
     }
 
-    .journal-table th, .journal-table td {
-      padding: 8px 10px;
-      border: 1px solid var(--border-color);
-      text-align: center;
-      vertical-align: middle;
-    }
-
-    .journal-table th {
-      background-color: #f1f5f9;
-      font-size: 0.85rem;
-      color: #334155;
-      font-weight: bold;
-    }
-
-    .journal-table th.th-debit {
-      background-color: #eff6ff;
-      color: #1e40af;
-      border-bottom: 2px solid #3b82f6;
-    }
-
-    .journal-table th.th-credit {
-      background-color: #fef2f2;
-      color: #991b1b;
-      border-bottom: 2px solid #ef4444;
-    }
-
-    .journal-table th.th-del {
-      width: 50px;
-      font-size: 0.75rem;
-      color: #64748b;
-    }
-
-    /* === スマホ・iPhone表示（横スクロールなし・縦スタックカード型） === */
-    @media (max-width: 640px) {
-      .journal-table thead {
-        display: none; /* スマホではヘッダーを非表示 */
-      }
-      .journal-table, .journal-table tbody, .journal-table tr {
-        display: block;
-        width: 100%;
-      }
-      .journal-table tr {
-        background: #ffffff;
-        border: 1px solid var(--border-color);
-        border-radius: 8px;
-        padding: 10px;
-        margin-bottom: 12px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-      }
-      .journal-table td {
-        display: block;
-        width: 100%;
-        padding: 0;
-        border: none;
-        text-align: left;
-      }
-
-      /* 借方（左側）ブロック */
-      .journal-table td:nth-child(1),
-      .journal-table td:nth-child(2) {
-        background-color: #eff6ff;
-      }
-      .journal-table td:nth-child(1) {
-        border-top-left-radius: 6px;
-        border-top-right-radius: 6px;
-        border-left: 4px solid #3b82f6;
-        padding: 8px 8px 4px 8px;
-      }
-      .journal-table td:nth-child(1)::before {
-        content: "借方（左側）- 勘定科目";
-        display: block;
-        font-size: 0.75rem;
-        font-weight: bold;
-        color: #1e40af;
-        margin-bottom: 4px;
-      }
-      .journal-table td:nth-child(2) {
-        border-bottom-left-radius: 6px;
-        border-bottom-right-radius: 6px;
-        border-left: 4px solid #3b82f6;
-        padding: 0 8px 8px 8px;
-        margin-bottom: 8px;
-      }
-      .journal-table td:nth-child(2)::before {
-        content: "借方金額";
-        display: block;
-        font-size: 0.75rem;
-        font-weight: bold;
-        color: #1e40af;
-        margin-bottom: 4px;
-      }
-
-      /* 貸方（右側）ブロック */
-      .journal-table td:nth-child(3),
-      .journal-table td:nth-child(4) {
-        background-color: #fef2f2;
-      }
-      .journal-table td:nth-child(3) {
-        border-top-left-radius: 6px;
-        border-top-right-radius: 6px;
-        border-left: 4px solid #ef4444;
-        padding: 8px 8px 4px 8px;
-      }
-      .journal-table td:nth-child(3)::before {
-        content: "貸方（右側）- 勘定科目";
-        display: block;
-        font-size: 0.75rem;
-        font-weight: bold;
-        color: #991b1b;
-        margin-bottom: 4px;
-      }
-      .journal-table td:nth-child(4) {
-        border-bottom-left-radius: 6px;
-        border-bottom-right-radius: 6px;
-        border-left: 4px solid #ef4444;
-        padding: 0 8px 8px 8px;
-        margin-bottom: 8px;
-      }
-      .journal-table td:nth-child(4)::before {
-        content: "貸方金額";
-        display: block;
-        font-size: 0.75rem;
-        font-weight: bold;
-        color: #991b1b;
-        margin-bottom: 4px;
-      }
-
-      /* 削除ボタン */
-      .journal-table td:nth-child(5) {
-        display: flex;
-        justify-content: flex-end;
-        padding-top: 4px;
-      }
-      .btn-remove-row {
-        padding: 6px 14px;
-      }
-    }
-
-    /* 共通入力スタイル（iOS Safariズーム防止用 font-size: 16px） */
-    select, input[type="number"] {
-      width: 100%;
-      padding: 8px;
-      border: 1px solid var(--border-color);
-      border-radius: 4px;
-      font-size: 16px;
-      outline: none;
-      background-color: #ffffff;
-    }
-
-    select:disabled, input[type="number"]:disabled {
-      background-color: #f1f5f9;
-      color: #64748b;
-      cursor: not-allowed;
-    }
-
-    select:focus, input[type="number"]:focus {
-      border-color: var(--primary);
-    }
-
-    .btn-remove-row {
-      background: #ef4444;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
+    .grid-table th {
+      background-color: #f8fafc;
+      color: #0f172a;
       font-size: 0.8rem;
       font-weight: bold;
+      padding: 6px 2px;
+      border: 1px solid var(--table-border);
+      text-align: center;
     }
 
-    .btn-remove-row:disabled {
-      opacity: 0.5;
+    .grid-table td {
+      border: 1px solid var(--table-border);
+      padding: 0;
+      height: 38px;
+      text-align: center;
+      vertical-align: middle;
+      background-color: #ffffff;
+    }
+
+    /* マス目内部の入力要素 */
+    .grid-table select,
+    .grid-table input[type="number"] {
+      width: 100%;
+      height: 38px;
+      border: none;
+      outline: none;
+      background: transparent;
+      font-size: 0.85rem;
+      font-family: inherit;
+      color: #0f172a;
+      padding: 0 4px;
+      text-align: center;
+      transition: background-color 0.2s;
+    }
+
+    .grid-table input[type="number"] {
+      text-align: right;
+      padding-right: 6px;
+      font-weight: 600;
+    }
+
+    .grid-table select:focus,
+    .grid-table input[type="number"]:focus {
+      background-color: #f0fdf4;
+    }
+
+    .grid-table select:disabled,
+    .grid-table input[type="number"]:disabled {
+      color: #64748b;
+      background-color: #f8fafc;
+    }
+
+    .btn-row-del {
+      width: 100%;
+      height: 38px;
+      border: none;
+      background: transparent;
+      color: #ef4444;
+      font-size: 0.75rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .btn-row-del:disabled {
+      opacity: 0.2;
       cursor: not-allowed;
     }
 
     .add-row-btn {
-      background: #f1f5f9;
-      color: #334155;
+      background: #f8fafc;
+      color: #475569;
       border: 1px dashed var(--border-color);
-      padding: 10px 16px;
-      border-radius: 6px;
+      padding: 8px;
+      border-radius: 4px;
       cursor: pointer;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       font-weight: bold;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       width: 100%;
     }
 
     .add-row-btn:hover:not(:disabled) {
-      background: #e2e8f0;
+      background: #f1f5f9;
     }
 
     .add-row-btn:disabled {
@@ -411,31 +305,33 @@
       cursor: not-allowed;
     }
 
-    .btn {
-      background-color: var(--primary);
+    .btn-submit {
+      background-color: #16a34a; /* 画像の決定ボタン風グリーン */
       color: white;
       border: none;
-      padding: 12px 20px;
+      padding: 12px;
       font-size: 1rem;
       border-radius: 6px;
       cursor: pointer;
       font-weight: bold;
       width: 100%;
-      transition: background 0.2s, opacity 0.2s;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      transition: background 0.2s;
     }
 
-    .btn:hover:not(:disabled) {
-      background-color: var(--primary-hover);
+    .btn-submit:hover:not(:disabled) {
+      background-color: #15803d;
     }
 
-    .btn:disabled {
+    .btn-submit:disabled {
       opacity: 0.5;
       cursor: not-allowed;
     }
 
+    /* 結果・解説 */
     .result-box {
-      margin-top: 12px;
-      padding: 12px;
+      margin-top: 10px;
+      padding: 10px;
       border-radius: 6px;
       display: none;
     }
@@ -452,10 +348,9 @@
       color: #7f1d1d;
     }
 
-    /* 正解仕訳表示ボックス */
     .correct-journal-box {
-      margin-top: 10px;
-      padding: 10px;
+      margin-top: 8px;
+      padding: 8px;
       background-color: #ffffff;
       border: 1px solid var(--border-color);
       border-radius: 6px;
@@ -463,70 +358,57 @@
 
     .correct-journal-title {
       font-weight: bold;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       color: #0f172a;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
 
     .correct-journal-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
     }
 
     .correct-journal-table th, .correct-journal-table td {
-      padding: 6px 8px;
+      padding: 4px 6px;
       border: 1px solid var(--border-color);
-    }
-
-    .correct-journal-table th {
-      font-weight: bold;
-      font-size: 0.75rem;
     }
 
     .correct-journal-table th.th-debit {
       color: #1e40af;
       background-color: #eff6ff;
-      border-bottom: 2px solid #3b82f6;
     }
 
     .correct-journal-table th.th-credit {
       color: #991b1b;
       background-color: #fef2f2;
-      border-bottom: 2px solid #ef4444;
-    }
-
-    .correct-journal-table td {
-      vertical-align: top;
-      background-color: #ffffff;
     }
 
     .explanation-box {
-      margin-top: 10px;
-      padding: 10px;
+      margin-top: 8px;
+      padding: 8px 10px;
       background-color: #ffffff;
-      border-left: 4px solid var(--primary);
-      font-size: 0.85rem;
+      border-left: 3px solid var(--primary);
+      font-size: 0.8rem;
       color: #334155;
     }
 
     .self-eval-buttons {
       display: flex;
-      gap: 6px;
-      margin-top: 10px;
+      gap: 4px;
+      margin-top: 8px;
     }
 
     .eval-btn {
       flex: 1;
-      padding: 8px 4px;
+      padding: 8px 2px;
       border: 1px solid var(--border-color);
       border-radius: 4px;
       background: #ffffff;
       cursor: pointer;
       font-size: 0.75rem;
       font-weight: 600;
-      transition: background 0.2s, opacity 0.2s;
-      line-height: 1.3;
+      line-height: 1.2;
     }
 
     .eval-btn:hover:not(:disabled) {
@@ -541,25 +423,26 @@
 
     .completion-message {
       text-align: center;
-      padding: 24px 12px;
+      padding: 20px 10px;
     }
 
     .completion-message h2 {
       color: #166534;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
+      font-size: 1.1rem;
     }
 
-    /* === 内蔵電卓（計算機）UI === */
+    /* === 内蔵電卓モーダル === */
     .calculator-modal {
       display: none;
       position: fixed;
-      bottom: 70px;
-      right: 15px;
-      width: 280px;
+      bottom: 65px;
+      right: 10px;
+      width: 270px;
       background: #ffffff;
       border: 1px solid var(--border-color);
-      border-radius: 10px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      border-radius: 8px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
       z-index: 1000;
       overflow: hidden;
     }
@@ -567,11 +450,11 @@
     .calc-header {
       background: #0f172a;
       color: white;
-      padding: 8px 12px;
+      padding: 6px 10px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       font-weight: bold;
     }
 
@@ -579,86 +462,94 @@
       background: none;
       border: none;
       color: #94a3b8;
-      font-size: 1.1rem;
+      font-size: 1rem;
       cursor: pointer;
-      padding: 0 4px;
     }
 
     .calc-display {
       background: #f8fafc;
-      padding: 10px 12px;
+      padding: 8px 10px;
       text-align: right;
-      font-size: 1.3rem;
+      font-size: 1.25rem;
       font-family: monospace;
       font-weight: bold;
       border-bottom: 1px solid var(--border-color);
       color: #0f172a;
       overflow-x: auto;
-      white-space: nowrap;
+    }
+
+    .calc-apply-bar {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px;
+      padding: 4px 6px;
+      background: #e2e8f0;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .calc-apply-btn {
+      padding: 5px 2px;
+      border: 1px solid transparent;
+      border-radius: 3px;
+      font-size: 0.7rem;
+      font-weight: bold;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .calc-apply-btn.debit {
+      background: #dbeafe;
+      color: #1e40af;
+      border-color: #93c5fd;
+    }
+
+    .calc-apply-btn.credit {
+      background: #fee2e2;
+      color: #991b1b;
+      border-color: #fca5a5;
     }
 
     .calc-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 4px;
-      padding: 8px;
+      gap: 3px;
+      padding: 6px;
       background: #f1f5f9;
     }
 
     .calc-btn {
       background: #ffffff;
       border: 1px solid var(--border-color);
-      padding: 10px 0;
-      font-size: 1rem;
+      padding: 8px 0;
+      font-size: 0.95rem;
       font-weight: bold;
-      border-radius: 4px;
+      border-radius: 3px;
       cursor: pointer;
       text-align: center;
       color: #1e293b;
-      touch-action: manipulation;
     }
 
-    .calc-btn:active {
-      background: #e2e8f0;
-    }
-
-    .calc-btn.op {
-      background: #e0e7ff;
-      color: #3730a3;
-    }
-
-    .calc-btn.eq {
-      background: #2563eb;
-      color: white;
-      grid-column: span 2;
-    }
-
-    .calc-btn.clear {
-      background: #fee2e2;
-      color: #991b1b;
-    }
+    .calc-btn.op { background: #e0e7ff; color: #3730a3; }
+    .calc-btn.eq { background: #2563eb; color: white; grid-column: span 2; }
+    .calc-btn.clear { background: #fee2e2; color: #991b1b; }
 
     .calc-fab {
       position: fixed;
-      bottom: 15px;
-      right: 15px;
+      bottom: 12px;
+      right: 12px;
       background: #0f172a;
       color: white;
       border: none;
       border-radius: 50px;
-      padding: 10px 16px;
-      font-size: 0.9rem;
+      padding: 8px 14px;
+      font-size: 0.85rem;
       font-weight: bold;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.25);
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 4px;
       z-index: 999;
-    }
-
-    .calc-fab:hover {
-      background: #1e293b;
     }
   </style>
 </head>
@@ -667,7 +558,7 @@
 <div class="container">
   <header>
     <h1>日商簿記3級 仕訳特化型演習システム</h1>
-    <p>2026年度出題区分対応 (全100問) × スマホ最適化 × SM-2改復習アルゴリズム</p>
+    <p>2026年度出題区分対応 (全100問) × 標準マス目UI × SM-2改復習</p>
   </header>
 
   <!-- ダッシュボード -->
@@ -685,11 +576,11 @@
       <div class="value" id="stat-unstudied">100</div>
     </div>
     <div class="dash-card">
-      <div class="title">連続学習記録</div>
+      <div class="title">連続学習</div>
       <div class="value streak" id="stat-streak">0 日</div>
     </div>
     <div class="dash-card">
-      <div class="title">平均Ease係数</div>
+      <div class="title">平均Ease</div>
       <div class="value" id="stat-ease">2.50</div>
     </div>
   </div>
@@ -709,7 +600,7 @@
   <div class="card" id="quiz-card">
     <div class="problem-header">
       <span class="category-badge" id="problem-category">カテゴリー</span>
-      <span id="problem-id-text" style="color: var(--text-muted); font-size: 0.8rem;">Q001</span>
+      <span id="problem-id-text" style="color: var(--text-muted); font-size: 0.75rem;">Q001</span>
     </div>
 
     <div class="statement" id="problem-statement">
@@ -718,58 +609,52 @@
 
     <div class="tool-bar">
       <button type="button" class="tool-btn hint-btn" onclick="toggleHint()">
-        💡 ヒントを表示/非表示
+        💡 ヒント
       </button>
       <button type="button" class="tool-btn" onclick="toggleCalculator()">
-        🧮 計算機（電卓）
+        🧮 計算機
       </button>
     </div>
     <div class="hint-box" id="hint-box"></div>
 
-    <!-- 仕訳解答欄（PC:横並びテーブル / スマホ:縦スタックカード） -->
-    <div class="journal-table-wrapper" id="journal-wrapper">
-      <table class="journal-table">
+    <!-- マス目型仕訳入力グリッド（添付画像スタイル） -->
+    <div class="grid-table-wrapper">
+      <table class="grid-table">
         <thead>
           <tr>
-            <th colspan="2" class="th-debit">借方（左側）</th>
-            <th colspan="2" class="th-credit">貸方（右側）</th>
-            <th class="th-del">削除</th>
-          </tr>
-          <tr>
-            <th style="width: 30%;">勘定科目</th>
-            <th style="width: 18%;">金額</th>
-            <th style="width: 30%;">勘定科目</th>
-            <th style="width: 18%;">金額</th>
-            <th class="th-del"></th>
+            <th style="width: 32%;">借方科目</th>
+            <th style="width: 17%;">金額</th>
+            <th style="width: 32%;">貸方科目</th>
+            <th style="width: 17%;">金額</th>
+            <th style="width: 24px;"></th>
           </tr>
         </thead>
         <tbody id="journal-rows">
-          <!-- 動的に行を追加 -->
+          <!-- 初期3行を動的生成 -->
         </tbody>
       </table>
     </div>
 
-    <button type="button" class="add-row-btn" id="add-row-btn" onclick="addJournalRow()">+ 複合仕訳用の行を追加する</button>
-
-    <button type="button" class="btn" id="submit-btn" onclick="checkAnswer()">解答を提出する</button>
+    <button type="button" class="add-row-btn" id="add-row-btn" onclick="addJournalRow()">+ 行を追加する</button>
+    <button type="button" class="btn-submit" id="submit-btn" onclick="checkAnswer()">決定（解答を提出）</button>
 
     <!-- 解答・解説エリア -->
     <div class="result-box" id="result-box">
-      <div id="result-title" style="font-weight: bold; font-size: 1rem;"></div>
-      <div id="result-detail" style="margin-top: 4px; font-size: 0.85rem;"></div>
+      <div id="result-title" style="font-weight: bold; font-size: 0.95rem;"></div>
+      <div id="result-detail" style="margin-top: 2px; font-size: 0.8rem;"></div>
 
-      <!-- 正解仕訳表示エリア（正解・不正解問わず常に表示） -->
+      <!-- 正解仕訳表示 -->
       <div class="correct-journal-box" id="correct-journal-box">
-        <div class="correct-journal-title">正解の仕訳:</div>
+        <div class="correct-journal-title">正解仕訳:</div>
         <div id="correct-journal-content"></div>
       </div>
 
       <div class="explanation-box" id="explanation-box"></div>
 
-      <div style="margin-top: 12px; font-weight: bold; font-size: 0.8rem;" id="eval-instruction">自覚難易度の選択（選択後に次の問題へ自動進みます）:</div>
+      <div style="margin-top: 10px; font-weight: bold; font-size: 0.75rem;" id="eval-instruction">自覚難易度の選択:</div>
       <div class="self-eval-buttons">
-        <button type="button" class="eval-btn" id="eval-btn-0" onclick="applySelfEval(0)" disabled>要復習 / 不正解<br>(1日後再出題)</button>
-        <button type="button" class="eval-btn" id="eval-btn-2" onclick="applySelfEval(2)" disabled>正解・やや不安<br>(標準間隔)</button>
+        <button type="button" class="eval-btn" id="eval-btn-0" onclick="applySelfEval(0)" disabled>要復習 / 不正解<br>(1日後)</button>
+        <button type="button" class="eval-btn" id="eval-btn-2" onclick="applySelfEval(2)" disabled>正解・やや不安<br>(標準)</button>
         <button type="button" class="eval-btn" id="eval-btn-3" onclick="applySelfEval(3)" disabled>正解・即答できた<br>(長期延長)</button>
       </div>
     </div>
@@ -784,10 +669,16 @@
 <!-- 内蔵電卓モーダル -->
 <div class="calculator-modal" id="calculator-modal">
   <div class="calc-header">
-    <span>簡易計算機</span>
+    <span>計算機（電卓）</span>
     <button type="button" class="calc-close-btn" onclick="toggleCalculator()">✕</button>
   </div>
   <div class="calc-display" id="calc-display">0</div>
+  
+  <div class="calc-apply-bar">
+    <button type="button" class="calc-apply-btn debit" onclick="applyCalcToJournal('debit')">📥 借方に反映</button>
+    <button type="button" class="calc-apply-btn credit" onclick="applyCalcToJournal('credit')">📥 貸方に反映</button>
+  </div>
+
   <div class="calc-grid">
     <button type="button" class="calc-btn clear" onclick="calcAction('C')">C</button>
     <button type="button" class="calc-btn" onclick="calcAction('DEL')">⌫</button>
@@ -818,7 +709,7 @@
 <script>
 'use strict';
 
-// 全100問データベース（2026年度適用 出題区分対応・校正済みテキスト）
+// 全100問データベース（2026年度適用 出題区分対応）
 const QUESTION_DATABASE = [
   // 1. 商品売買・手付金・発送費 (Q001 - Q018)
   {
@@ -1839,7 +1730,7 @@ const QUESTION_DATABASE = [
   }
 ];
 
-// 有効問題IDマップの生成（バリデーション用）
+// 有効問題IDマップの生成
 const VALID_QUESTION_IDS = new Set(QUESTION_DATABASE.map(q => q.id));
 
 // 移行元バージョンに応じた累積パージ対象マップ
@@ -1945,6 +1836,7 @@ let currentQuestionIndex = -1;
 let currentErrorType = 'NONE';
 let isAnswered = false;
 let isEvalCompleted = false;
+let lastFocusedInput = null;
 
 function getTodayString() {
   const d = new Date();
@@ -1995,9 +1887,9 @@ function setEvalButtonsDisabled(disabled, isCorrect = false) {
 }
 
 function setInputFieldsDisabled(disabled) {
-  const selects = document.querySelectorAll('.journal-table select');
-  const inputs = document.querySelectorAll('.journal-table input');
-  const removeBtns = document.querySelectorAll('.btn-remove-row');
+  const selects = document.querySelectorAll('.grid-table select');
+  const inputs = document.querySelectorAll('.grid-table input');
+  const removeBtns = document.querySelectorAll('.btn-row-del');
   const addBtn = document.getElementById('add-row-btn');
   const submitBtn = document.getElementById('submit-btn');
 
@@ -2076,7 +1968,7 @@ function loadQuestion(index) {
       <div class="completion-message">
         <h2>本日の学習・復習はすべて完了しました。</h2>
         <p>復習期限が到来している問題、および未学習の問題は現在ありません。</p>
-        <p style="color: var(--text-muted); font-size: 0.85rem;">次回アクセス時、復習期日が到来した問題が自動出題されます。</p>
+        <p style="color: var(--text-muted); font-size: 0.8rem;">次回アクセス時、復習期日が到来した問題が自動出題されます。</p>
       </div>
     `;
     return;
@@ -2086,6 +1978,7 @@ function loadQuestion(index) {
   currentQuestionIndex = index;
   isAnswered = false;
   isEvalCompleted = false;
+  lastFocusedInput = null;
 
   setEvalButtonsDisabled(true);
 
@@ -2104,7 +1997,8 @@ function loadQuestion(index) {
   const tbody = document.getElementById('journal-rows');
   if (tbody) {
     tbody.innerHTML = '';
-    const initialRows = Math.max(q.debit.length, q.credit.length, 1);
+    // 添付画像に合わせて初期3行を標準生成
+    const initialRows = Math.max(q.debit.length, q.credit.length, 3);
     for (let i = 0; i < initialRows; i++) {
       addJournalRow();
     }
@@ -2113,7 +2007,7 @@ function loadQuestion(index) {
   setInputFieldsDisabled(false);
 }
 
-// 5列標準テーブル行の生成（PCでは横並びテーブル／スマホではCSSで縦スタックカード化）
+// 5列標準テーブル行の生成
 function addJournalRow() {
   const tbody = document.getElementById('journal-rows');
   if (!tbody || currentQuestionIndex === -1 || isAnswered) return;
@@ -2121,18 +2015,25 @@ function addJournalRow() {
 
   const tr = document.createElement('tr');
 
-  let optionsHtml = '<option value="">(勘定科目を選択)</option>';
+  let optionsHtml = '<option value="">(選択)</option>';
   q.options.forEach(opt => {
     optionsHtml += `<option value="${escapeHtml(opt)}">${escapeHtml(opt)}</option>`;
   });
 
   tr.innerHTML = `
     <td><select class="debit-account">${optionsHtml}</select></td>
-    <td><input type="number" class="debit-amount" placeholder="金額" min="0" step="100"></td>
+    <td><input type="number" class="debit-amount" placeholder="" min="0" step="100"></td>
     <td><select class="credit-account">${optionsHtml}</select></td>
-    <td><input type="number" class="credit-amount" placeholder="金額" min="0" step="100"></td>
-    <td><button type="button" class="btn-remove-row" onclick="removeJournalRow(this)">✕ 削除</button></td>
+    <td><input type="number" class="credit-amount" placeholder="" min="0" step="100"></td>
+    <td><button type="button" class="btn-row-del" onclick="removeJournalRow(this)">✕</button></td>
   `;
+
+  // 入力フォーカスの追跡（電卓からの転記用）
+  const debitInput = tr.querySelector('.debit-amount');
+  const creditInput = tr.querySelector('.credit-amount');
+  if (debitInput) debitInput.addEventListener('focus', () => { lastFocusedInput = debitInput; });
+  if (creditInput) creditInput.addEventListener('focus', () => { lastFocusedInput = creditInput; });
+
   tbody.appendChild(tr);
 }
 
@@ -2262,10 +2163,10 @@ function checkAnswer() {
     }
   }
 
-  // 正解仕訳の表描画（正解・不正解問わず常に表示）
+  // 正解仕訳の表描画（常に必ず表示）
   if (correctJournalContent) {
-    const debitHtml = q.debit.map(e => `<div style="display:flex; justify-content:space-between; margin-bottom:4px; gap:8px;"><span>${escapeHtml(e.account)}</span><span style="font-weight:600;">￥${e.amount.toLocaleString()}</span></div>`).join('');
-    const creditHtml = q.credit.map(e => `<div style="display:flex; justify-content:space-between; margin-bottom:4px; gap:8px;"><span>${escapeHtml(e.account)}</span><span style="font-weight:600;">￥${e.amount.toLocaleString()}</span></div>`).join('');
+    const debitHtml = q.debit.map(e => `<div style="display:flex; justify-content:space-between; margin-bottom:2px; gap:8px;"><span>${escapeHtml(e.account)}</span><span style="font-weight:600;">￥${e.amount.toLocaleString()}</span></div>`).join('');
+    const creditHtml = q.credit.map(e => `<div style="display:flex; justify-content:space-between; margin-bottom:2px; gap:8px;"><span>${escapeHtml(e.account)}</span><span style="font-weight:600;">￥${e.amount.toLocaleString()}</span></div>`).join('');
     
     correctJournalContent.innerHTML = `
       <table class="correct-journal-table">
@@ -2437,6 +2338,42 @@ function calcAction(val) {
     }
   }
   updateCalcDisplay();
+}
+
+// 電卓の数値を仕訳回答欄へ反映（転記）する関数
+function applyCalcToJournal(side) {
+  if (isAnswered) return;
+  const num = Math.round(Number(calcCurrent));
+  if (isNaN(num) || num <= 0) {
+    alert('有効な金額（1以上の数値）を計算してから反映してください。');
+    return;
+  }
+
+  let targetInput = null;
+
+  if (lastFocusedInput && lastFocusedInput.classList.contains(`${side}-amount`) && !lastFocusedInput.disabled) {
+    targetInput = lastFocusedInput;
+  } else {
+    const inputs = document.querySelectorAll(`.${side}-amount`);
+    for (let i = 0; i < inputs.length; i++) {
+      if (!inputs[i].disabled && inputs[i].value === '') {
+        targetInput = inputs[i];
+        break;
+      }
+    }
+    if (!targetInput && inputs.length > 0 && !inputs[0].disabled) {
+      targetInput = inputs[0];
+    }
+  }
+
+  if (targetInput) {
+    targetInput.value = num;
+    targetInput.style.backgroundColor = '#fef08a';
+    setTimeout(() => {
+      targetInput.style.backgroundColor = '';
+    }, 400);
+    toggleCalculator();
+  }
 }
 
 window.addEventListener('DOMContentLoaded', () => {
