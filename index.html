@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>日商簿記3級 仕訳特化型演習システム（2026年度出題区分対応）</title>
   <style>
     :root {
@@ -31,57 +31,58 @@
       background-color: var(--bg-color);
       color: var(--text-main);
       margin: 0;
-      padding: 15px;
-      line-height: 1.6;
+      padding: 12px;
+      line-height: 1.5;
     }
 
     .container {
       max-width: 950px;
       margin: 0 auto;
+      padding-bottom: 60px; /* 電卓フローティングボタンの被り防止 */
     }
 
     header {
       background-color: #0f172a;
       color: #ffffff;
-      padding: 20px;
+      padding: 16px;
       border-radius: 8px;
-      margin-bottom: 15px;
+      margin-bottom: 12px;
     }
 
     header h1 {
       margin: 0;
-      font-size: 1.4rem;
+      font-size: 1.25rem;
     }
 
     header p {
-      margin: 5px 0 0;
+      margin: 4px 0 0;
       color: #94a3b8;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
     }
 
     /* ダッシュボード */
     .dashboard {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 12px;
-      margin-bottom: 15px;
+      grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+      gap: 8px;
+      margin-bottom: 12px;
     }
 
     .dash-card {
       background: var(--card-bg);
-      padding: 12px 15px;
+      padding: 10px 12px;
       border-radius: 6px;
       border: 1px solid var(--border-color);
     }
 
     .dash-card .title {
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       color: var(--text-muted);
       font-weight: 600;
     }
 
     .dash-card .value {
-      font-size: 1.25rem;
+      font-size: 1.15rem;
       font-weight: bold;
       color: var(--primary);
     }
@@ -95,22 +96,22 @@
       background: var(--card-bg);
       border: 1px solid var(--border-color);
       border-radius: 6px;
-      padding: 12px 15px;
-      margin-bottom: 15px;
+      padding: 10px 12px;
+      margin-bottom: 12px;
     }
 
     .progress-header {
       display: flex;
       justify-content: space-between;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       font-weight: bold;
       margin-bottom: 6px;
     }
 
     .progress-bar-bg {
       background-color: #e2e8f0;
-      height: 10px;
-      border-radius: 5px;
+      height: 8px;
+      border-radius: 4px;
       overflow: hidden;
     }
 
@@ -125,8 +126,8 @@
       background: var(--card-bg);
       border: 1px solid var(--border-color);
       border-radius: 8px;
-      padding: 20px;
-      margin-bottom: 15px;
+      padding: 16px;
+      margin-bottom: 12px;
     }
 
     .problem-header {
@@ -134,117 +135,215 @@
       justify-content: space-between;
       align-items: center;
       border-bottom: 2px solid var(--border-color);
-      padding-bottom: 10px;
-      margin-bottom: 15px;
+      padding-bottom: 8px;
+      margin-bottom: 12px;
     }
 
     .category-badge {
       background-color: #e0e7ff;
       color: #3730a3;
-      padding: 3px 8px;
+      padding: 2px 6px;
       border-radius: 4px;
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       font-weight: bold;
     }
 
     .statement {
-      font-size: 1rem;
-      margin-bottom: 15px;
+      font-size: 0.95rem;
+      margin-bottom: 12px;
       background-color: #f1f5f9;
-      padding: 15px;
+      padding: 12px;
       border-radius: 6px;
       word-break: break-word;
     }
 
-    /* ヒント */
-    .hint-toggle-btn {
-      background: none;
-      border: 1px solid var(--hint-border);
-      color: #b45309;
-      padding: 6px 12px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 0.85rem;
-      font-weight: bold;
-      margin-bottom: 15px;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
+    /* ボタンツールバー（ヒント・電卓） */
+    .tool-bar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
     }
 
-    .hint-toggle-btn:hover {
+    .tool-btn {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      color: #334155;
+      padding: 6px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: bold;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .tool-btn:hover {
+      background-color: #f1f5f9;
+    }
+
+    .tool-btn.hint-btn {
+      border-color: var(--hint-border);
+      color: #b45309;
+    }
+
+    .tool-btn.hint-btn:hover {
       background-color: #fef3c7;
     }
 
     .hint-box {
       background-color: var(--hint-bg);
       border-left: 4px solid var(--hint-border);
-      padding: 12px;
+      padding: 10px 12px;
       border-radius: 0 4px 4px 0;
-      margin-bottom: 15px;
-      font-size: 0.9rem;
+      margin-bottom: 12px;
+      font-size: 0.85rem;
       color: #78350f;
       display: none;
     }
 
-    /* 横並び仕訳テーブル */
-    .journal-table-wrapper {
-      width: 100%;
-      overflow-x: auto;
-      margin-bottom: 15px;
-      border: 1px solid var(--border-color);
-      border-radius: 6px;
+    /* === 仕訳入力UI（レスポンシブ完全対応） === */
+    .journal-container {
+      margin-bottom: 12px;
     }
 
-    .journal-table {
-      width: 100%;
-      min-width: 600px;
-      border-collapse: collapse;
-      background-color: #ffffff;
+    /* PC・タブレット表示（横並びテーブル） */
+    @media (min-width: 641px) {
+      .journal-table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        margin-bottom: 12px;
+      }
+
+      .journal-table {
+        width: 100%;
+        border-collapse: collapse;
+        background-color: #ffffff;
+      }
+
+      .journal-table th, .journal-table td {
+        padding: 8px 10px;
+        border: 1px solid var(--border-color);
+        text-align: center;
+        vertical-align: middle;
+      }
+
+      .journal-table th {
+        background-color: #f1f5f9;
+        font-size: 0.85rem;
+        color: #334155;
+      }
+
+      .journal-table th.th-debit {
+        background-color: #eff6ff;
+        color: #1e40af;
+        border-bottom: 2px solid #3b82f6;
+      }
+
+      .journal-table th.th-credit {
+        background-color: #fef2f2;
+        color: #991b1b;
+        border-bottom: 2px solid #ef4444;
+      }
+
+      .journal-row-card {
+        display: table-row;
+      }
+      .journal-row-card > td {
+        display: table-cell;
+      }
+      .mobile-only-header {
+        display: none;
+      }
     }
 
-    .journal-table th, .journal-table td {
-      padding: 8px 10px;
-      border: 1px solid var(--border-color);
-      text-align: center;
-      vertical-align: middle;
+    /* スマホ・iPhone表示（横スクロールなし・縦スタックカード型） */
+    @media (max-width: 640px) {
+      .journal-table-wrapper {
+        border: none;
+        margin-bottom: 8px;
+      }
+      .journal-table, .journal-table tbody {
+        display: block;
+        width: 100%;
+      }
+      .journal-table thead {
+        display: none; /* スマホではヘッダーテーブルを隠して各カード内にラベル表示 */
+      }
+      .journal-row-card {
+        display: block;
+        background: #ffffff;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 10px;
+        margin-bottom: 10px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      }
+      .journal-row-card > td {
+        display: block;
+        padding: 0;
+        border: none;
+      }
+      .mobile-split-block {
+        padding: 8px;
+        border-radius: 6px;
+        margin-bottom: 8px;
+      }
+      .mobile-split-block.debit {
+        background-color: #eff6ff;
+        border-left: 4px solid #3b82f6;
+      }
+      .mobile-split-block.credit {
+        background-color: #fef2f2;
+        border-left: 4px solid #ef4444;
+      }
+      .mobile-label {
+        font-size: 0.75rem;
+        font-weight: bold;
+        margin-bottom: 4px;
+        display: flex;
+        justify-content: space-between;
+      }
+      .mobile-label.debit { color: #1e40af; }
+      .mobile-label.credit { color: #991b1b; }
+      
+      .mobile-input-group {
+        display: flex;
+        gap: 6px;
+      }
+      .mobile-input-group select {
+        flex: 1.3;
+      }
+      .mobile-input-group input {
+        flex: 1;
+      }
+      .mobile-row-footer {
+        display: flex;
+        justify-content: flex-end;
+      }
     }
 
-    .journal-table th {
-      background-color: #f1f5f9;
-      font-size: 0.85rem;
-      color: #334155;
-      font-weight: bold;
-    }
-
-    .journal-table th.th-debit {
-      background-color: #eff6ff;
-      color: #1e40af;
-      border-bottom: 2px solid #3b82f6;
-    }
-
-    .journal-table th.th-credit {
-      background-color: #fef2f2;
-      color: #991b1b;
-      border-bottom: 2px solid #ef4444;
-    }
-
-    .journal-table td select, .journal-table td input[type="number"] {
+    /* 共通入力スタイル（iOSでのズーム防止のためfont-size: 16pxに設定） */
+    select, input[type="number"] {
       width: 100%;
       padding: 8px;
       border: 1px solid var(--border-color);
       border-radius: 4px;
-      font-size: 0.9rem;
+      font-size: 16px; /* iOS Safari ズーム防止 */
       outline: none;
+      background-color: #ffffff;
     }
 
-    .journal-table td select:disabled, .journal-table td input[type="number"]:disabled {
+    select:disabled, input[type="number"]:disabled {
       background-color: #f1f5f9;
       color: #64748b;
       cursor: not-allowed;
     }
 
-    .journal-table td select:focus, .journal-table td input[type="number"]:focus {
+    select:focus, input[type="number"]:focus {
       border-color: var(--primary);
     }
 
@@ -253,9 +352,10 @@
       color: white;
       border: none;
       border-radius: 4px;
-      padding: 6px 10px;
+      padding: 6px 12px;
       cursor: pointer;
       font-size: 0.8rem;
+      font-weight: bold;
     }
 
     .btn-remove-row:disabled {
@@ -267,12 +367,12 @@
       background: #f1f5f9;
       color: #334155;
       border: 1px dashed var(--border-color);
-      padding: 8px 16px;
+      padding: 10px 16px;
       border-radius: 6px;
       cursor: pointer;
       font-size: 0.85rem;
       font-weight: bold;
-      margin-bottom: 15px;
+      margin-bottom: 12px;
       width: 100%;
     }
 
@@ -290,7 +390,7 @@
       color: white;
       border: none;
       padding: 12px 20px;
-      font-size: 0.95rem;
+      font-size: 1rem;
       border-radius: 6px;
       cursor: pointer;
       font-weight: bold;
@@ -308,8 +408,8 @@
     }
 
     .result-box {
-      margin-top: 15px;
-      padding: 15px;
+      margin-top: 12px;
+      padding: 12px;
       border-radius: 6px;
       display: none;
     }
@@ -328,8 +428,8 @@
 
     /* 正解仕訳表示ボックス */
     .correct-journal-box {
-      margin-top: 12px;
-      padding: 12px;
+      margin-top: 10px;
+      padding: 10px;
       background-color: #ffffff;
       border: 1px solid var(--border-color);
       border-radius: 6px;
@@ -337,25 +437,25 @@
 
     .correct-journal-title {
       font-weight: bold;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       color: #0f172a;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
 
     .correct-journal-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
     }
 
     .correct-journal-table th, .correct-journal-table td {
-      padding: 8px 10px;
+      padding: 6px 8px;
       border: 1px solid var(--border-color);
     }
 
     .correct-journal-table th {
       font-weight: bold;
-      font-size: 0.85rem;
+      font-size: 0.75rem;
     }
 
     .correct-journal-table th.th-debit {
@@ -376,30 +476,31 @@
     }
 
     .explanation-box {
-      margin-top: 12px;
-      padding: 12px;
+      margin-top: 10px;
+      padding: 10px;
       background-color: #ffffff;
       border-left: 4px solid var(--primary);
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       color: #334155;
     }
 
     .self-eval-buttons {
       display: flex;
-      gap: 8px;
-      margin-top: 12px;
+      gap: 6px;
+      margin-top: 10px;
     }
 
     .eval-btn {
       flex: 1;
-      padding: 10px 5px;
+      padding: 8px 4px;
       border: 1px solid var(--border-color);
       border-radius: 4px;
       background: #ffffff;
       cursor: pointer;
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       font-weight: 600;
       transition: background 0.2s, opacity 0.2s;
+      line-height: 1.3;
     }
 
     .eval-btn:hover:not(:disabled) {
@@ -414,12 +515,125 @@
 
     .completion-message {
       text-align: center;
-      padding: 30px 15px;
+      padding: 24px 12px;
     }
 
     .completion-message h2 {
       color: #166534;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
+    }
+
+    /* === 内蔵電卓（計算機）UI === */
+    .calculator-modal {
+      display: none;
+      position: fixed;
+      bottom: 70px;
+      right: 15px;
+      width: 280px;
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      z-index: 1000;
+      overflow: hidden;
+    }
+
+    .calc-header {
+      background: #0f172a;
+      color: white;
+      padding: 8px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      font-weight: bold;
+    }
+
+    .calc-close-btn {
+      background: none;
+      border: none;
+      color: #94a3b8;
+      font-size: 1.1rem;
+      cursor: pointer;
+      padding: 0 4px;
+    }
+
+    .calc-display {
+      background: #f8fafc;
+      padding: 10px 12px;
+      text-align: right;
+      font-size: 1.3rem;
+      font-family: monospace;
+      font-weight: bold;
+      border-bottom: 1px solid var(--border-color);
+      color: #0f172a;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+
+    .calc-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 4px;
+      padding: 8px;
+      background: #f1f5f9;
+    }
+
+    .calc-btn {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      padding: 10px 0;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      text-align: center;
+      color: #1e293b;
+      touch-action: manipulation;
+    }
+
+    .calc-btn:active {
+      background: #e2e8f0;
+    }
+
+    .calc-btn.op {
+      background: #e0e7ff;
+      color: #3730a3;
+    }
+
+    .calc-btn.eq {
+      background: #2563eb;
+      color: white;
+      grid-column: span 2;
+    }
+
+    .calc-btn.clear {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    /* フローティング電卓起動ボタン */
+    .calc-fab {
+      position: fixed;
+      bottom: 15px;
+      right: 15px;
+      background: #0f172a;
+      color: white;
+      border: none;
+      border-radius: 50px;
+      padding: 10px 16px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      z-index: 999;
+    }
+
+    .calc-fab:hover {
+      background: #1e293b;
     }
   </style>
 </head>
@@ -428,7 +642,7 @@
 <div class="container">
   <header>
     <h1>日商簿記3級 仕訳特化型演習システム</h1>
-    <p>2026年度出題区分対応 (全100問) × 標準仕訳表形式 × SM-2改復習アルゴリズム</p>
+    <p>2026年度出題区分対応 (全100問) × スマホ最適化 × SM-2改復習アルゴリズム</p>
   </header>
 
   <!-- ダッシュボード -->
@@ -470,39 +684,46 @@
   <div class="card" id="quiz-card">
     <div class="problem-header">
       <span class="category-badge" id="problem-category">カテゴリー</span>
-      <span id="problem-id-text" style="color: var(--text-muted); font-size: 0.85rem;">Q001</span>
+      <span id="problem-id-text" style="color: var(--text-muted); font-size: 0.8rem;">Q001</span>
     </div>
 
     <div class="statement" id="problem-statement">
       問題文を読み込んでいます...
     </div>
 
-    <button type="button" class="hint-toggle-btn" onclick="toggleHint()">
-      💡 ヒントを表示/非表示
-    </button>
+    <div class="tool-bar">
+      <button type="button" class="tool-btn hint-btn" onclick="toggleHint()">
+        💡 ヒントを表示/非表示
+      </button>
+      <button type="button" class="tool-btn" onclick="toggleCalculator()">
+        🧮 計算機（電卓）
+      </button>
+    </div>
     <div class="hint-box" id="hint-box"></div>
 
-    <!-- 横並び解答欄（標準仕訳帳形式） -->
-    <div class="journal-table-wrapper" id="journal-wrapper">
-      <table class="journal-table">
-        <thead>
-          <tr>
-            <th colspan="2" class="th-debit">借方（左側）</th>
-            <th colspan="2" class="th-credit">貸方（右側）</th>
-            <th style="width: 50px;">削除</th>
-          </tr>
-          <tr>
-            <th style="width: 32%;">勘定科目</th>
-            <th style="width: 18%;">金額</th>
-            <th style="width: 32%;">勘定科目</th>
-            <th style="width: 18%;">金額</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody id="journal-rows">
-          <!-- 動的に行を追加 -->
-        </tbody>
-      </table>
+    <!-- 仕訳解答欄（PC:横並びテーブル / スマホ:縦スタックカード） -->
+    <div class="journal-container">
+      <div class="journal-table-wrapper" id="journal-wrapper">
+        <table class="journal-table">
+          <thead>
+            <tr>
+              <th colspan="2" class="th-debit">借方（左側）</th>
+              <th colspan="2" class="th-credit">貸方（右側）</th>
+              <th style="width: 50px;">削除</th>
+            </tr>
+            <tr>
+              <th style="width: 32%;">勘定科目</th>
+              <th style="width: 18%;">金額</th>
+              <th style="width: 32%;">勘定科目</th>
+              <th style="width: 18%;">金額</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="journal-rows">
+            <!-- 動的に行を追加 -->
+          </tbody>
+        </table>
+      </div>
     </div>
 
     <button type="button" class="add-row-btn" id="add-row-btn" onclick="addJournalRow()">+ 複合仕訳用の行を追加する</button>
@@ -511,8 +732,8 @@
 
     <!-- 解答・解説エリア -->
     <div class="result-box" id="result-box">
-      <div id="result-title" style="font-weight: bold; font-size: 1.05rem;"></div>
-      <div id="result-detail" style="margin-top: 4px;"></div>
+      <div id="result-title" style="font-weight: bold; font-size: 1rem;"></div>
+      <div id="result-detail" style="margin-top: 4px; font-size: 0.85rem;"></div>
 
       <!-- 正解仕訳表示エリア（正解・不正解問わず常に表示） -->
       <div class="correct-journal-box" id="correct-journal-box">
@@ -522,13 +743,52 @@
 
       <div class="explanation-box" id="explanation-box"></div>
 
-      <div style="margin-top: 15px; font-weight: bold; font-size: 0.85rem;" id="eval-instruction">自覚難易度の選択（選択後に次の問題へ自動進みます）:</div>
+      <div style="margin-top: 12px; font-weight: bold; font-size: 0.8rem;" id="eval-instruction">自覚難易度の選択（選択後に次の問題へ自動進みます）:</div>
       <div class="self-eval-buttons">
         <button type="button" class="eval-btn" id="eval-btn-0" onclick="applySelfEval(0)" disabled>要復習 / 不正解<br>(1日後再出題)</button>
         <button type="button" class="eval-btn" id="eval-btn-2" onclick="applySelfEval(2)" disabled>正解・やや不安<br>(標準間隔)</button>
         <button type="button" class="eval-btn" id="eval-btn-3" onclick="applySelfEval(3)" disabled>正解・即答できた<br>(長期延長)</button>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- フローティング電卓ボタン -->
+<button type="button" class="calc-fab" onclick="toggleCalculator()">
+  🧮 電卓
+</button>
+
+<!-- 内蔵電卓モーダル -->
+<div class="calculator-modal" id="calculator-modal">
+  <div class="calc-header">
+    <span>簡易計算機</span>
+    <button type="button" class="calc-close-btn" onclick="toggleCalculator()">✕</button>
+  </div>
+  <div class="calc-display" id="calc-display">0</div>
+  <div class="calc-grid">
+    <button type="button" class="calc-btn clear" onclick="calcAction('C')">C</button>
+    <button type="button" class="calc-btn" onclick="calcAction('DEL')">⌫</button>
+    <button type="button" class="calc-btn op" onclick="calcAction('%')">%</button>
+    <button type="button" class="calc-btn op" onclick="calcAction('/')">÷</button>
+    
+    <button type="button" class="calc-btn" onclick="calcAction('7')">7</button>
+    <button type="button" class="calc-btn" onclick="calcAction('8')">8</button>
+    <button type="button" class="calc-btn" onclick="calcAction('9')">9</button>
+    <button type="button" class="calc-btn op" onclick="calcAction('*')">×</button>
+    
+    <button type="button" class="calc-btn" onclick="calcAction('4')">4</button>
+    <button type="button" class="calc-btn" onclick="calcAction('5')">5</button>
+    <button type="button" class="calc-btn" onclick="calcAction('6')">6</button>
+    <button type="button" class="calc-btn op" onclick="calcAction('-')">-</button>
+    
+    <button type="button" class="calc-btn" onclick="calcAction('1')">1</button>
+    <button type="button" class="calc-btn" onclick="calcAction('2')">2</button>
+    <button type="button" class="calc-btn" onclick="calcAction('3')">3</button>
+    <button type="button" class="calc-btn op" onclick="calcAction('+')">+</button>
+    
+    <button type="button" class="calc-btn" onclick="calcAction('0')">0</button>
+    <button type="button" class="calc-btn" onclick="calcAction('00')">00</button>
+    <button type="button" class="calc-btn eq" onclick="calcAction('=')">=</button>
   </div>
 </div>
 
@@ -1416,7 +1676,7 @@ const QUESTION_DATABASE = [
     statement: "役員報酬 ￥500,000 を、源泉税 ￥40,000 を控除して当座預金から支払った。",
     hint: "役員給料は「役員報酬（費用）」、天引き額は「所得税預り金」です。",
     options: ["役員報酬", "所得税預り金", "当座預金"],
-    debit: [{ account: "役員報酬", amount: 50000 }],
+    debit: [{ account: "役員報酬", amount: 500000 }],
     credit: [{ account: "所得税預り金", amount: 40000 }, { account: "当座預金", amount: 460000 }],
     explanation: "総額を「役員報酬」とし、源泉税天引き分を「所得税預り金」とします。"
   },
@@ -1559,7 +1819,7 @@ const QUESTION_DATABASE = [
 // 有効問題IDマップの生成（バリデーション用）
 const VALID_QUESTION_IDS = new Set(QUESTION_DATABASE.map(q => q.id));
 
-// 移行元バージョンに応じた累積パージ対象マップ（sourceVersion以降に変更された全IDを網羅）
+// 移行元バージョンに応じた累積パージ対象マップ
 const PURGE_BY_SOURCE_VERSION = {
   "v5": new Set(["Q006", "Q008", "Q011", "Q013", "Q014", "Q022", "Q030", "Q037", "Q050", "Q051", "Q087", "Q093"]),
   "v6.0": new Set(["Q006", "Q008", "Q011", "Q013", "Q014", "Q022", "Q030", "Q037", "Q050", "Q051", "Q087", "Q093"]),
@@ -1569,7 +1829,7 @@ const PURGE_BY_SOURCE_VERSION = {
   "v6.4": new Set()
 };
 
-// --- 堅牢な LocalStorage 管理クラス (累積パージ対応) ---
+// --- 堅牢な LocalStorage 管理クラス ---
 class StorageManager {
   static KEY_V6 = 'boki3_system_state_v6';
   static KEY_V5 = 'boki3_system_state_v5';
@@ -1581,11 +1841,10 @@ class StorageManager {
       let isFromV5 = false;
       let serialized = localStorage.getItem(this.KEY_V6);
       
-      // v6が存在せずv5が存在する場合の移行(Migration)対応
       if (!serialized) {
         const v5Serialized = localStorage.getItem(this.KEY_V5);
         if (v5Serialized) {
-          serialized = v5Serialized; // v5のデータ構造を引き継ぎ
+          serialized = v5Serialized;
           isFromV5 = true;
         }
       }
@@ -1597,12 +1856,10 @@ class StorageManager {
       const sourceVersion = isFromV5 ? "v5" : (parsed.bankVersion || "v6.0");
       const purgeSet = PURGE_BY_SOURCE_VERSION[sourceVersion] || PURGE_BY_SOURCE_VERSION["v6.0"];
 
-      // 厳格なバリデーションとサニタイズ
       const sanitizedProgress = {};
       if (typeof parsed.progress === 'object' && parsed.progress !== null) {
         Object.keys(parsed.progress).forEach(id => {
           if (VALID_QUESTION_IDS.has(id)) {
-            // 移行元バージョン以降に変更された問題の古い学習進捗を累積パージ
             if (purgeSet && purgeSet.has(id)) {
               return;
             }
@@ -1663,8 +1920,8 @@ class StorageManager {
 let state = StorageManager.loadState();
 let currentQuestionIndex = -1;
 let currentErrorType = 'NONE';
-let isAnswered = false; // 採点完了フラグ
-let isEvalCompleted = false; // 自己評価完了フラグ
+let isAnswered = false;
+let isEvalCompleted = false;
 
 function getTodayString() {
   const d = new Date();
@@ -1715,8 +1972,8 @@ function setEvalButtonsDisabled(disabled, isCorrect = false) {
 }
 
 function setInputFieldsDisabled(disabled) {
-  const selects = document.querySelectorAll('.journal-table select');
-  const inputs = document.querySelectorAll('.journal-table input');
+  const selects = document.querySelectorAll('.journal-container select');
+  const inputs = document.querySelectorAll('.journal-container input');
   const removeBtns = document.querySelectorAll('.btn-remove-row');
   const addBtn = document.getElementById('add-row-btn');
   const submitBtn = document.getElementById('submit-btn');
@@ -1760,7 +2017,6 @@ function updateDashboard() {
   document.getElementById('progress-text').innerText = `${state.todayCount} / ${dailyTarget} 問完了`;
 }
 
-// --- 間隔反復（SM-2改）優先出題アルゴリズム ---
 function getNextQuestionIndex() {
   const now = new Date();
   const dueIndices = [];
@@ -1775,19 +2031,16 @@ function getNextQuestionIndex() {
     }
   });
 
-  // 1. 本日復習期日が来ている問題を優先出題
   if (dueIndices.length > 0) {
     const candidates = dueIndices.filter(i => i !== currentQuestionIndex);
     return candidates.length > 0 ? candidates[Math.floor(Math.random() * candidates.length)] : dueIndices[0];
   }
 
-  // 2. 未学習問題を優先出題
   if (unstudiedIndices.length > 0) {
     const candidates = unstudiedIndices.filter(i => i !== currentQuestionIndex);
     return candidates.length > 0 ? candidates[Math.floor(Math.random() * candidates.length)] : unstudiedIndices[0];
   }
 
-  // 3. 復習待ち・未学習がすべて完了した場合
   return -1;
 }
 
@@ -1800,7 +2053,7 @@ function loadQuestion(index) {
       <div class="completion-message">
         <h2>本日の学習・復習はすべて完了しました。</h2>
         <p>復習期限が到来している問題、および未学習の問題は現在ありません。</p>
-        <p style="color: var(--text-muted); font-size: 0.9rem;">次回アクセス時、復習期日が到来した問題が自動出題されます。</p>
+        <p style="color: var(--text-muted); font-size: 0.85rem;">次回アクセス時、復習期日が到来した問題が自動出題されます。</p>
       </div>
     `;
     return;
@@ -1834,33 +2087,47 @@ function loadQuestion(index) {
     }
   }
 
-  // 次の問題読み込み時に仕訳表の横スクロール位置を最左端（借方側）へリセット
-  const wrapper = document.getElementById('journal-wrapper');
-  if (wrapper) {
-    wrapper.scrollLeft = 0;
-  }
-
   setInputFieldsDisabled(false);
 }
 
+// 行の生成（PC用テーブル構造＆スマホ用スタック構造を両立）
 function addJournalRow() {
   const tbody = document.getElementById('journal-rows');
   if (!tbody || currentQuestionIndex === -1 || isAnswered) return;
   const q = QUESTION_DATABASE[currentQuestionIndex];
 
   const tr = document.createElement('tr');
+  tr.className = 'journal-row-card';
 
-  let optionsHtml = '<option value="">(選択)</option>';
+  let optionsHtml = '<option value="">(勘定科目を選択)</option>';
   q.options.forEach(opt => {
     optionsHtml += `<option value="${escapeHtml(opt)}">${escapeHtml(opt)}</option>`;
   });
 
   tr.innerHTML = `
-    <td><select class="debit-account">${optionsHtml}</select></td>
-    <td><input type="number" class="debit-amount" placeholder="0" min="0" step="100"></td>
-    <td><select class="credit-account">${optionsHtml}</select></td>
-    <td><input type="number" class="credit-amount" placeholder="0" min="0" step="100"></td>
-    <td><button type="button" class="btn-remove-row" onclick="removeJournalRow(this)">✕</button></td>
+    <td>
+      <div class="mobile-split-block debit">
+        <div class="mobile-label debit">借方（左側）</div>
+        <div class="mobile-input-group">
+          <select class="debit-account">${optionsHtml}</select>
+          <input type="number" class="debit-amount" placeholder="金額" min="0" step="100">
+        </div>
+      </div>
+    </td>
+    <td>
+      <div class="mobile-split-block credit">
+        <div class="mobile-label credit">貸方（右側）</div>
+        <div class="mobile-input-group">
+          <select class="credit-account">${optionsHtml}</select>
+          <input type="number" class="credit-amount" placeholder="金額" min="0" step="100">
+        </div>
+      </div>
+    </td>
+    <td>
+      <div class="mobile-row-footer">
+        <button type="button" class="btn-remove-row" onclick="removeJournalRow(this)">✕ 削除</button>
+      </div>
+    </td>
   `;
   tbody.appendChild(tr);
 }
@@ -1869,7 +2136,7 @@ function removeJournalRow(btn) {
   const tbody = document.getElementById('journal-rows');
   if (!tbody || isAnswered) return;
   if (tbody.children.length > 1) {
-    btn.closest('tr').remove();
+    btn.closest('.journal-row-card').remove();
   } else {
     const tr = tbody.children[0];
     tr.querySelectorAll('select').forEach(s => s.value = '');
@@ -1900,7 +2167,6 @@ function getEntries(side) {
     const acc = accounts[i].value;
     const rawAmt = amounts[i].value;
     
-    // 金額の厳格な正の整数バリデーション（小数・0・負数の排除）
     const numAmt = Number(rawAmt);
     const isValidInteger = rawAmt !== "" && Number.isInteger(numAmt) && numAmt > 0;
 
@@ -1960,9 +2226,8 @@ function checkAnswer() {
   const expBox = document.getElementById('explanation-box');
 
   resultBox.style.display = 'block';
-  isAnswered = true; // 採点完了
+  isAnswered = true;
 
-  // 初回採点後の入力欄および採点ボタンのロック
   setInputFieldsDisabled(true);
   setEvalButtonsDisabled(false, isAllCorrect);
 
@@ -1975,14 +2240,12 @@ function checkAnswer() {
     resultBox.className = 'result-box incorrect';
     resultTitle.innerText = '不正解';
 
-    // 行分割・重複科目を集約してSet比較する堅牢な科目判定ロジック
     const isAccountsMatch = (entriesA, entriesB) => {
       const setA = Array.from(new Set(entriesA.map(e => e.account))).sort().join(',');
       const setB = Array.from(new Set(entriesB.map(e => e.account))).sort().join(',');
       return setA === setB;
     };
 
-    // 精密誤答分類判定
     if (isAccountsMatch(debitRes.entries, q.debit) && isAccountsMatch(creditRes.entries, q.credit)) {
       currentErrorType = 'CALCULATION';
       resultDetail.innerText = '勘定科目は正解ですが、計算金額に誤りがあります。';
@@ -1995,7 +2258,7 @@ function checkAnswer() {
     }
   }
 
-  // 正解仕訳の表描画（正解時・不正解時ともに常に表示）
+  // 正解仕訳の表描画（常に必ず表示）
   if (correctJournalContent) {
     const debitHtml = q.debit.map(e => `<div style="display:flex; justify-content:space-between; margin-bottom:4px; gap:8px;"><span>${escapeHtml(e.account)}</span><span style="font-weight:600;">￥${e.amount.toLocaleString()}</span></div>`).join('');
     const creditHtml = q.credit.map(e => `<div style="display:flex; justify-content:space-between; margin-bottom:4px; gap:8px;"><span>${escapeHtml(e.account)}</span><span style="font-weight:600;">￥${e.amount.toLocaleString()}</span></div>`).join('');
@@ -2030,7 +2293,6 @@ function applySelfEval(quality) {
   const q = QUESTION_DATABASE[currentQuestionIndex];
   const today = getTodayString();
 
-  // タブ放置エッジケースに対応した正確な Streak・todayCount・日付更新計算
   if (!state.lastStudyDate) {
     state.streak = 1;
     state.todayCount = 1;
@@ -2043,9 +2305,9 @@ function applySelfEval(quality) {
     if (diffDays === 1) {
       state.streak += 1;
     } else {
-      state.streak = 1; // 日付が飛んでいる場合はリセット
+      state.streak = 1;
     }
-    state.todayCount = 1; // 日を跨いでいるため当日の件数を1件目でリセット
+    state.todayCount = 1;
     state.lastStudyDate = today;
   } else {
     state.todayCount += 1;
@@ -2070,7 +2332,6 @@ function applySelfEval(quality) {
     repetitionCount++;
   }
 
-  // Ease Factor の補正計算
   easeFactor = easeFactor + (0.1 - (3 - quality) * (0.08 + (3 - quality) * 0.02));
   if (currentErrorType === 'ACCOUNT_ITEM') easeFactor -= 0.05;
   if (currentErrorType === 'CONCEPT') easeFactor -= 0.10;
@@ -2091,7 +2352,6 @@ function applySelfEval(quality) {
 
   isEvalCompleted = true;
 
-  // 状態変更時の保存・画面更新・自動次問題遷移
   StorageManager.saveState(state);
   updateDashboard();
   nextQuestion();
@@ -2102,9 +2362,83 @@ function nextQuestion() {
   loadQuestion(nextIdx);
 }
 
+// === 内蔵電卓（計算機）ロジック ===
+let calcCurrent = '0';
+let calcPrev = null;
+let calcOp = null;
+let calcResetOnNext = false;
+
+function toggleCalculator() {
+  const modal = document.getElementById('calculator-modal');
+  if (!modal) return;
+  modal.style.display = (modal.style.display === 'block') ? 'none' : 'block';
+}
+
+function updateCalcDisplay() {
+  const disp = document.getElementById('calc-display');
+  if (disp) {
+    const num = Number(calcCurrent);
+    if (!isNaN(num) && !calcCurrent.includes('.')) {
+      disp.innerText = num.toLocaleString();
+    } else {
+      disp.innerText = calcCurrent;
+    }
+  }
+}
+
+function calcAction(val) {
+  if (val === 'C') {
+    calcCurrent = '0';
+    calcPrev = null;
+    calcOp = null;
+    calcResetOnNext = false;
+  } else if (val === 'DEL') {
+    if (calcCurrent.length > 1) {
+      calcCurrent = calcCurrent.slice(0, -1);
+    } else {
+      calcCurrent = '0';
+    }
+  } else if (['+', '-', '*', '/'].includes(val)) {
+    calcPrev = Number(calcCurrent);
+    calcOp = val;
+    calcResetOnNext = true;
+  } else if (val === '%') {
+    const num = Number(calcCurrent);
+    calcCurrent = String(num / 100);
+  } else if (val === '=') {
+    if (calcOp && calcPrev !== null) {
+      const current = Number(calcCurrent);
+      let res = 0;
+      if (calcOp === '+') res = calcPrev + current;
+      if (calcOp === '-') res = calcPrev - current;
+      if (calcOp === '*') res = calcPrev * current;
+      if (calcOp === '/') res = current !== 0 ? calcPrev / current : 0;
+      calcCurrent = String(Math.round(res * 100000) / 100000);
+      calcOp = null;
+      calcPrev = null;
+      calcResetOnNext = true;
+    }
+  } else {
+    // 数字入力 (0-9, 00)
+    if (calcResetOnNext) {
+      calcCurrent = (val === '00') ? '0' : val;
+      calcResetOnNext = false;
+    } else {
+      if (calcCurrent === '0') {
+        calcCurrent = (val === '00') ? '0' : val;
+      } else {
+        if (calcCurrent.length < 12) {
+          calcCurrent += val;
+        }
+      }
+    }
+  }
+  updateCalcDisplay();
+}
+
 window.addEventListener('DOMContentLoaded', () => {
   updateDashboard();
-  nextQuestion(); // 起動時も復習優先スケジュールに従って読み込み
+  nextQuestion();
 });
 </script>
 
