@@ -933,7 +933,7 @@
 
   
 
-    /* ===== v8.6 iPhone-first overrides ===== */
+    /* ===== v8.8 iPhone-first overrides ===== */
     html { min-height: 100%; }
     body {
       padding-top: calc(8px + env(safe-area-inset-top));
@@ -973,6 +973,12 @@
     .grid-table input.credit-amount {
       padding-left: 2px;
       padding-right: 4px;
+    }
+    /* iOS Safariのフォーカス時ズームを避けるため、編集中だけ16pxを固定。
+       非フォーカス時はCanvas計測で11pxまで縮小し、4列を横スクロールなしで維持する。 */
+    .grid-table input.debit-amount:focus,
+    .grid-table input.credit-amount:focus {
+      font-size: 16px !important;
     }
     .journal-cbt-note {
       margin: -3px 0 9px;
@@ -1067,17 +1073,60 @@
     }
     .table-answer-input { min-height: 44px; font-size: 16px; }
 
-    .learning-coach-box {
+    /* 解答後は、抽象的な5大要素より先に「この場面で何が起きたか」を読む。
+       文章は各問題に登録済みの教科書解説を再構成して表示し、機械的な推測文は生成しない。 */
+    .scenario-guide-box {
       margin-top: 10px;
       padding: 12px;
       border: 1px solid #bfdbfe;
-      border-radius: 8px;
+      border-radius: 9px;
       background: #eff6ff;
     }
-    .learning-coach-title { font-weight: 800; color: #1e3a8a; margin-bottom: 5px; }
-    .learning-coach-summary { font-size: .84rem; color: #334155; margin-bottom: 7px; }
-    .learning-coach-steps { margin: 0 0 8px 1.25rem; padding: 0; font-size: .82rem; line-height: 1.6; }
-    .account-effect-list { display: grid; gap: 5px; }
+    .scenario-guide-title {
+      font-weight: 800;
+      color: #1e3a8a;
+      margin-bottom: 9px;
+      font-size: .95rem;
+    }
+    .scenario-section {
+      padding: 10px;
+      margin-top: 8px;
+      border-radius: 7px;
+      background: #fff;
+      border: 1px solid #dbeafe;
+    }
+    .scenario-section:first-of-type { margin-top: 0; }
+    .scenario-section-title {
+      margin-bottom: 5px;
+      font-size: .8rem;
+      font-weight: 800;
+      color: #1e40af;
+    }
+    .scenario-section-text {
+      font-size: .86rem;
+      line-height: 1.75;
+      color: #334155;
+      white-space: pre-line;
+    }
+    .account-nature-details {
+      margin-top: 10px;
+      border-top: 1px dashed #93c5fd;
+      padding-top: 8px;
+    }
+    .account-nature-details summary {
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      color: #1e3a8a;
+      font-size: .82rem;
+      font-weight: 800;
+      touch-action: manipulation;
+    }
+    .account-nature-details summary::-webkit-details-marker { display: none; }
+    .account-nature-details summary::before { content: '＋'; margin-right: 6px; }
+    .account-nature-details[open] summary::before { content: '－'; }
+    .account-effect-list { display: grid; gap: 5px; padding-top: 3px; }
     .account-effect-item {
       display: grid;
       grid-template-columns: auto 1fr;
@@ -1088,6 +1137,7 @@
       background: #fff;
       border: 1px solid #dbeafe;
       font-size: .8rem;
+      line-height: 1.5;
     }
     .account-effect-side { font-weight: 800; white-space: nowrap; }
 
@@ -1107,7 +1157,7 @@
 <div class="container">
   <header>
     <h1>日商簿記3級 総合演習システム（仕訳200問＋表問題40問）</h1>
-    <p>2026年度出題区分対応 × 仕訳200問 × 表・決算演習40問 × 教科書型解説 × 教材版 v8.6</p>
+    <p>2026年度出題区分対応 × 仕訳200問 × 表・決算演習40問 × 教科書型解説 × 教材版 v8.8</p>
   </header>
   <div id="data-integrity-banner" class="data-integrity-banner" role="alert" aria-live="polite"></div>
 
@@ -1193,10 +1243,10 @@
       <table class="grid-table">
         <thead>
           <tr>
-            <th style="width: 31%;">借方科目</th>
-            <th style="width: 19%;">金額</th>
-            <th style="width: 31%;">貸方科目</th>
-            <th style="width: 19%;">金額</th>
+            <th style="width: 30%;">借方科目</th>
+            <th style="width: 20%;">金額</th>
+            <th style="width: 30%;">貸方科目</th>
+            <th style="width: 20%;">金額</th>
           </tr>
         </thead>
         <tbody id="journal-rows">
@@ -1230,12 +1280,24 @@
         <div id="correct-journal-content"></div>
       </div>
 
-      <div class="explanation-box" id="explanation-box"></div>
-      <div class="learning-coach-box" id="learning-coach-box">
-        <div class="learning-coach-title">仕訳の組み立て（5大要素チェック）</div>
-        <div class="learning-coach-summary" id="learning-coach-summary"></div>
-        <ol class="learning-coach-steps" id="learning-coach-steps"></ol>
-        <div class="account-effect-list" id="account-effect-list"></div>
+      <div class="scenario-guide-box" id="scenario-guide-box">
+        <div class="scenario-guide-title">取引の流れを整理しよう</div>
+        <div class="scenario-section">
+          <div class="scenario-section-title">この取引では何が起きている？</div>
+          <div class="scenario-section-text" id="scenario-thinking-text"></div>
+        </div>
+        <div class="scenario-section" id="scenario-amount-section" hidden>
+          <div class="scenario-section-title">金額はどう考える？</div>
+          <div class="scenario-section-text" id="scenario-amount-text"></div>
+        </div>
+        <div class="scenario-section">
+          <div class="scenario-section-title">だから、この仕訳になる</div>
+          <div class="scenario-section-text" id="scenario-reason-text"></div>
+        </div>
+        <details class="account-nature-details" id="account-nature-details">
+          <summary>勘定科目の性質も確認する</summary>
+          <div class="account-effect-list" id="account-effect-list"></div>
+        </details>
       </div>
 
       <div style="margin-top: 10px; font-weight: bold; font-size: 0.75rem;" id="eval-instruction">自覚難易度の選択:</div>
@@ -1351,7 +1413,7 @@
 <script type="module">
 'use strict';
 
-// 仕訳200問データベース（2026年度適用 出題区分対応・教科書型解説 v8.6）
+// 仕訳200問データベース（2026年度適用 出題区分対応・教科書型解説 v8.8）
 const QUESTION_DATABASE = [
   {
     "id": "Q001",
@@ -9994,10 +10056,13 @@ function runIntegrityCheck() {
   const result = validateQuestionBanks();
   const diagnosticIssues = validateDiagnosticEngine();
   const classificationIssues = validateAccountClassifications();
+  const explanationIssues = validateExplanationStructure();
   result.diagnosticIssues = diagnosticIssues;
   result.classificationIssues = classificationIssues;
+  result.explanationIssues = explanationIssues;
   result.issues.push(...diagnosticIssues.map(issue => `誤答診断: ${issue}`));
-  result.issues.push(...classificationIssues.map(account => `5大要素分類未登録: ${account}`));
+  result.issues.push(...classificationIssues.map(account => `勘定科目分類未登録: ${account}`));
+  result.issues.push(...explanationIssues.map(issue => `解説構造: ${issue}`));
   const banner = document.getElementById('data-integrity-banner');
   if (result.issues.length) {
     console.error('起動時整合性チェックエラー', result);
@@ -10015,7 +10080,7 @@ function runIntegrityCheck() {
 deepFreeze(QUESTION_DATABASE);
 deepFreeze(TABLE_DATABASE);
 
-const APP_VERSION = 'v8.6';
+const APP_VERSION = 'v8.8';
 const STORAGE_SCHEMA_VERSION = 2;
 const JOURNAL_BANK_VERSION = 'v7.1';
 const TABLE_BANK_VERSION = 'v8.3';
@@ -10134,9 +10199,9 @@ const Runtime = {
   state: StorageManager.loadState(),
   mode: 'journal',
   journal: { currentQuestionIndex: -1, currentErrorType: 'NONE', isAnswered: false, isEvalCompleted: false, lastFocusedInput: null },
-  table: { currentIndex: -1, answered: false, lastFocusedInput: null, viewMode: 'full', segmentIndex: 0, draft: {} },
+  table: { currentIndex: -1, answered: false, lastFocusedInput: null, viewMode: 'full', viewPreference: 'auto', segmentIndex: 0, hintLevel: 0, draft: {} },
   calculator: { current: '0', prev: null, op: null, resetOnNext: false, error: false },
-  ui: { quizCardTemplate: null, journalResizeTimer: null }
+  ui: { quizCardTemplate: null, journalResizeTimer: null, tableMediaQuery: null, tableMediaHandler: null }
 };
 
 function getTodayString() {
@@ -10298,8 +10363,10 @@ function loadQuestion(index) {
 
   document.getElementById('result-box').style.display = 'none';
   renderJournalDiagnostic(null);
-  const coachBox = document.getElementById('learning-coach-box');
-  if (coachBox) coachBox.style.display = 'none';
+  const scenarioBox = document.getElementById('scenario-guide-box');
+  if (scenarioBox) scenarioBox.style.display = 'none';
+  const accountDetails = document.getElementById('account-nature-details');
+  if (accountDetails) accountDetails.open = false;
 
   const tbody = document.getElementById('journal-rows');
   if (tbody) {
@@ -10322,6 +10389,13 @@ function fitJournalAmountFont(input) {
   const value = String(input.value ?? '');
   const MAX_SIZE = 16;
   const MIN_SIZE = 11;
+
+  // iPhone Safariでは16px未満の入力欄を再フォーカスした際にズームが起こり得るため、
+  // 編集中は必ず16pxを維持する。表示用の縮小はblur後にだけ行う。
+  if (document.activeElement === input) {
+    input.style.fontSize = `${MAX_SIZE}px`;
+    return;
+  }
 
   // 空欄は標準サイズへ戻す。
   if (value === '') {
@@ -10413,10 +10487,15 @@ function addJournalRow() {
     input.autocomplete = 'off';
     input.className = className;
     input.setAttribute('aria-label', label);
-    input.addEventListener('focus', () => { Runtime.journal.lastFocusedInput = input; });
+    input.addEventListener('focus', () => {
+      Runtime.journal.lastFocusedInput = input;
+      input.style.fontSize = '16px';
+    });
+    input.addEventListener('blur', () => fitJournalAmountFont(input));
     input.addEventListener('input', () => {
       const sanitized = String(input.value || '').replace(/[^0-9]/g, '');
       if (input.value !== sanitized) input.value = sanitized;
+      // フォーカス中は16pxを維持。blur後に必要な場合だけ縮小する。
       fitJournalAmountFont(input);
     });
     input.addEventListener('keydown', event => handleJournalFieldKeydown(event, input));
@@ -10693,7 +10772,6 @@ function checkAnswer() {
   const resultTitle = document.getElementById('result-title');
   const resultDetail = document.getElementById('result-detail');
   const correctJournalContent = document.getElementById('correct-journal-content');
-  const expBox = document.getElementById('explanation-box');
 
   resultBox.style.display = 'block';
   Runtime.journal.isAnswered = true;
@@ -10739,8 +10817,7 @@ function checkAnswer() {
     `;
   }
 
-  expBox.innerText = `【教科書解説】\n${q.explanation}`;
-  renderLearningCoach(q);
+  renderScenarioGuide(q);
 }
 
 
@@ -10768,40 +10845,79 @@ const ACCOUNT_CLASSIFICATIONS = Object.freeze({
 function accountEffectText(account, side) {
   const type = ACCOUNT_CLASSIFICATIONS[account] || '分類確認';
   const isDebit = side === 'debit';
-  if (type === '資産') return `資産の${isDebit ? '増加' : '減少'} → ${isDebit ? '借方' : '貸方'}`;
-  if (type === '資産控除') return `資産控除項目の${isDebit ? '減少' : '増加'} → ${isDebit ? '借方' : '貸方'}`;
-  if (type === '負債') return `負債の${isDebit ? '減少' : '増加'} → ${isDebit ? '借方' : '貸方'}`;
-  if (type === '純資産') return `純資産の${isDebit ? '減少' : '増加'} → ${isDebit ? '借方' : '貸方'}`;
-  if (type === '収益') return `収益の${isDebit ? '減少・取消し' : '発生'} → ${isDebit ? '借方' : '貸方'}`;
-  if (type === '費用') return `費用の${isDebit ? '発生' : '減少・取消し'} → ${isDebit ? '借方' : '貸方'}`;
-  return `${type}（問題の決算・一時処理として借貸を確認）`;
+  if (type === '資産') return `資産が${isDebit ? '増えるので借方' : '減るので貸方'}`;
+  if (type === '資産控除') return `資産の控除項目が${isDebit ? '減るので借方' : '増えるので貸方'}`;
+  if (type === '負債') return `負債が${isDebit ? '減るので借方' : '増えるので貸方'}`;
+  if (type === '純資産') return `純資産が${isDebit ? '減るので借方' : '増えるので貸方'}`;
+  if (type === '収益') return isDebit ? '収益を取り消す・減らすので借方' : '収益が生じるので貸方';
+  if (type === '費用') return isDebit ? '費用が生じるので借方' : '費用を取り消す・減らすので貸方';
+  return `${type}として、この問題の処理に応じて${isDebit ? '借方' : '貸方'}に置く`;
 }
 
-function renderLearningCoach(q) {
-  const box = document.getElementById('learning-coach-box');
-  const summary = document.getElementById('learning-coach-summary');
-  const steps = document.getElementById('learning-coach-steps');
-  const list = document.getElementById('account-effect-list');
-  if (!box || !summary || !steps || !list || !q) return;
-  const totalLines = q.debit.length + q.credit.length;
-  summary.textContent = totalLines >= 4
-    ? `この問題は複数の勘定科目が動く複合仕訳です。答えを丸暗記せず、次の順で分解します。`
-    : `この問題も「科目 → 5大要素 → 増減 → 借貸」の順で確認します。`;
-  steps.replaceChildren();
-  ['問題文から増減する勘定科目を拾う','各科目を5大要素（または資産控除・決算勘定）に分類する','増加・減少を判定して借方／貸方へ置く','最後に借方合計と貸方合計が一致するか検算する'].forEach(text => {
-    const li = document.createElement('li'); li.textContent = text; steps.appendChild(li);
+function parseExplanationSections(explanation) {
+  const source = String(explanation || '').trim();
+  const result = { thinking: '', amount: '', reason: '' };
+  if (!source) return result;
+  const labelMap = { '考え方': 'thinking', '金額の求め方': 'amount', '仕訳の理由': 'reason' };
+  const re = /【(考え方|金額の求め方|仕訳の理由)】/g;
+  const matches = [...source.matchAll(re)];
+  if (!matches.length) {
+    result.thinking = source;
+    return result;
+  }
+  matches.forEach((match, index) => {
+    const next = matches[index + 1];
+    const start = match.index + match[0].length;
+    const end = next ? next.index : source.length;
+    result[labelMap[match[1]]] = source.slice(start, end).trim();
   });
+  return result;
+}
+
+function renderScenarioGuide(q) {
+  const box = document.getElementById('scenario-guide-box');
+  const thinkingText = document.getElementById('scenario-thinking-text');
+  const amountSection = document.getElementById('scenario-amount-section');
+  const amountText = document.getElementById('scenario-amount-text');
+  const reasonText = document.getElementById('scenario-reason-text');
+  const details = document.getElementById('account-nature-details');
+  const list = document.getElementById('account-effect-list');
+  if (!box || !thinkingText || !amountSection || !amountText || !reasonText || !details || !list || !q) return;
+
+  // ここでは新しい会計理由を推測して作らない。
+  // 各問題に登録済みの教科書解説を、場面→金額→仕訳理由の順に読みやすく再配置する。
+  const sections = parseExplanationSections(q.explanation);
+  thinkingText.textContent = sections.thinking || q.explanation || '';
+  amountSection.hidden = !sections.amount;
+  amountText.textContent = sections.amount;
+  reasonText.textContent = sections.reason || q.explanation || '';
+
   list.replaceChildren();
   const add = (side, label, entry) => {
-    const item = document.createElement('div'); item.className = 'account-effect-item';
-    const sideEl = document.createElement('span'); sideEl.className = 'account-effect-side'; sideEl.textContent = label;
+    const item = document.createElement('div');
+    item.className = 'account-effect-item';
+    const sideEl = document.createElement('span');
+    sideEl.className = 'account-effect-side';
+    sideEl.textContent = label;
     const body = document.createElement('span');
-    body.textContent = `${entry.account} ${formatYen(entry.amount)} — ${accountEffectText(entry.account, side)}`;
-    item.append(sideEl, body); list.appendChild(item);
+    body.textContent = `${entry.account} ${formatYen(entry.amount)}：${accountEffectText(entry.account, side)}`;
+    item.append(sideEl, body);
+    list.appendChild(item);
   };
-  q.debit.forEach(entry => add('debit','借方',entry));
-  q.credit.forEach(entry => add('credit','貸方',entry));
+  q.debit.forEach(entry => add('debit', '借方', entry));
+  q.credit.forEach(entry => add('credit', '貸方', entry));
+  details.open = false;
   box.style.display = 'block';
+}
+
+function validateExplanationStructure() {
+  const issues = [];
+  QUESTION_DATABASE.forEach(q => {
+    const sections = parseExplanationSections(q.explanation);
+    if (!sections.thinking) issues.push(`${q.id}: 【考え方】がありません`);
+    if (!sections.reason) issues.push(`${q.id}: 【仕訳の理由】がありません`);
+  });
+  return issues;
 }
 
 function validateAccountClassifications() {
@@ -11014,9 +11130,28 @@ function renderTableQuestionTable(q) {
   tbody.appendChild(fragment); table.appendChild(tbody); host.replaceChildren(table);
 }
 
+function getResponsiveTableView() {
+  const mq = Runtime.ui.tableMediaQuery;
+  if (mq) return mq.matches ? 'compact' : 'full';
+  return window.matchMedia && window.matchMedia('(max-width: 600px)').matches ? 'compact' : 'full';
+}
+
+function syncTableViewToViewport() {
+  if (Runtime.table.currentIndex < 0 || Runtime.table.viewPreference !== 'auto') return;
+  const nextView = getResponsiveTableView();
+  if (nextView === Runtime.table.viewMode) return;
+  syncVisibleTableDraft();
+  Runtime.table.viewMode = nextView;
+  Runtime.table.segmentIndex = 0;
+  const q = TABLE_DATABASE[Runtime.table.currentIndex];
+  renderTableViewControls(q);
+  renderTableQuestionTable(q);
+}
+
 function setTableView(view) {
   if (Runtime.table.currentIndex < 0) return;
   syncVisibleTableDraft();
+  Runtime.table.viewPreference = 'manual';
   Runtime.table.viewMode = view === 'full' ? 'full' : 'compact';
   Runtime.table.segmentIndex = Math.max(0, Runtime.table.segmentIndex);
   const q = TABLE_DATABASE[Runtime.table.currentIndex];
@@ -11029,25 +11164,38 @@ function setTableSegment(index) {
   const q = TABLE_DATABASE[Runtime.table.currentIndex];
   const segments = getTableSegments(q);
   Runtime.table.segmentIndex = Math.min(Math.max(0, Number(index) || 0), Math.max(0, segments.length - 1));
+  Runtime.table.viewPreference = 'manual';
   Runtime.table.viewMode = 'compact';
   renderTableViewControls(q); renderTableQuestionTable(q);
 }
 
 function loadTableQuestion(index) {
   if (index < 0 || index >= TABLE_DATABASE.length) index = 0;
-  Runtime.table.currentIndex = index; Runtime.table.answered = false; Runtime.table.lastFocusedInput = null; Runtime.table.segmentIndex = 0; Runtime.table.draft = {};
+  Runtime.table.currentIndex = index; Runtime.table.answered = false; Runtime.table.lastFocusedInput = null;
+  Runtime.table.viewPreference = 'auto'; Runtime.table.segmentIndex = 0; Runtime.table.hintLevel = 0; Runtime.table.draft = {};
   const q = TABLE_DATABASE[index];
-  Runtime.table.viewMode = window.matchMedia && window.matchMedia('(max-width: 600px)').matches ? 'compact' : 'full';
+  Runtime.table.viewMode = getResponsiveTableView();
   document.getElementById('table-problem-category').innerText = q.category;
   document.getElementById('table-problem-id-text').innerText = `ID: ${q.id} (${index + 1} / ${TABLE_DATABASE.length})`;
   document.getElementById('table-problem-statement').innerText = q.statement;
-  const hint = document.getElementById('table-hint-box'); hint.innerText = tableHintFor(q); hint.style.display = 'none';
+  const hint = document.getElementById('table-hint-box'); hint.innerText = tableHintFor(q, 1); hint.style.display = 'none';
   renderTableViewControls(q); renderTableQuestionTable(q);
   const rb = document.getElementById('table-result-box'); rb.className = 'table-result-box'; rb.style.display = 'none';
   document.getElementById('table-submit-btn').disabled = false; updateTableTocActive(q.id);
 }
 
-function tableHintFor(q) {
+function tableHintFor(q, level = 1) {
+  // T024は当期純利益の計算位置を段階的に確認できるようにし、1回目から答えを直接見せない。
+  if (q.id === 'T024') {
+    if (level <= 1) {
+      return '【段階1/3】まず損益計算書欄だけを見ます。貸方の収益合計と、借方の費用合計をそれぞれ求め、どちらが大きいかを確認してください。';
+    }
+    if (level === 2) {
+      return '【段階2/3】この問題では収益合計は900,000円です。費用合計は、仕入500,000円＋給料200,000円＋減価償却費50,000円です。まだ差額の記入位置は考えず、まず差額を求めてください。';
+    }
+    return '【段階3/3】収益900,000円－費用750,000円＝150,000円なので当期純利益です。精算表では、損益計算書欄の借方に150,000円、貸借対照表欄の貸方に同額を記入して各欄を一致させます。';
+  }
+
   const map={
     '残高試算表':'資産・費用は通常借方残高、負債・純資産・収益は通常貸方残高です。最後に借方合計と貸方合計を照合します。',
     '合計試算表':'残高ではなく、各勘定の借方記入額・貸方記入額の累計をそのまま記入します。',
@@ -11060,8 +11208,29 @@ function tableHintFor(q) {
 }
 
 function toggleTableHint() {
-  const box=document.getElementById('table-hint-box'); if(!box)return;
-  box.style.display = box.style.display==='block' ? 'none' : 'block';
+  const box = document.getElementById('table-hint-box');
+  if (!box || Runtime.table.currentIndex < 0) return;
+  const q = TABLE_DATABASE[Runtime.table.currentIndex];
+
+  if (q.id === 'T024') {
+    if (box.style.display !== 'block') {
+      Runtime.table.hintLevel = 1;
+      box.innerText = tableHintFor(q, 1);
+      box.style.display = 'block';
+      return;
+    }
+    if (Runtime.table.hintLevel < 3) {
+      Runtime.table.hintLevel += 1;
+      box.innerText = tableHintFor(q, Runtime.table.hintLevel);
+      return;
+    }
+    Runtime.table.hintLevel = 0;
+    box.style.display = 'none';
+    return;
+  }
+
+  box.innerText = tableHintFor(q, 1);
+  box.style.display = box.style.display === 'block' ? 'none' : 'block';
 }
 
 function checkTableAnswer() {
@@ -11335,6 +11504,16 @@ function initializeApp() {
   renderTableToc();
   loadTableQuestion(getNextTableQuestionIndex());
   switchMode('journal', false);
+
+  if (typeof window.matchMedia === 'function') {
+    const mediaQuery = window.matchMedia('(max-width: 600px)');
+    const mediaHandler = () => syncTableViewToViewport();
+    Runtime.ui.tableMediaQuery = mediaQuery;
+    Runtime.ui.tableMediaHandler = mediaHandler;
+    // 現行SafariはaddEventListener対応。旧Safari向けにaddListenerもフォールバックする。
+    if (typeof mediaQuery.addEventListener === 'function') mediaQuery.addEventListener('change', mediaHandler);
+    else if (typeof mediaQuery.addListener === 'function') mediaQuery.addListener(mediaHandler);
+  }
 
   const wrapper = document.querySelector('.grid-table-wrapper');
   if (wrapper && typeof ResizeObserver !== 'undefined') {
