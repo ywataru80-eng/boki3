@@ -1725,6 +1725,7 @@
       gap: 6px;
       margin-top: 10px;
     }
+    .learning-quick-grid-primary { grid-template-columns: minmax(0, .72fr) minmax(0, 1.28fr); }
     .learning-quick-item {
       min-width: 0;
       padding: 7px;
@@ -1765,6 +1766,12 @@
     .learning-topics-details > summary::-webkit-details-marker { display: none; }
     .learning-topics-details > summary::before { content: '＋'; margin-right: 6px; color: #2563eb; }
     .learning-topics-details[open] > summary::before { content: '－'; }
+    .learning-details-summary {
+      margin: 0 0 7px;
+      color: #64748b;
+      font-size: .69rem;
+    }
+    .learning-details-summary strong { color: #334155; font-variant-numeric: tabular-nums; }
     .learning-topic-list {
       display: grid;
       grid-template-columns: 1fr;
@@ -1825,6 +1832,19 @@
       border-color: #86efac;
       background: #f0fdf4;
     }
+    .next-stage-card.preview {
+      padding: 9px 11px;
+      border-color: #dbe3f0;
+      background: #f8fafc;
+    }
+    .next-stage-card.preview .next-stage-kicker { color: #64748b; }
+    .next-stage-card.preview .next-stage-title {
+      margin-top: 1px;
+      color: #475569;
+      font-size: .76rem;
+      font-weight: 800;
+      line-height: 1.5;
+    }
     .next-stage-kicker {
       color: #6366f1;
       font-size: .65rem;
@@ -1846,6 +1866,7 @@
       font-size: .72rem;
       line-height: 1.55;
     }
+    .next-stage-link[hidden], .next-stage-status[hidden], .next-stage-body[hidden] { display: none !important; }
     .next-stage-link {
       display: inline-flex;
       min-height: 44px;
@@ -1907,6 +1928,7 @@
       .learning-overall-level { font-size: 1.28rem; }
       .learning-today-summary { font-size: .66rem; }
       .learning-quick-grid { gap: 4px; }
+      .learning-quick-grid-primary { grid-template-columns: 1fr; }
       .learning-quick-item { padding: 6px 5px; }
     }
 
@@ -1917,7 +1939,7 @@
 <div class="container">
   <header>
     <h1>日商簿記3級 総合演習システム（仕訳200問＋表問題40問）</h1>
-    <p>2026年度出題区分対応 × 仕訳200問 × 表・決算演習40問 × 解説 × 教材版 v10.4</p>
+    <p>2026年度出題区分対応 × 仕訳200問 × 表・決算演習40問 × 解説 × 教材版 v10.5</p>
   </header>
   <div id="data-integrity-banner" class="data-integrity-banner" role="alert" aria-live="polite"></div>
 
@@ -1927,36 +1949,36 @@
   </div>
 
 
-  <section class="learning-growth-card" id="learning-growth-card" aria-label="教材内の学習レベルと成長">
+  <section class="learning-growth-card" id="learning-growth-card" aria-label="学習の進み具合">
     <div class="learning-growth-head">
       <div>
-        <div class="learning-growth-kicker">教材内の学習レベル</div>
+        <div class="learning-growth-kicker">学習の進み具合</div>
         <div class="learning-overall-line">
           <strong class="learning-overall-level" id="learning-overall-level">Lv.1</strong>
           <span class="learning-overall-title" id="learning-overall-title">簿記見習い</span>
         </div>
       </div>
-      <div class="learning-today-summary" id="learning-today-summary">今日 +0 EXP</div>
+      <div class="learning-today-summary" id="learning-today-summary">今日 0 / 10問</div>
     </div>
     <div class="learning-exp-track" aria-hidden="true"><div class="learning-exp-fill" id="learning-overall-bar"></div></div>
-    <div class="learning-exp-text" id="learning-overall-progress-text">学習履歴から教材内EXPを計算しています。</div>
-    <p class="learning-disclaimer">レベル・EXP・称号は、この教材内の学習履歴と復習定着度を見える化する独自指標です。日商簿記検定の得点、合格可能性、公式評価を示すものではありません。</p>
-    <div class="learning-quick-grid">
-      <div class="learning-quick-item"><span>学習履歴</span><strong id="learning-studied-count">0 / 240</strong></div>
-      <div class="learning-quick-item"><span>達成記録</span><strong id="learning-achievement-count">0</strong></div>
-      <div class="learning-quick-item"><span>重点候補</span><strong id="learning-weakest-topic">—</strong></div>
+    <div class="learning-exp-text" id="learning-overall-progress-text">次のLvまでの進み具合を計算しています。</div>
+    <p class="learning-disclaimer">※レベルは教材内の学習指標で、検定の得点・合格判定ではありません。</p>
+    <div class="learning-quick-grid learning-quick-grid-primary">
+      <div class="learning-quick-item"><span>学習済み</span><strong id="learning-studied-count">0 / 240問</strong></div>
+      <div class="learning-quick-item"><span>次におすすめ</span><strong id="learning-weakest-topic">—</strong></div>
     </div>
-    <div class="learning-next-goal" id="learning-next-goal"></div>
+    <div class="learning-next-goal" id="learning-next-goal">今日の目標を確認しています。</div>
     <details class="learning-topics-details" id="learning-topics-details">
-      <summary>項目別レベルを見る</summary>
+      <summary>項目別レベル・実績を見る</summary>
+      <div class="learning-details-summary">実績 <strong id="learning-achievement-count">0個</strong></div>
       <div class="learning-topic-list" id="learning-topic-list"></div>
     </details>
-    <div class="next-stage-card" id="learning-next-stage-card">
-      <div class="next-stage-kicker">2級への橋渡し</div>
-      <div class="next-stage-title" id="learning-next-stage-title">3級教材を一巡すると、次の学習候補を表示します</div>
-      <div class="next-stage-status" id="learning-next-stage-status"></div>
-      <div class="next-stage-body" id="learning-next-stage-body"></div>
-      <a class="next-stage-link" href="https://www.kentei.ne.jp/bookkeeping/class2" target="_blank" rel="noopener noreferrer">日本商工会議所「簿記2級」の公式情報を確認</a>
+    <div class="next-stage-card preview" id="learning-next-stage-card">
+      <div class="next-stage-kicker" id="learning-next-stage-kicker">この先の学習</div>
+      <div class="next-stage-title" id="learning-next-stage-title">3級を一巡すると、2級への学習ガイドが開きます。</div>
+      <div class="next-stage-status" id="learning-next-stage-status" hidden></div>
+      <div class="next-stage-body" id="learning-next-stage-body" hidden></div>
+      <a class="next-stage-link" id="learning-next-stage-link" href="https://www.kentei.ne.jp/bookkeeping/class2" target="_blank" rel="noopener noreferrer" hidden>日本商工会議所「簿記2級」の公式情報を確認</a>
     </div>
   </section>
   <div class="learning-toast" id="learning-toast" role="status" aria-live="polite" hidden></div>
@@ -1968,10 +1990,10 @@
         <span class="backup-summary-sub">端末変更・ブラウザデータ削除に備える</span>
       </summary>
       <div class="backup-body">
-        <p class="backup-help">仕訳・表問題の学習履歴、SRS、教材内レベル用EXPはこのブラウザ内に保存されます。必要に応じてJSONファイルへ保存し、同じ教材へ復元できます。ブラウザ保存に失敗した場合は、この欄を自動的に開いて原因区分とJSONバックアップ手順を案内します。復元時はファイル形式と教材データの互換性を確認します。チェックサムは破損・意図しない変更の検出用で、暗号学的な署名ではありません。</p>
+        <p class="backup-help">学習履歴・復習予定・教材内レベルはこのブラウザに保存されます。端末変更やデータ消失に備えて、必要に応じてバックアップファイルを保存できます。保存に失敗した場合は、この欄を自動で開いて対処方法を案内します。復元時はファイルの互換性と破損を確認します。</p>
         <div class="backup-actions">
-          <button type="button" class="backup-btn primary" data-action="export-progress-backup">JSONバックアップを保存</button>
-          <button type="button" class="backup-btn" data-action="choose-progress-restore">JSONから復元</button>
+          <button type="button" class="backup-btn primary" data-action="export-progress-backup">バックアップを保存</button>
+          <button type="button" class="backup-btn" data-action="choose-progress-restore">バックアップから復元</button>
         </div>
         <input id="progress-import-input" type="file" accept="application/json,.json" hidden>
         <div class="backup-status" id="backup-status" role="status" aria-live="polite"></div>
@@ -1998,10 +2020,6 @@
     <div class="dash-card">
       <div class="title">連続学習</div>
       <div class="value streak" id="stat-streak">0 日</div>
-    </div>
-    <div class="dash-card">
-      <div class="title">総合レベル</div>
-      <div class="value" id="stat-overall-level">Lv.1</div>
     </div>
   </div>
 
@@ -2069,9 +2087,9 @@
         </tbody>
       </table>
     </div>
-    <p id="journal-account-selection-help" class="visually-hidden">勘定科目欄はブラウザ標準の選択メニューです。選択した勘定科目名は画面上では折り返して表示されます。</p>
+    <p id="journal-account-selection-help" class="visually-hidden">勘定科目欄を選択して借方・貸方の科目を指定します。選択した科目名は画面上で折り返して表示されます。</p>
     <div class="journal-cbt-note">同じ勘定科目は、借方・貸方それぞれで1回までです。本教材では数字を3桁区切りで表示します（ネット試験ではカンマ入力は不要です）。</div>
-    <div class="journal-design-note">勘定科目候補はスマホでの反復学習用に、各問題5～6科目へ整理しています。本試験画面の候補数や画面配置を再現する機能ではありません。</div>
+    <div class="journal-design-note">勘定科目候補は各問題5～6科目に整理しています。本試験の候補数や画面配置を再現するものではありません。</div>
 
     <div class="journal-row-controls">
       <button type="button" class="row-control-btn" id="add-row-btn" data-action="add-journal-row">＋ 行を追加</button>
@@ -2261,7 +2279,7 @@
 <script type="module">
 
 /*
- * ===== v10.4 内部アーキテクチャ方針 =====
+ * ===== v10.5 内部アーキテクチャ方針 =====
  * 配布物はGitHub Pagesへそのまま置ける単一HTMLを維持する。
  * 物理ファイルは分割せず、以下の責務を論理的に分離して扱う。
  *   1) Domain Data      : 仕訳200問・表40問・目次・勘定科目
@@ -11272,7 +11290,7 @@ function validateVisibleProductClaims() {
     .map(claim => `根拠を限定していない表示があります: ${claim}`);
 }
 
-const REQUIRED_DOM_IDS = Object.freeze(['account-effect-list', 'account-nature-details', 'add-row-btn', 'backup-status', 'calc-display', 'calc-expression', 'calc-learning-note', 'calculator-modal', 'correct-journal-content', 'data-integrity-banner', 'diagnostic-box', 'diagnostic-list', 'diagnostic-summary', 'eval-btn-0', 'eval-btn-2', 'eval-btn-3', 'eval-instruction', 'explanation-reference-list', 'explanation-reference-policy', 'hint-box', 'journal-mode-section', 'journal-rows', 'journal-account-selection-help', 'learning-achievement-count', 'learning-growth-card', 'learning-next-goal', 'learning-next-stage-body', 'learning-next-stage-card', 'learning-next-stage-status', 'learning-next-stage-title', 'learning-overall-bar', 'learning-overall-level', 'learning-overall-progress-text', 'learning-overall-title', 'learning-studied-count', 'learning-today-summary', 'learning-toast', 'learning-topic-list', 'learning-weakest-topic', 'mode-journal-btn', 'mode-table-btn', 'problem-category', 'problem-difficulty', 'problem-id-text', 'problem-statement', 'problem-topic-level', 'progress-bar', 'progress-import-input', 'progress-text', 'quiz-card', 'remove-row-btn', 'result-box', 'result-detail', 'result-title', 'scenario-amount-section', 'scenario-amount-text', 'scenario-confusion-section', 'scenario-confusion-text', 'scenario-cue-list', 'scenario-guide-box', 'scenario-reading-text', 'scenario-reason-text', 'stat-due', 'stat-overall-level', 'stat-streak', 'stat-total', 'stat-unstudied', 'submit-btn', 'table-exercise-host', 'table-exercise-wrapper', 'table-explanation-box', 'table-hint-box', 'table-mode-section', 'table-problem-category', 'table-problem-givens', 'table-problem-givens-block', 'table-problem-id-text', 'table-problem-instruction', 'table-problem-statement', 'table-problem-targets', 'table-problem-targets-block', 'table-problem-topic-level', 'table-quiz-card', 'table-result-box', 'table-result-detail', 'table-result-title', 'table-segment-nav', 'table-submit-btn', 'table-toc-card', 'table-toc-details', 'table-toc-groups', 'table-workspace-help', 'table-workspace-title', 'toc-card', 'toc-details', 'toc-groups']);
+const REQUIRED_DOM_IDS = Object.freeze(['account-effect-list', 'account-nature-details', 'add-row-btn', 'backup-status', 'calc-display', 'calc-expression', 'calc-learning-note', 'calculator-modal', 'correct-journal-content', 'data-integrity-banner', 'diagnostic-box', 'diagnostic-list', 'diagnostic-summary', 'eval-btn-0', 'eval-btn-2', 'eval-btn-3', 'eval-instruction', 'explanation-reference-list', 'explanation-reference-policy', 'hint-box', 'journal-mode-section', 'journal-rows', 'journal-account-selection-help', 'learning-achievement-count', 'learning-growth-card', 'learning-next-goal', 'learning-next-stage-body', 'learning-next-stage-card', 'learning-next-stage-kicker', 'learning-next-stage-link', 'learning-next-stage-status', 'learning-next-stage-title', 'learning-overall-bar', 'learning-overall-level', 'learning-overall-progress-text', 'learning-overall-title', 'learning-studied-count', 'learning-today-summary', 'learning-toast', 'learning-topic-list', 'learning-weakest-topic', 'mode-journal-btn', 'mode-table-btn', 'problem-category', 'problem-difficulty', 'problem-id-text', 'problem-statement', 'problem-topic-level', 'progress-bar', 'progress-import-input', 'progress-text', 'quiz-card', 'remove-row-btn', 'result-box', 'result-detail', 'result-title', 'scenario-amount-section', 'scenario-amount-text', 'scenario-confusion-section', 'scenario-confusion-text', 'scenario-cue-list', 'scenario-guide-box', 'scenario-reading-text', 'scenario-reason-text', 'stat-due', 'stat-streak', 'stat-total', 'stat-unstudied', 'submit-btn', 'table-exercise-host', 'table-exercise-wrapper', 'table-explanation-box', 'table-hint-box', 'table-mode-section', 'table-problem-category', 'table-problem-givens', 'table-problem-givens-block', 'table-problem-id-text', 'table-problem-instruction', 'table-problem-statement', 'table-problem-targets', 'table-problem-targets-block', 'table-problem-topic-level', 'table-quiz-card', 'table-result-box', 'table-result-detail', 'table-result-title', 'table-segment-nav', 'table-submit-btn', 'table-toc-card', 'table-toc-details', 'table-toc-groups', 'table-workspace-help', 'table-workspace-title', 'toc-card', 'toc-details', 'toc-groups']);
 
 function validateUiStructure() {
   const issues = [];
@@ -11296,6 +11314,12 @@ function validateUiStructure() {
   }
   const visibleText = String(document.body?.innerText || '');
   if (visibleText.includes('iPhone入力') || visibleText.includes('全体表')) issues.push('表問題UIに端末・実装寄りの表示名が残っています');
+  const growthText = String(document.getElementById('learning-growth-card')?.innerText || '');
+  if (growthText.includes('重点候補') || growthText.includes('達成記録')) issues.push('学習進捗カードにシステム寄りの旧表示名が残っています');
+  const stageLink = document.getElementById('learning-next-stage-link');
+  if (stageLink && !stageLink.hidden && Number(Object.keys(Runtime.state.progress || {}).length + Object.keys(Runtime.state.tableProgress || {}).length) < 240) {
+    issues.push('3級一巡前に2級公式リンクが常時表示されています');
+  }
   return issues;
 }
 
@@ -11562,7 +11586,7 @@ function runIntegrityCheck() {
 deepFreeze(QUESTION_DATABASE);
 deepFreeze(TABLE_DATABASE);
 
-const APP_VERSION = 'v10.4';
+const APP_VERSION = 'v10.5';
 const STORAGE_SCHEMA_VERSION = 3;
 const COMPATIBLE_STORAGE_SCHEMA_VERSIONS = new Set([2, 3]);
 const JOURNAL_BANK_VERSION = 'v7.2';
@@ -11658,8 +11682,8 @@ function reportStorageSaveFailure(error, serializedState = '') {
   const sizeKb = serializedState ? Math.max(1, Math.ceil(utf8ByteLength(serializedState) / 1024)) : null;
   const sizeText = sizeKb ? `（現在の保存データ約${sizeKb.toLocaleString('ja-JP')}KB）` : '';
   const message = quota
-    ? `ブラウザの保存領域へ学習履歴を保存できませんでした${sizeText}。容量上限に達した可能性があります。JSONバックアップを保存して学習履歴を保護してください。`
-    : `ブラウザへ学習履歴を保存できませんでした${sizeText}。ブラウザ設定・保存領域・プライベート閲覧等により保存が拒否される場合があります。JSONバックアップを保存して学習履歴を保護してください。`;
+    ? `ブラウザの保存領域へ学習履歴を保存できませんでした${sizeText}。容量上限に達した可能性があります。バックアップを保存して学習履歴を保護してください。`
+    : `ブラウザへ学習履歴を保存できませんでした${sizeText}。ブラウザ設定・保存領域・プライベート閲覧等により保存が拒否される場合があります。バックアップを保存して学習履歴を保護してください。`;
   showStoragePersistenceFailure(message, '保存エラー');
 }
 
@@ -11668,7 +11692,7 @@ function reportStorageLoadFailure(error) {
   const detail = quota
     ? '保存領域へのアクセス時にquota系エラーが返されました。'
     : 'ブラウザから保存領域へのアクセスが拒否または失敗しました。';
-  const message = `以前の学習履歴をブラウザから読み込めなかったため、初期状態で開始します。${detail} JSONバックアップがある場合は「JSONから復元」を使用してください。`;
+  const message = `以前の学習履歴をブラウザから読み込めなかったため、初期状態で開始します。${detail} バックアップファイルがある場合は「バックアップから復元」を使用してください。`;
   showStoragePersistenceFailure(message, '履歴読込エラー');
 }
 
@@ -11845,7 +11869,7 @@ class StorageManager {
     }
     const rawSchema = raw.schemaVersion == null ? 2 : raw.schemaVersion;
     if (!COMPATIBLE_STORAGE_SCHEMA_VERSIONS.has(rawSchema)) {
-      result.error = `保存形式のバージョンが異なるため復元できません（schema ${raw.schemaVersion ?? '不明'}）。`;
+      result.error = `この版では読み込めない保存形式です（保存形式 ${raw.schemaVersion ?? '不明'}）。`;
       return result;
     }
 
@@ -11853,7 +11877,7 @@ class StorageManager {
     if (payload.stateChecksum != null && payload.state) {
       const actual = stableBankHash(raw);
       if (String(payload.stateChecksum) !== actual) {
-        result.error = 'バックアップのチェックサムが一致しません。ファイルが途中で変更・破損している可能性があります。';
+        result.error = 'バックアップファイルの整合性確認に失敗しました。ファイルが途中で変更・破損している可能性があります。';
         return result;
       }
     }
@@ -12080,16 +12104,10 @@ function markNewAchievements(snapshot) {
   return newlyUnlocked;
 }
 
-function getNextLearningGoal(snapshot) {
-  if (snapshot.journalStudied < 10) return `次の節目：仕訳10問まであと ${10 - snapshot.journalStudied}問`;
-  if (snapshot.journalStudied < 50) return `次の節目：仕訳50問まであと ${50 - snapshot.journalStudied}問`;
-  if (snapshot.journalStudied < 100) return `次の節目：仕訳100問まであと ${100 - snapshot.journalStudied}問`;
-  if (snapshot.journalStudied < 200) return `次の節目：仕訳200問一巡まであと ${200 - snapshot.journalStudied}問`;
-  if (snapshot.tableAttempted < 10) return `次の節目：表問題10問まであと ${10 - snapshot.tableAttempted}問`;
-  if (snapshot.tableAttempted < 40) return `次の節目：表問題40問一巡まであと ${40 - snapshot.tableAttempted}問`;
-  if (snapshot.totalStudied < 240) return `次の節目：全240問の学習一巡まであと ${240 - snapshot.totalStudied}問`;
-  if (snapshot.overall.level < OVERALL_LEVEL_MAX) return `全240問を一巡済み。復習で定着度を上げ、総合Lv.${snapshot.overall.level + 1}を目指せます。`;
-  return '教材内レベル上限に到達しています。復習期限が来た問題で定着を維持しましょう。';
+function getNextLearningGoal() {
+  const todayCount = Number.isFinite(Runtime.state.todayCount) ? Math.max(0, Math.floor(Runtime.state.todayCount)) : 0;
+  if (todayCount < DAILY_STUDY_TARGET) return `今日の目標：あと ${DAILY_STUDY_TARGET - todayCount}問`;
+  return `✓ 今日の目標 ${DAILY_STUDY_TARGET}問を達成しました`;
 }
 
 function refreshTocLevelLabels(snapshot) {
@@ -12116,19 +12134,18 @@ function renderLearningDashboard() {
 
   setText('learning-overall-level', `Lv.${snapshot.overall.level}`);
   setText('learning-overall-title', snapshot.overall.title);
-  setText('stat-overall-level', `Lv.${snapshot.overall.level}`);
-  setText('learning-today-summary', `今日 +${Math.max(0, Math.floor(Number(game.todayXp) || 0))} EXP・${Runtime.state.todayCount || 0}問`);
+  setText('learning-today-summary', `今日 ${Runtime.state.todayCount || 0} / ${DAILY_STUDY_TARGET}問`);
   const overallBar = document.getElementById('learning-overall-bar');
   if (overallBar) overallBar.style.width = `${Math.round(snapshot.overall.levelProgress * 100)}%`;
   setText('learning-overall-progress-text', snapshot.overall.level >= OVERALL_LEVEL_MAX
-    ? `総合EXP ${snapshot.totalXp.toLocaleString('ja-JP')} / ${snapshot.maxXp.toLocaleString('ja-JP')}・教材内レベル上限`
-    : `次のLvまで ${snapshot.overall.xpToNext.toLocaleString('ja-JP')} EXP　｜　総合EXP ${snapshot.totalXp.toLocaleString('ja-JP')} / ${snapshot.maxXp.toLocaleString('ja-JP')}`);
-  setText('learning-studied-count', `${snapshot.totalStudied} / 240`);
+    ? '教材内レベル上限に到達しています'
+    : `次のLvまで ${snapshot.overall.xpToNext.toLocaleString('ja-JP')} EXP`);
+  setText('learning-studied-count', `${snapshot.totalStudied} / 240問`);
   const achieved = ACHIEVEMENT_DEFINITIONS.filter(item => item.check(snapshot));
-  setText('learning-achievement-count', `${achieved.length} / ${ACHIEVEMENT_DEFINITIONS.length}`);
+  setText('learning-achievement-count', `${achieved.length}個`);
   const weakest = [...snapshot.topics].sort((a, b) => a.ratio - b.ratio || a.id.localeCompare(b.id))[0];
   setText('learning-weakest-topic', weakest ? `${weakest.title} Lv.${weakest.level}` : '—');
-  setText('learning-next-goal', getNextLearningGoal(snapshot));
+  setText('learning-next-goal', getNextLearningGoal());
 
   const topicHost = document.getElementById('learning-topic-list');
   if (topicHost) {
@@ -12161,15 +12178,32 @@ function renderLearningDashboard() {
   }
 
   const stageCard = document.getElementById('learning-next-stage-card');
+  const stageStatus = document.getElementById('learning-next-stage-status');
+  const stageBody = document.getElementById('learning-next-stage-body');
+  const stageLink = document.getElementById('learning-next-stage-link');
   const allStudied = snapshot.totalStudied >= 240;
-  if (stageCard) stageCard.classList.toggle('ready', allStudied);
-  setText('learning-next-stage-title', allStudied ? '次のステージ：日商簿記2級' : '3級教材を一巡すると、次の学習候補を表示します');
-  setText('learning-next-stage-status', allStudied
-    ? 'この教材の全240問に学習履歴がつきました（教材内の「一巡」）。'
-    : `全240問の学習一巡まであと ${Math.max(0, 240 - snapshot.totalStudied)}問です。`);
-  setText('learning-next-stage-body', allStudied
-    ? 'これは日商簿記3級の合格判定ではありません。日本商工会議所の2026年度案内では、2級は高度な商業簿記に加え、工業簿記（原価計算を含む）を扱います。3級で練習した仕訳・集計・決算の基礎を整理したうえで、2級の公式出題範囲へ進むための橋渡しとして表示しています。'
-    : '一巡後もレベルは下がりません。復習期限が来た問題で項目EXPを伸ばしながら、2級へ進む前の弱点確認に使えます。');
+  const halfway = snapshot.totalStudied >= 120;
+  if (stageCard) {
+    stageCard.classList.toggle('ready', allStudied);
+    stageCard.classList.toggle('preview', !allStudied);
+  }
+  setText('learning-next-stage-kicker', allStudied ? '2級への橋渡し' : 'この先の学習');
+  setText('learning-next-stage-title', allStudied
+    ? '次のステージ：日商簿記2級'
+    : '3級を一巡すると、2級への学習ガイドが開きます。');
+  if (stageStatus) {
+    stageStatus.hidden = !allStudied && !halfway;
+    stageStatus.textContent = allStudied
+      ? 'この教材の全240問に学習履歴がつきました（教材内の「一巡」）。'
+      : halfway ? `一巡まであと ${Math.max(0, 240 - snapshot.totalStudied)}問です。` : '';
+  }
+  if (stageBody) {
+    stageBody.hidden = !allStudied;
+    stageBody.textContent = allStudied
+      ? 'これは日商簿記3級の合格判定ではありません。3級で練習した仕訳・集計・決算の基礎を整理したうえで、次の学習範囲を確認するための案内です。'
+      : '';
+  }
+  if (stageLink) stageLink.hidden = !allStudied;
 
   refreshTocLevelLabels(snapshot);
   if (Runtime.journal.currentQuestionIndex >= 0) renderCurrentTopicLevel('journal', QUESTION_DATABASE[Runtime.journal.currentQuestionIndex]?.id, 'problem-topic-level', snapshot);
@@ -14553,7 +14587,7 @@ async function handleProgressRestoreFile(event) {
   const file = input?.files?.[0];
   if (!file) return;
   if (file.size > MAX_BACKUP_FILE_BYTES) {
-    setBackupStatus(`ファイルが大きすぎます。${Math.floor(MAX_BACKUP_FILE_BYTES / 1024 / 1024)}MB以下のJSONを選択してください。`, 'error');
+    setBackupStatus(`ファイルが大きすぎます。${Math.floor(MAX_BACKUP_FILE_BYTES / 1024 / 1024)}MB以下のバックアップファイルを選択してください。`, 'error');
     input.value = '';
     return;
   }
@@ -14593,7 +14627,7 @@ async function handleProgressRestoreFile(event) {
     setTimeout(() => window.location.reload(), 350);
   } catch (error) {
     console.error('Backup import failed.', error);
-    setBackupStatus('JSONを読み込めませんでした。バックアップファイルの内容を確認してください。', 'error');
+    setBackupStatus('バックアップファイルを読み込めませんでした。ファイルの内容を確認してください。', 'error');
     if (input) input.value = '';
   }
 }
