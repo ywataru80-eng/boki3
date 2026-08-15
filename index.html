@@ -1382,7 +1382,7 @@
     }
     .journal-account-wrap:focus-within .journal-account-display { background: #f0fdf4; }
 
-    /* v10.3: Windows High Contrast / forced-colors ではOSのシステム色でフォーカスを明示する。
+    /* v10.4: Windows High Contrast / forced-colors ではOSのシステム色でフォーカスを明示する。
        ネイティブselect自体はDOM・アクセシビリティツリーに残し、表示用spanはaria-hiddenのまま使用する。 */
     @media (forced-colors: active) {
       .journal-account-wrap:focus-within {
@@ -1444,7 +1444,7 @@
 
   
 
-    /* ===== v10.3 表問題の問題文: 指示 → 与件 → 入力表の順に読む ===== */
+    /* ===== v10.4 表問題の問題文: 指示 → 与件 → 入力表の順に読む ===== */
     .table-problem-brief {
       margin: 12px 0 9px;
       display: grid;
@@ -1917,7 +1917,7 @@
 <div class="container">
   <header>
     <h1>日商簿記3級 総合演習システム（仕訳200問＋表問題40問）</h1>
-    <p>2026年度出題区分対応 × 仕訳200問 × 表・決算演習40問 × 解説 × 教材版 v10.3</p>
+    <p>2026年度出題区分対応 × 仕訳200問 × 表・決算演習40問 × 解説 × 教材版 v10.4</p>
   </header>
   <div id="data-integrity-banner" class="data-integrity-banner" role="alert" aria-live="polite"></div>
 
@@ -2261,7 +2261,7 @@
 <script type="module">
 
 /*
- * ===== v10.3 内部アーキテクチャ方針 =====
+ * ===== v10.4 内部アーキテクチャ方針 =====
  * 配布物はGitHub Pagesへそのまま置ける単一HTMLを維持する。
  * 物理ファイルは分割せず、以下の責務を論理的に分離して扱う。
  *   1) Domain Data      : 仕訳200問・表40問・目次・勘定科目
@@ -11290,6 +11290,7 @@ function validateUiStructure() {
   if (sampleJournalSelect && sampleJournalSelect.getAttribute('aria-describedby') !== 'journal-account-selection-help') issues.push('仕訳勘定科目selectに読み上げ補助説明が関連付けられていません');
   if (!document.getElementById('table-workspace-guide')) issues.push('表問題の見方ガイドがありません');
   if (typeof reportStorageSaveFailure !== 'function' || typeof reportStorageLoadFailure !== 'function' || typeof isQuotaExceededError !== 'function') issues.push('ブラウザ保存・読込失敗の診断／バックアップ誘導機構がありません');
+  document.querySelectorAll('[data-action]').forEach(el => { if (!el.closest(ACTION_ROOT_SELECTOR)) issues.push(`data-actionが許可されたUI領域外にあります: ${el.dataset.action || '不明'}`); });
   if (!document.getElementById('table-problem-instruction') || !document.getElementById('table-problem-givens') || !document.getElementById('table-problem-targets')) {
     issues.push('表問題の「指示・与件・入力対象」構造がありません');
   }
@@ -11328,6 +11329,52 @@ function validateStoragePersistenceUtilities() {
   const asciiBytes = utf8ByteLength('abc');
   const japaneseBytes = utf8ByteLength('簿記');
   if (!(asciiBytes >= 3 && japaneseBytes >= 2)) issues.push('保存データのバイト数計測ユーティリティ異常');
+  return issues;
+}
+
+
+function buildFullProgressStorageFixture() {
+  const state = StorageManager.getDefaultState();
+  const now = '2026-08-15T00:00:00.000Z';
+  QUESTION_DATABASE.forEach(q => {
+    state.progress[q.id] = { intervalDays: 3650, repetitionCount: 999, easeFactor: 5, nextReviewDate: now, lastReviewed: now, lastQuality: 3 };
+    state.learningGame.journalXp[q.id] = QUESTION_MASTERY_XP_MAX;
+  });
+  TABLE_DATABASE.forEach(q => {
+    state.tableProgress[q.id] = { attempts: 999, correct: true, lastResultCorrect: true, intervalDays: 3650, repetitionCount: 999, easeFactor: 5, nextReviewDate: now, lastAttempt: now, lastReviewed: now };
+    state.learningGame.tableXp[q.id] = QUESTION_MASTERY_XP_MAX;
+  });
+  state.streak = 999;
+  state.lastStudyDate = '2026-08-15';
+  state.todayCount = 999;
+  state.learningGame.todayXp = 99999;
+  state.learningGame.dailyGoalCelebratedDate = '2026-08-15';
+  ACHIEVEMENT_DEFINITIONS.forEach(item => { state.learningGame.announcedAchievements[item.id] = true; });
+  return state;
+}
+
+function validateStorageFootprintAndRuntimeBoundary() {
+  const issues = [];
+  const fixture = buildFullProgressStorageFixture();
+  const serialized = JSON.stringify(fixture);
+  const bytes = utf8ByteLength(serialized);
+  if (!(bytes > 0)) issues.push('全240問履歴入り試験データのサイズを計測できません');
+  if (bytes >= STORAGE_DIAGNOSTIC_WARN_BYTES) issues.push(`全240問履歴入り試験データが内部監視しきい値を超えています: ${bytes} bytes`);
+  if (Object.prototype.hasOwnProperty.call(fixture, 'draft')) issues.push('永続stateにdraftが混入しています');
+  if (Object.prototype.hasOwnProperty.call(StorageManager.getDefaultState(), 'mode')) issues.push('永続stateにUIモードが混入しています');
+  const backup = StorageManager.createBackupPayload(fixture);
+  if (backup?.state && Object.prototype.hasOwnProperty.call(backup.state, 'draft')) issues.push('JSONバックアップに表入力draftが混入しています');
+  return issues;
+}
+
+function validatePerformanceDiagnosticsUtilities() {
+  const issues = [];
+  const before = { ...PerformanceDiagnostics };
+  recordStoragePerformance({ bytes: 123, serializeMs: 1.25, writeMs: 2.5 });
+  if (PerformanceDiagnostics.storageLastBytes !== 123) issues.push('保存サイズ診断の記録が不正です');
+  if (Math.abs(PerformanceDiagnostics.storageLastSerializeMs - 1.25) > 1e-9) issues.push('JSON直列化時間診断の記録が不正です');
+  if (Math.abs(PerformanceDiagnostics.storageLastWriteMs - 2.5) > 1e-9) issues.push('LocalStorage書込時間診断の記録が不正です');
+  Object.assign(PerformanceDiagnostics, before);
   return issues;
 }
 
@@ -11376,6 +11423,7 @@ function validateRuntimeShape() {
   ['journal', 'table', 'calculator', 'ui'].forEach(key => {
     if (!Object.isSealed(Runtime[key])) issues.push(`Runtime.${key}がsealされていません`);
   });
+  if (!Object.isSealed(PerformanceDiagnostics)) issues.push('PerformanceDiagnosticsがsealされていません');
   return issues;
 }
 
@@ -11438,6 +11486,8 @@ function runDetailedIntegrityCheck() {
   const numericInputIssues = validateNumericInputUtilities();
   const backupIssues = validateBackupUtilities();
   const storagePersistenceIssues = validateStoragePersistenceUtilities();
+  const storageFootprintIssues = validateStorageFootprintAndRuntimeBoundary();
+  const performanceDiagnosticsIssues = validatePerformanceDiagnosticsUtilities();
   const confusionNoteIssues = validateConfusionNoteCatalog();
   const referenceCatalogIssues = validateContentReferenceCatalog();
   const sourceAuditedCaseIssues = validateSourceAuditedCoreCases();
@@ -11448,7 +11498,7 @@ function runDetailedIntegrityCheck() {
   const learningLevelIssues = validateLearningLevelSystem();
   Object.assign(result, {
     diagnosticIssues, classificationIssues, explanationIssues, explanationAlignmentIssues,
-    learningSupportIssues, numericInputIssues, backupIssues, storagePersistenceIssues, confusionNoteIssues,
+    learningSupportIssues, numericInputIssues, backupIssues, storagePersistenceIssues, storageFootprintIssues, performanceDiagnosticsIssues, confusionNoteIssues,
     referenceCatalogIssues, sourceAuditedCaseIssues, sourceAuditedTextIssues,
     visibleClaimIssues, tablePresentationIssues, calculatorIssues, learningLevelIssues
   });
@@ -11460,6 +11510,8 @@ function runDetailedIntegrityCheck() {
   result.issues.push(...numericInputIssues.map(issue => `金額入力: ${issue}`));
   result.issues.push(...backupIssues.map(issue => `バックアップ: ${issue}`));
   result.issues.push(...storagePersistenceIssues.map(issue => `ブラウザ保存: ${issue}`));
+  result.issues.push(...storageFootprintIssues.map(issue => `保存容量境界: ${issue}`));
+  result.issues.push(...performanceDiagnosticsIssues.map(issue => `性能診断: ${issue}`));
   result.issues.push(...confusionNoteIssues.map(issue => `混同防止解説: ${issue}`));
   result.issues.push(...referenceCatalogIssues.map(issue => `参照資料: ${issue}`));
   result.issues.push(...sourceAuditedCaseIssues.map(issue => `重点論点監査: ${issue}`));
@@ -11510,7 +11562,7 @@ function runIntegrityCheck() {
 deepFreeze(QUESTION_DATABASE);
 deepFreeze(TABLE_DATABASE);
 
-const APP_VERSION = 'v10.3';
+const APP_VERSION = 'v10.4';
 const STORAGE_SCHEMA_VERSION = 3;
 const COMPATIBLE_STORAGE_SCHEMA_VERSIONS = new Set([2, 3]);
 const JOURNAL_BANK_VERSION = 'v7.2';
@@ -11533,7 +11585,43 @@ const BACKUP_FORMAT_VERSION = 2;
 const COMPATIBLE_BACKUP_FORMAT_VERSIONS = new Set([1, 2]);
 const MAX_BACKUP_FILE_BYTES = 2 * 1024 * 1024;
 const STORAGE_FAILURE_ALERT_COOLDOWN_MS = 15000;
+// 以下はブラウザ上限ではなく、本教材内での性能監視用しきい値。超過しても保存を拒否しない。
+const STORAGE_DIAGNOSTIC_WARN_BYTES = 256 * 1024;
+const STORAGE_DIAGNOSTIC_WARN_MS = 16;
+const CANVAS_REFIT_DIAGNOSTIC_WARN_MS = 16;
 let lastStorageFailureAlertAt = 0;
+
+const PerformanceDiagnostics = Object.seal({
+  storageSaveCount: 0,
+  storageLastBytes: 0,
+  storageMaxBytes: 0,
+  storageLastSerializeMs: 0,
+  storageLastWriteMs: 0,
+  storageMaxTotalMs: 0,
+  journalRefitCount: 0,
+  journalRefitLastElements: 0,
+  journalRefitLastMs: 0,
+  journalRefitMaxMs: 0
+});
+
+function recordStoragePerformance({ bytes = 0, serializeMs = 0, writeMs = 0 } = {}) {
+  const totalMs = Math.max(0, Number(serializeMs) || 0) + Math.max(0, Number(writeMs) || 0);
+  PerformanceDiagnostics.storageSaveCount += 1;
+  PerformanceDiagnostics.storageLastBytes = Math.max(0, Math.floor(Number(bytes) || 0));
+  PerformanceDiagnostics.storageMaxBytes = Math.max(PerformanceDiagnostics.storageMaxBytes, PerformanceDiagnostics.storageLastBytes);
+  PerformanceDiagnostics.storageLastSerializeMs = Math.max(0, Number(serializeMs) || 0);
+  PerformanceDiagnostics.storageLastWriteMs = Math.max(0, Number(writeMs) || 0);
+  PerformanceDiagnostics.storageMaxTotalMs = Math.max(PerformanceDiagnostics.storageMaxTotalMs, totalMs);
+  if (PerformanceDiagnostics.storageLastBytes >= STORAGE_DIAGNOSTIC_WARN_BYTES || totalMs >= STORAGE_DIAGNOSTIC_WARN_MS) {
+    console.warn('LocalStorage保存の性能しきい値を超えました。実測値を確認してください。', {
+      bytes: PerformanceDiagnostics.storageLastBytes,
+      serializeMs: PerformanceDiagnostics.storageLastSerializeMs,
+      writeMs: PerformanceDiagnostics.storageLastWriteMs,
+      totalMs
+    });
+  }
+}
+
 
 function isQuotaExceededError(error) {
   if (!error || typeof error !== 'object') return false;
@@ -11680,6 +11768,8 @@ class StorageManager {
 
   static saveState(appState) {
     let serialized = '';
+    let serializeMs = 0;
+    let writeMs = 0;
     try {
       appState.schemaVersion = STORAGE_SCHEMA_VERSION;
       appState.appVersion = APP_VERSION;
@@ -11693,10 +11783,16 @@ class StorageManager {
         appState.lastStudyDate,
         appState.streak
       );
+      const serializeStartedAt = integrityNowMs();
       serialized = JSON.stringify(appState);
+      serializeMs = Math.max(0, integrityNowMs() - serializeStartedAt);
+      const writeStartedAt = integrityNowMs();
       localStorage.setItem(this.KEY, serialized);
+      writeMs = Math.max(0, integrityNowMs() - writeStartedAt);
+      recordStoragePerformance({ bytes: utf8ByteLength(serialized), serializeMs, writeMs });
       return true;
     } catch (error) {
+      if (serialized) recordStoragePerformance({ bytes: utf8ByteLength(serialized), serializeMs, writeMs });
       console.error('Failed to save state to LocalStorage.', error);
       reportStorageSaveFailure(error, serialized);
       return false;
@@ -11867,6 +11963,7 @@ function createRuntime() {
     state: StorageManager.loadState(),
     mode: 'journal',
     journal: { currentQuestionIndex: -1, currentErrorType: 'NONE', isAnswered: false, isEvalCompleted: false, lastFocusedInput: null },
+    // draftは現在表示中の表問題だけの一時入力。LocalStorage／JSONバックアップへは永続化しない。
     table: { currentIndex: -1, answered: false, lastFocusedInput: null, viewMode: 'full', viewPreference: 'auto', segmentIndex: 0, hintLevel: 0, draft: {} },
     calculator: { current: '0', prev: null, op: null, resetOnNext: false, error: false, lastOperand: null, lastOp: null },
     ui: { quizCardTemplate: null, journalResizeTimer: null, journalRefitRaf: null, tableMediaQuery: null, tableMediaHandler: null, resizeObserver: null, learningToastTimer: null }
@@ -12282,6 +12379,7 @@ const JOURNAL_AMOUNT_FONT_MAX = 16;
 const JOURNAL_AMOUNT_FONT_MIN = 11;
 const JOURNAL_AMOUNT_MEASURE_CACHE_LIMIT = 512;
 const journalAmountMeasureCache = new Map();
+const journalAmountFitSignature = new WeakMap();
 let journalAmountMeasureCanvas = null;
 
 function cachedJournalTextWidth(ctx, value, size, fontStyle, fontWeight, fontFamily) {
@@ -12306,13 +12404,21 @@ function fitJournalAmountFont(input) {
   const value = String(input.value ?? '');
 
   // iPhone Safariのフォーカス時ズームを避けるため、編集中は16pxを維持する。
+  // blur後には再計測が必要なので、フォーカス中は前回署名を破棄する。
   if (document.activeElement === input) {
     input.style.fontSize = `${JOURNAL_AMOUNT_FONT_MAX}px`;
+    journalAmountFitSignature.delete(input);
     return;
   }
 
+  const rawWidth = Math.max(0, Math.round(Number(input.clientWidth) || 0));
+  const dpr = Math.round((Number(window.devicePixelRatio) || 1) * 100) / 100;
+  const coarseSignature = `${value}|${rawWidth}|${dpr}`;
+  if (journalAmountFitSignature.get(input) === coarseSignature) return;
+
   if (value === '') {
     input.style.fontSize = `${JOURNAL_AMOUNT_FONT_MAX}px`;
+    journalAmountFitSignature.set(input, coarseSignature);
     return;
   }
 
@@ -12325,6 +12431,7 @@ function fitJournalAmountFont(input) {
   const ctx = journalAmountMeasureCanvas.getContext('2d');
   if (!ctx) {
     input.style.fontSize = `${JOURNAL_AMOUNT_FONT_MAX}px`;
+    journalAmountFitSignature.set(input, coarseSignature);
     return;
   }
 
@@ -12335,6 +12442,7 @@ function fitJournalAmountFont(input) {
 
   if (measureAt(JOURNAL_AMOUNT_FONT_MAX) <= availableWidth) {
     input.style.fontSize = `${JOURNAL_AMOUNT_FONT_MAX}px`;
+    journalAmountFitSignature.set(input, coarseSignature);
     return;
   }
 
@@ -12348,10 +12456,21 @@ function fitJournalAmountFont(input) {
 
   const fitted = Math.max(JOURNAL_AMOUNT_FONT_MIN, Math.floor(low * 10) / 10);
   input.style.fontSize = `${fitted}px`;
+  journalAmountFitSignature.set(input, coarseSignature);
 }
 
 function refitAllJournalAmountFonts() {
-  document.querySelectorAll('.grid-table .debit-amount, .grid-table .credit-amount').forEach(fitJournalAmountFont);
+  const inputs = [...document.querySelectorAll('.grid-table .debit-amount, .grid-table .credit-amount')];
+  const startedAt = integrityNowMs();
+  inputs.forEach(fitJournalAmountFont);
+  const durationMs = Math.max(0, integrityNowMs() - startedAt);
+  PerformanceDiagnostics.journalRefitCount += 1;
+  PerformanceDiagnostics.journalRefitLastElements = inputs.length;
+  PerformanceDiagnostics.journalRefitLastMs = durationMs;
+  PerformanceDiagnostics.journalRefitMaxMs = Math.max(PerformanceDiagnostics.journalRefitMaxMs, durationMs);
+  if (durationMs >= CANVAS_REFIT_DIAGNOSTIC_WARN_MS) {
+    console.warn('仕訳金額欄の再フィットが性能しきい値を超えました。実測値を確認してください。', { elements: inputs.length, durationMs });
+  }
 }
 
 function scheduleJournalAmountRefit() {
@@ -14485,9 +14604,12 @@ window.addEventListener('resize', () => {
 });
 window.addEventListener('orientationchange', () => setTimeout(scheduleJournalAmountRefit, 180));
 
+const ACTION_ROOT_SELECTOR = '.container, .toc-fab, .calc-fab, #calculator-modal';
+
 function handleDelegatedAction(event) {
-  const trigger = event.target.closest('[data-action]');
-  if (!trigger || trigger.disabled) return;
+  const target = event.target instanceof Element ? event.target : null;
+  const trigger = target?.closest('[data-action]');
+  if (!trigger || trigger.disabled || !trigger.closest(ACTION_ROOT_SELECTOR)) return;
   const action = trigger.dataset.action;
   switch (action) {
     case 'switch-mode': switchMode(trigger.dataset.mode); break;
