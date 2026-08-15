@@ -763,6 +763,25 @@
       overflow-x: auto;
     }
 
+    .calc-expression {
+      min-height: 1.45rem;
+      padding: 5px 10px 2px;
+      background: #f8fafc;
+      color: #64748b;
+      text-align: right;
+      font-family: monospace;
+      font-size: 0.78rem;
+      line-height: 1.25;
+      overflow-wrap: anywhere;
+    }
+
+    .calc-btn.op.active {
+      outline: 3px solid rgba(37,99,235,.24);
+      outline-offset: -3px;
+      background: #c7d2fe;
+      color: #312e81;
+    }
+
     .calc-apply-bar {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -817,6 +836,25 @@
     .calc-btn.op { background: #e0e7ff; color: #3730a3; }
     .calc-btn.eq { background: #2563eb; color: white; grid-column: span 2; }
     .calc-btn.clear { background: #fee2e2; color: #991b1b; }
+    .calc-btn:focus-visible,
+    .calc-close-btn:focus-visible,
+    .calc-apply-btn:focus-visible,
+    .calc-fab:focus-visible {
+      outline: 3px solid rgba(37, 99, 235, .45);
+      outline-offset: 2px;
+    }
+
+    .visually-hidden {
+      position: absolute !important;
+      width: 1px !important;
+      height: 1px !important;
+      padding: 0 !important;
+      margin: -1px !important;
+      overflow: hidden !important;
+      clip: rect(0, 0, 0, 0) !important;
+      white-space: nowrap !important;
+      border: 0 !important;
+    }
 
     .calc-fab {
       position: fixed;
@@ -1000,7 +1038,7 @@
     .container { padding-bottom: calc(88px + env(safe-area-inset-bottom)); }
 
     .mode-btn, .tool-btn, .btn-submit, .eval-btn,
-    .table-secondary-btn, .table-primary-btn, .table-view-btn,
+    .table-secondary-btn, .table-primary-btn,
     .table-segment-btn, .row-control-btn, .calc-btn,
     .calc-apply-btn, .calc-close-btn, .toc-fab, .calc-fab {
       min-height: 44px;
@@ -1060,7 +1098,9 @@
     }
     .problem-difficulty-row {
       display: flex;
-      justify-content: flex-end;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
       margin: -3px 0 7px;
     }
     .problem-difficulty {
@@ -1107,15 +1147,9 @@
     .calc-btn { padding: 0; font-size: 1rem; }
     .calc-apply-btn { padding: 6px 4px; font-size: 0.72rem; }
 
-    /* iPhone向け表入力ビュー: 2列単位で入力し、全体表は必要時だけ表示。 */
-    .table-view-switcher {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin: 10px 0 8px;
-    }
-    .table-view-switcher[hidden], .table-segment-nav[hidden] { display: none !important; }
-    .table-view-btn, .table-segment-btn {
+    /* 狭い画面では表を会計上の2列単位に分け、横スクロールを避ける。 */
+    .table-segment-nav[hidden] { display: none !important; }
+    .table-segment-btn {
       border: 1px solid var(--border-color);
       background: #fff;
       color: #334155;
@@ -1123,7 +1157,7 @@
       font-weight: 700;
       padding: 7px 8px;
     }
-    .table-view-btn.active, .table-segment-btn.active {
+    .table-segment-btn.active {
       background: #ede9fe;
       color: #5b21b6;
       border-color: #8b5cf6;
@@ -1343,8 +1377,47 @@
     .journal-account-wrap:focus-within {
       background: #f0fdf4;
       box-shadow: inset 0 0 0 2px #86efac;
+      outline: 3px solid rgba(22, 101, 52, .55);
+      outline-offset: 2px;
     }
     .journal-account-wrap:focus-within .journal-account-display { background: #f0fdf4; }
+
+    /* v10.2: Windows High Contrast / forced-colors ではOSのシステム色でフォーカスを明示する。
+       ネイティブselect自体はDOM・アクセシビリティツリーに残し、表示用spanはaria-hiddenのまま使用する。 */
+    @media (forced-colors: active) {
+      .journal-account-wrap:focus-within {
+        outline: 3px solid Highlight;
+        outline-offset: 2px;
+        box-shadow: none;
+      }
+      .journal-account-wrap:focus-within .journal-account-display {
+        background: Canvas;
+        color: CanvasText;
+      }
+      .journal-account-wrap::after { color: ButtonText; }
+      .table-problem-block,
+      .table-given-summary-table th,
+      .table-given-summary-table td {
+        border-color: CanvasText;
+      }
+      .table-problem-block-title {
+        background: Canvas;
+        color: CanvasText;
+      }
+      .table-answer-input:focus-visible,
+      .table-segment-btn:focus-visible,
+      .table-primary-btn:focus-visible,
+      .table-secondary-btn:focus-visible,
+      #table-mode-section .tool-btn:focus-visible,
+      #table-submit-btn:focus-visible,
+      .calc-btn:focus-visible,
+      .calc-close-btn:focus-visible,
+      .calc-apply-btn:focus-visible,
+      .calc-fab:focus-visible {
+        outline: 3px solid Highlight;
+        outline-offset: 2px;
+      }
+    }
     .journal-account-wrap select:disabled + .journal-account-display,
     .journal-account-wrap.is-disabled .journal-account-display {
       color: #64748b;
@@ -1369,14 +1442,482 @@
       .statement { padding: 10px; }
     }
 
-  </style>
+  
+
+    /* ===== v10.2 表問題の問題文: 指示 → 与件 → 入力表の順に読む ===== */
+    .table-problem-brief {
+      margin: 12px 0 9px;
+      display: grid;
+      gap: 8px;
+    }
+    .table-problem-block {
+      border: 1px solid #dbe4ef;
+      border-radius: 9px;
+      background: #fff;
+      overflow: hidden;
+    }
+    .table-problem-block-title {
+      margin: 0;
+      padding: 7px 10px;
+      background: #f1f5f9;
+      color: #0f172a;
+      font-size: .78rem;
+      font-weight: 800;
+      letter-spacing: .01em;
+    }
+    .table-problem-instruction {
+      margin: 0;
+      padding: 10px 11px;
+      color: #0f172a;
+      font-size: .92rem;
+      line-height: 1.75;
+      font-weight: 700;
+      white-space: pre-line;
+    }
+    .table-problem-givens {
+      padding: 9px 10px 10px;
+      color: #334155;
+      font-size: .84rem;
+      line-height: 1.65;
+    }
+    .table-problem-givens p { margin: 0; white-space: pre-line; }
+    .table-problem-givens strong {
+      color: #0f172a;
+      font-variant-numeric: tabular-nums;
+    }
+    .table-given-summary-table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      font-variant-numeric: tabular-nums;
+    }
+    .table-given-summary-table th,
+    .table-given-summary-table td {
+      border: 1px solid #dbe4ef;
+      padding: 7px 8px;
+      vertical-align: middle;
+    }
+    .table-given-summary-table th {
+      background: #f8fafc;
+      color: #334155;
+      font-size: .74rem;
+      font-weight: 800;
+      text-align: center;
+    }
+    .table-given-summary-table td:first-child {
+      width: 48%;
+      color: #0f172a;
+      font-weight: 700;
+      overflow-wrap: anywhere;
+    }
+    .table-given-summary-table td:not(:first-child) {
+      text-align: right;
+      white-space: nowrap;
+    }
+    .table-problem-targets {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      padding: 9px 10px 10px;
+    }
+    .table-problem-target-chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 4px 8px;
+      border: 1px solid #cbd5e1;
+      border-radius: 999px;
+      background: #f8fafc;
+      color: #334155;
+      font-size: .74rem;
+      font-weight: 700;
+    }
+    .table-problem-target-note {
+      margin: 0;
+      padding: 9px 10px 10px;
+      color: #475569;
+      font-size: .78rem;
+      line-height: 1.6;
+    }
+    @media (max-width: 600px) {
+      .table-problem-brief { gap: 7px; }
+      .table-problem-instruction { padding: 9px; font-size: .88rem; }
+      .table-problem-givens { padding: 8px; font-size: .81rem; }
+      .table-given-summary-table th,
+      .table-given-summary-table td { padding: 7px 5px; font-size: .76rem; }
+      .table-given-summary-table td:first-child { width: 44%; }
+    }
+
+    /* ===== v9.9 表問題UI: 会計上の意味を前面に出し、端末名・実装用語を表示しない ===== */
+    .table-workspace-guide {
+      margin: 9px 0 8px;
+      padding: 10px 11px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      background: #f8fafc;
+    }
+    .table-workspace-title {
+      margin-bottom: 4px;
+      font-size: .84rem;
+      font-weight: 800;
+      color: #0f172a;
+    }
+    .table-workspace-help {
+      font-size: .76rem;
+      line-height: 1.6;
+      color: #475569;
+    }
+    .table-segment-nav {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 7px;
+      margin: 8px 0 9px;
+    }
+    .table-segment-btn {
+      min-height: 46px;
+      padding: 7px 5px;
+      font-size: .78rem;
+      line-height: 1.25;
+    }
+    .table-segment-btn.active {
+      box-shadow: inset 0 0 0 1px #7c3aed;
+    }
+    .exercise-table tbody tr:nth-child(even) td {
+      background: #fbfdff;
+    }
+    .exercise-table tbody tr:nth-child(even) td:first-child {
+      background: #fbfdff;
+    }
+    .exercise-table td.table-input-cell {
+      background: #fffef7;
+    }
+    .exercise-table tbody tr:nth-child(even) td.table-input-cell {
+      background: #fffdf2;
+    }
+    .exercise-table td.table-given-cell {
+      color: #475569;
+    }
+    .table-answer-input {
+      border-width: 2px;
+      border-color: #64748b;
+      background: #ffffff;
+      min-height: 46px;
+    }
+    .table-answer-input:focus-visible,
+    .table-segment-btn:focus-visible,
+    .table-primary-btn:focus-visible,
+    .table-secondary-btn:focus-visible,
+    #table-mode-section .tool-btn:focus-visible,
+    #table-submit-btn:focus-visible {
+      outline: 3px solid rgba(37, 99, 235, .45);
+      outline-offset: 2px;
+    }
+    .exercise-table th.table-section-header {
+      background: #e2e8f0;
+      color: #0f172a;
+      font-size: .8rem;
+      font-weight: 800;
+    }
+    .exercise-table th.table-debit-header {
+      background: #eff6ff;
+      color: #1e3a8a;
+    }
+    .exercise-table th.table-credit-header {
+      background: #fef2f2;
+      color: #7f1d1d;
+    }
+    .exercise-table.compact th:first-child,
+    .exercise-table.compact td:first-child {
+      width: 46%;
+    }
+    .exercise-table.compact th:not(:first-child),
+    .exercise-table.compact td:not(:first-child) {
+      width: 27%;
+    }
+    @media (max-width: 600px) {
+      .table-exercise-wrapper { border-radius: 8px; }
+      .exercise-table.compact { font-size: .8rem; }
+      .exercise-table.compact th,
+      .exercise-table.compact td { padding: 7px 3px; }
+      .exercise-table.compact td:first-child { padding-left: 7px; padding-right: 5px; }
+      .table-answer-input { min-height: 48px; }
+    }
+
+
+    /* ===== v10.0 学習レベル・達成感・2級への橋渡し ===== */
+    .learning-growth-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+    .learning-growth-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .learning-growth-kicker {
+      color: var(--text-muted);
+      font-size: .68rem;
+      font-weight: 800;
+      letter-spacing: .04em;
+    }
+    .learning-overall-line {
+      display: flex;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 2px;
+    }
+    .learning-overall-level {
+      color: #1d4ed8;
+      font-size: 1.45rem;
+      line-height: 1;
+      font-weight: 900;
+      font-variant-numeric: tabular-nums;
+    }
+    .learning-overall-title {
+      color: #0f172a;
+      font-size: .86rem;
+      font-weight: 800;
+    }
+    .learning-today-summary {
+      flex: 0 0 auto;
+      border: 1px solid #bbf7d0;
+      border-radius: 999px;
+      background: #f0fdf4;
+      color: #166534;
+      padding: 5px 8px;
+      font-size: .72rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .learning-exp-track {
+      height: 9px;
+      margin-top: 10px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #e2e8f0;
+    }
+    .learning-exp-fill {
+      width: 0%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #2563eb, #7c3aed);
+      transition: width .35s ease;
+    }
+    .learning-exp-text {
+      margin-top: 4px;
+      color: #475569;
+      font-size: .72rem;
+      line-height: 1.45;
+    }
+    .learning-disclaimer {
+      margin: 7px 0 0;
+      color: #64748b;
+      font-size: .68rem;
+      line-height: 1.5;
+    }
+    .learning-quick-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 6px;
+      margin-top: 10px;
+    }
+    .learning-quick-item {
+      min-width: 0;
+      padding: 7px;
+      border: 1px solid #e2e8f0;
+      border-radius: 7px;
+      background: #f8fafc;
+    }
+    .learning-quick-item span {
+      display: block;
+      color: #64748b;
+      font-size: .62rem;
+      font-weight: 700;
+    }
+    .learning-quick-item strong {
+      display: block;
+      margin-top: 2px;
+      color: #0f172a;
+      font-size: .79rem;
+      line-height: 1.3;
+      overflow-wrap: anywhere;
+    }
+    .learning-topics-details {
+      margin-top: 10px;
+      border-top: 1px dashed #cbd5e1;
+      padding-top: 6px;
+    }
+    .learning-topics-details > summary {
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      color: #334155;
+      font-size: .8rem;
+      font-weight: 800;
+      list-style: none;
+      touch-action: manipulation;
+    }
+    .learning-topics-details > summary::-webkit-details-marker { display: none; }
+    .learning-topics-details > summary::before { content: '＋'; margin-right: 6px; color: #2563eb; }
+    .learning-topics-details[open] > summary::before { content: '－'; }
+    .learning-topic-list {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 6px;
+      padding: 2px 0 5px;
+    }
+    .learning-topic-card {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 5px 9px;
+      align-items: center;
+      padding: 8px;
+      border: 1px solid #e2e8f0;
+      border-radius: 7px;
+      background: #fff;
+    }
+    .learning-topic-name {
+      min-width: 0;
+      color: #334155;
+      font-size: .75rem;
+      font-weight: 800;
+      overflow-wrap: anywhere;
+    }
+    .learning-topic-level {
+      color: #5b21b6;
+      font-size: .76rem;
+      font-weight: 900;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+    .learning-topic-track {
+      grid-column: 1 / -1;
+      height: 5px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #e2e8f0;
+    }
+    .learning-topic-fill { height: 100%; background: #8b5cf6; }
+    .learning-topic-meta {
+      grid-column: 1 / -1;
+      color: #64748b;
+      font-size: .64rem;
+    }
+    .learning-next-goal {
+      margin-top: 7px;
+      color: #475569;
+      font-size: .72rem;
+      line-height: 1.5;
+    }
+    .next-stage-card {
+      margin-top: 10px;
+      padding: 11px;
+      border: 1px solid #c7d2fe;
+      border-radius: 9px;
+      background: #eef2ff;
+    }
+    .next-stage-card.ready {
+      border-color: #86efac;
+      background: #f0fdf4;
+    }
+    .next-stage-kicker {
+      color: #6366f1;
+      font-size: .65rem;
+      font-weight: 900;
+      letter-spacing: .04em;
+    }
+    .next-stage-card.ready .next-stage-kicker { color: #15803d; }
+    .next-stage-title {
+      margin-top: 2px;
+      color: #1e1b4b;
+      font-size: .92rem;
+      font-weight: 900;
+    }
+    .next-stage-card.ready .next-stage-title { color: #14532d; }
+    .next-stage-status,
+    .next-stage-body {
+      margin-top: 5px;
+      color: #475569;
+      font-size: .72rem;
+      line-height: 1.55;
+    }
+    .next-stage-link {
+      display: inline-flex;
+      min-height: 44px;
+      align-items: center;
+      margin-top: 6px;
+      color: #1d4ed8;
+      font-size: .72rem;
+      font-weight: 800;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    .problem-topic-level {
+      display: inline-flex;
+      min-height: 28px;
+      align-items: center;
+      padding: 4px 8px;
+      border: 1px solid #c4b5fd;
+      border-radius: 999px;
+      background: #f5f3ff;
+      color: #5b21b6;
+      font-size: .72rem;
+      font-weight: 900;
+      line-height: 1.2;
+    }
+    .learning-toast {
+      position: fixed;
+      left: 50%;
+      top: calc(14px + env(safe-area-inset-top));
+      transform: translateX(-50%);
+      z-index: 1500;
+      width: min(420px, calc(100vw - 24px));
+      padding: 12px 14px;
+      border: 1px solid #a7f3d0;
+      border-radius: 10px;
+      background: #ecfdf5;
+      color: #14532d;
+      box-shadow: 0 8px 24px rgba(15,23,42,.18);
+      font-size: .82rem;
+      font-weight: 800;
+      line-height: 1.55;
+      white-space: pre-line;
+    }
+    .learning-toast.level-up {
+      border-color: #c4b5fd;
+      background: #f5f3ff;
+      color: #4c1d95;
+    }
+    .learning-toast[hidden] { display: none !important; }
+    .toc-level-chip {
+      color: #5b21b6;
+      font-weight: 900;
+      margin-right: 5px;
+    }
+    @media (min-width: 640px) {
+      .learning-topic-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 390px) {
+      .learning-growth-card { padding: 10px; }
+      .learning-overall-level { font-size: 1.28rem; }
+      .learning-today-summary { font-size: .66rem; }
+      .learning-quick-grid { gap: 4px; }
+      .learning-quick-item { padding: 6px 5px; }
+    }
+
+</style>
 </head>
 <body>
 
 <div class="container">
   <header>
     <h1>日商簿記3級 総合演習システム（仕訳200問＋表問題40問）</h1>
-    <p>2026年度出題区分対応 × 仕訳200問 × 表・決算演習40問 × 解説 × 教材版 v9.8</p>
+    <p>2026年度出題区分対応 × 仕訳200問 × 表・決算演習40問 × 解説 × 教材版 v10.2</p>
   </header>
   <div id="data-integrity-banner" class="data-integrity-banner" role="alert" aria-live="polite"></div>
 
@@ -1385,6 +1926,41 @@
     <button type="button" class="mode-btn" id="mode-table-btn" data-action="switch-mode" data-mode="table">表・決算演習 40問</button>
   </div>
 
+
+  <section class="learning-growth-card" id="learning-growth-card" aria-label="教材内の学習レベルと成長">
+    <div class="learning-growth-head">
+      <div>
+        <div class="learning-growth-kicker">教材内の学習レベル</div>
+        <div class="learning-overall-line">
+          <strong class="learning-overall-level" id="learning-overall-level">Lv.1</strong>
+          <span class="learning-overall-title" id="learning-overall-title">簿記見習い</span>
+        </div>
+      </div>
+      <div class="learning-today-summary" id="learning-today-summary">今日 +0 EXP</div>
+    </div>
+    <div class="learning-exp-track" aria-hidden="true"><div class="learning-exp-fill" id="learning-overall-bar"></div></div>
+    <div class="learning-exp-text" id="learning-overall-progress-text">学習履歴から教材内EXPを計算しています。</div>
+    <p class="learning-disclaimer">レベル・EXP・称号は、この教材内の学習履歴と復習定着度を見える化する独自指標です。日商簿記検定の得点、合格可能性、公式評価を示すものではありません。</p>
+    <div class="learning-quick-grid">
+      <div class="learning-quick-item"><span>学習履歴</span><strong id="learning-studied-count">0 / 240</strong></div>
+      <div class="learning-quick-item"><span>達成記録</span><strong id="learning-achievement-count">0</strong></div>
+      <div class="learning-quick-item"><span>重点候補</span><strong id="learning-weakest-topic">—</strong></div>
+    </div>
+    <div class="learning-next-goal" id="learning-next-goal"></div>
+    <details class="learning-topics-details" id="learning-topics-details">
+      <summary>項目別レベルを見る</summary>
+      <div class="learning-topic-list" id="learning-topic-list"></div>
+    </details>
+    <div class="next-stage-card" id="learning-next-stage-card">
+      <div class="next-stage-kicker">2級への橋渡し</div>
+      <div class="next-stage-title" id="learning-next-stage-title">3級教材を一巡すると、次の学習候補を表示します</div>
+      <div class="next-stage-status" id="learning-next-stage-status"></div>
+      <div class="next-stage-body" id="learning-next-stage-body"></div>
+      <a class="next-stage-link" href="https://www.kentei.ne.jp/bookkeeping/class2" target="_blank" rel="noopener noreferrer">日本商工会議所「簿記2級」の公式情報を確認</a>
+    </div>
+  </section>
+  <div class="learning-toast" id="learning-toast" role="status" aria-live="polite" hidden></div>
+
   <section class="backup-card" aria-label="学習履歴のバックアップ">
     <details class="backup-details" id="backup-details">
       <summary>
@@ -1392,7 +1968,7 @@
         <span class="backup-summary-sub">端末変更・ブラウザデータ削除に備える</span>
       </summary>
       <div class="backup-body">
-        <p class="backup-help">学習履歴はこのブラウザ内に保存されます。必要に応じてJSONファイルへ保存し、同じ教材へ復元できます。復元時はファイル形式と教材データの互換性を確認します。チェックサムは破損・意図しない変更の検出用で、暗号学的な署名ではありません。</p>
+        <p class="backup-help">仕訳・表問題の学習履歴、SRS、教材内レベル用EXPはこのブラウザ内に保存されます。必要に応じてJSONファイルへ保存し、同じ教材へ復元できます。復元時はファイル形式と教材データの互換性を確認します。チェックサムは破損・意図しない変更の検出用で、暗号学的な署名ではありません。</p>
         <div class="backup-actions">
           <button type="button" class="backup-btn primary" data-action="export-progress-backup">JSONバックアップを保存</button>
           <button type="button" class="backup-btn" data-action="choose-progress-restore">JSONから復元</button>
@@ -1424,8 +2000,8 @@
       <div class="value streak" id="stat-streak">0 日</div>
     </div>
     <div class="dash-card">
-      <div class="title">平均Ease</div>
-      <div class="value" id="stat-ease">2.50</div>
+      <div class="title">総合レベル</div>
+      <div class="value" id="stat-overall-level">Lv.1</div>
     </div>
   </div>
 
@@ -1462,6 +2038,7 @@
     </div>
 
     <div class="problem-difficulty-row">
+      <span class="problem-topic-level" id="problem-topic-level">項目 Lv.1</span>
       <span class="problem-difficulty" id="problem-difficulty" aria-label="問題の難易度">難易度 ★☆☆☆☆（教材内目安）</span>
     </div>
 
@@ -1492,6 +2069,7 @@
         </tbody>
       </table>
     </div>
+    <p id="journal-account-selection-help" class="visually-hidden">勘定科目欄はブラウザ標準の選択メニューです。選択した勘定科目名は画面上では折り返して表示されます。</p>
     <div class="journal-cbt-note">同じ勘定科目は、借方・貸方それぞれで1回までです。本教材では数字を3桁区切りで表示します（ネット試験ではカンマ入力は不要です）。</div>
     <div class="journal-design-note">勘定科目候補はスマホでの反復学習用に、各問題5～6科目へ整理しています。本試験画面の候補数や画面配置を再現する機能ではありません。</div>
 
@@ -1586,17 +2164,33 @@
         <span class="category-badge" id="table-problem-category">表問題</span>
         <span id="table-problem-id-text" style="color: var(--text-muted); font-size:0.75rem;">T001</span>
       </div>
-      <div class="statement" id="table-problem-statement">問題文を読み込んでいます...</div>
+      <div class="problem-difficulty-row">
+        <span class="problem-topic-level" id="table-problem-topic-level">項目 Lv.1</span>
+      </div>
+      <div class="table-problem-brief" id="table-problem-statement" aria-label="問題文">
+        <section class="table-problem-block" aria-labelledby="table-problem-instruction-title">
+          <h2 class="table-problem-block-title" id="table-problem-instruction-title">問題の指示</h2>
+          <p class="table-problem-instruction" id="table-problem-instruction">問題文を読み込んでいます...</p>
+        </section>
+        <section class="table-problem-block" id="table-problem-givens-block" aria-labelledby="table-problem-givens-title">
+          <h2 class="table-problem-block-title" id="table-problem-givens-title">与えられた情報</h2>
+          <div class="table-problem-givens" id="table-problem-givens"></div>
+        </section>
+        <section class="table-problem-block" id="table-problem-targets-block" aria-labelledby="table-problem-targets-title">
+          <h2 class="table-problem-block-title" id="table-problem-targets-title">入力するもの</h2>
+          <div class="table-problem-targets" id="table-problem-targets"></div>
+        </section>
+      </div>
       <div class="tool-bar">
         <button type="button" class="tool-btn hint-btn" data-action="toggle-table-hint">💡 解き方のヒント</button>
       </div>
       <div class="hint-box" id="table-hint-box"></div>
-      <div class="table-note">空欄セルに数字を入力してください。本教材では3桁区切りで表示します。</div>
-      <div class="table-view-switcher" id="table-view-switcher" hidden aria-label="表の表示方法">
-        <button type="button" class="table-view-btn" data-action="set-table-view" data-view="compact">iPhone入力</button>
-        <button type="button" class="table-view-btn" data-action="set-table-view" data-view="full">全体表</button>
+      <div class="table-note">枠線のある欄だけ入力します。「—」は記入不要です。金額は3桁区切りで表示されます。</div>
+      <div class="table-workspace-guide" id="table-workspace-guide" aria-live="polite">
+        <div class="table-workspace-title" id="table-workspace-title">この問題の入力方法</div>
+        <div class="table-workspace-help" id="table-workspace-help"></div>
       </div>
-      <div class="table-segment-nav" id="table-segment-nav" hidden aria-label="表の入力列切替"></div>
+      <div class="table-segment-nav" id="table-segment-nav" hidden aria-label="入力する欄の切替"></div>
       <div class="table-exercise-wrapper" id="table-exercise-wrapper"><div id="table-exercise-host"></div></div>
       <button type="button" class="btn-submit" id="table-submit-btn" data-action="check-table">決定（表を採点）</button>
       <div class="table-result-box" id="table-result-box">
@@ -1626,8 +2220,9 @@
     <span>電卓</span>
     <button type="button" class="calc-close-btn" data-action="toggle-calculator">✕</button>
   </div>
-  <div class="calc-display" id="calc-display">0</div>
-  <div class="calc-learning-note">この電卓はスマホ学習用の補助機能です。試験会場の画面仕様を再現するものではありません。</div>
+  <div class="calc-expression" id="calc-expression" aria-live="polite"></div>
+  <div class="calc-display" id="calc-display" aria-live="polite">0</div>
+  <div class="calc-learning-note" id="calc-learning-note">この電卓はスマホ学習用の補助機能です。試験会場の画面仕様を再現するものではありません。ACは計算全体を消去し、Cは現在入力中の数値だけを消去します。％キーは表示中の値を100で割る単項処理です（50 → ％ → 0.5、100 ＋ 10 → ％ → ＝ → 100.1）。</div>
   
   <div class="calc-apply-bar">
     <button type="button" class="calc-apply-btn debit" data-action="apply-calc-journal" data-side="debit">📥 借方に反映</button>
@@ -1636,36 +2231,53 @@
   </div>
 
   <div class="calc-grid">
-    <button type="button" class="calc-btn clear" data-action="calc-key" data-value="C">C</button>
+    <button type="button" class="calc-btn clear" data-action="calc-key" data-value="AC" aria-label="AC。計算全体を消去">AC</button>
+    <button type="button" class="calc-btn clear" data-action="calc-key" data-value="C" aria-label="C。現在入力中の数値だけを消去">C</button>
     <button type="button" class="calc-btn" data-action="calc-key" data-value="DEL">⌫</button>
-    <button type="button" class="calc-btn op" data-action="calc-key" data-value="%">%</button>
     <button type="button" class="calc-btn op" data-action="calc-key" data-value="/">÷</button>
-    
+
     <button type="button" class="calc-btn" data-action="calc-key" data-value="7">7</button>
     <button type="button" class="calc-btn" data-action="calc-key" data-value="8">8</button>
-    <button type="button" class="calc-btn op" data-action="calc-key" data-value="*">×</button>
     <button type="button" class="calc-btn" data-action="calc-key" data-value="9">9</button>
-    
+    <button type="button" class="calc-btn op" data-action="calc-key" data-value="*">×</button>
+
     <button type="button" class="calc-btn" data-action="calc-key" data-value="4">4</button>
     <button type="button" class="calc-btn" data-action="calc-key" data-value="5">5</button>
     <button type="button" class="calc-btn" data-action="calc-key" data-value="6">6</button>
-    <button type="button" class="calc-btn op" data-action="calc-key" data-value="-">-</button>
-    
+    <button type="button" class="calc-btn op" data-action="calc-key" data-value="-">−</button>
+
     <button type="button" class="calc-btn" data-action="calc-key" data-value="1">1</button>
     <button type="button" class="calc-btn" data-action="calc-key" data-value="2">2</button>
     <button type="button" class="calc-btn" data-action="calc-key" data-value="3">3</button>
-    <button type="button" class="calc-btn op" data-action="calc-key" data-value="+">+</button>
-    
+    <button type="button" class="calc-btn op" data-action="calc-key" data-value="+">＋</button>
+
     <button type="button" class="calc-btn" data-action="calc-key" data-value="0">0</button>
     <button type="button" class="calc-btn" data-action="calc-key" data-value="00">00</button>
-    <button type="button" class="calc-btn eq" data-action="calc-key" data-value="=">=</button>
+    <button type="button" class="calc-btn op" data-action="calc-key" data-value="%" aria-label="パーセント。表示中の値を100で割る">%</button>
+    <button type="button" class="calc-btn eq" data-action="calc-key" data-value="=">＝</button>
   </div>
 </div>
 
 <script type="module">
+
+/*
+ * ===== v10.2 内部アーキテクチャ方針 =====
+ * 配布物はGitHub Pagesへそのまま置ける単一HTMLを維持する。
+ * 物理ファイルは分割せず、以下の責務を論理的に分離して扱う。
+ *   1) Domain Data      : 仕訳200問・表40問・目次・勘定科目
+ *   2) Domain Logic     : 採点・SRS・学習EXP/Level・誤答診断
+ *   3) Infrastructure  : LocalStorage・JSONバックアップ・整合性Hash
+ *   4) Presentation    : 仕訳UI・表UI・解説・電卓・学習ダッシュボード
+ *   5) Integrity / QA  : 起動時の必須検査と、初期描画後の詳細自己監査
+ *
+ * 起動時検査は二段階。データ破損時に危険な検査だけを同期実行し、
+ * 詳細な意味論・ユーティリティ自己テストは初期画面を描画した後に実行する。
+ */
+
+// ===== Domain Data: 仕訳問題バンク =====
 'use strict';
 
-// 仕訳200問データベース（2026年度適用 出題区分対応・解説監査 v9.8）
+// 仕訳200問データベース（2026年度適用 出題区分対応・解説監査 v9.9）
 const QUESTION_DATABASE = [
   {
     "id": "Q001",
@@ -3294,7 +3906,7 @@ const QUESTION_DATABASE = [
   {
     "id": "Q065",
     "category": "減価償却（期中取得・月割り）",
-    "statement": "当期11月1日に取得した備品 ￥1,200,000（耐用年数 5年、残存価額 ゼロ、定額法）について、決算（3月31日）で月割り減価償却を行う。",
+    "statement": "当期11月1日に取得した備品 ￥1,200,000（耐用年数 5年、残存価額 ゼロ）について、決算（3月31日）で定額法・間接法により月割り減価償却を行う。",
     "hint": "年額 240,000円（1,200,000÷5）のうち当期使用分は5ヶ月（11〜3月）です。",
     "options": [
       "減価償却費",
@@ -6100,7 +6712,7 @@ const QUESTION_DATABASE = [
   {
     "id": "Q179",
     "category": "総合・法人税等の確定納付",
-    "statement": "決算確定した法人税等 ￥300,000 について、中間納付済みの ￥100,000 を差し引いた残額 ￥200,000 を普通預金から納付した。",
+    "statement": "前期決算で法人税等の確定額 ￥300,000 から中間納付済額 ￥100,000 を差し引いた残額 ￥200,000 を未払法人税等として計上済みである。本日、その ￥200,000 を普通預金から納付した。",
     "hint": "決算時に計上した「未払法人税等」の残額を納付する取引です。納付により未払法人税等と普通預金が同額減少します。",
     "options": [
       "未払法人税等",
@@ -6634,7 +7246,8 @@ const QUESTION_DATABASE = [
 ];
 
 
-// v8.5: 教材データはv8.3から変更せず、不正解時の個別差分診断を追加。
+// v9.9: 表問題の会計内容を維持しつつ、減価償却の間接法明示と入力UIを改善。
+// ===== Domain Data: 表・決算問題バンク =====
 // 表・決算演習40問（2026年度3級範囲：試算表、8桁精算表、決算整理後残高試算表、損益計算書、貸借対照表）
 const TABLE_DATABASE = [
   {
@@ -8546,7 +9159,7 @@ const TABLE_DATABASE = [
     "id": "T019",
     "group": "8桁精算表",
     "category": "精算表⑤・減価償却",
-    "statement": "備品600,000円、備品減価償却累計額100,000円について、当期の減価償却費60,000円を計上します。精算表の抜粋を完成させてください。",
+    "statement": "備品600,000円、備品減価償却累計額100,000円について、間接法により当期の減価償却費60,000円を計上します。精算表の抜粋を完成させてください。",
     "columns": [
       {
         "key": "tbD",
@@ -9420,7 +10033,7 @@ const TABLE_DATABASE = [
     "id": "T028",
     "group": "決算整理後残高試算表",
     "category": "決算整理後残高試算表④・減価償却",
-    "statement": "備品600,000円、減価償却累計額100,000円に対し、当期減価償却費60,000円を計上しました。決算整理後残高を求めてください。",
+    "statement": "備品600,000円、減価償却累計額100,000円に対し、間接法により当期減価償却費60,000円を計上しました。決算整理後残高を求めてください。",
     "columns": [
       {
         "key": "debit",
@@ -9524,7 +10137,7 @@ const TABLE_DATABASE = [
     "id": "T030",
     "group": "決算整理後残高試算表",
     "category": "決算整理後残高試算表⑥・複合整理",
-    "statement": "売掛金400,000円に対して貸倒引当金を8,000円（整理前4,000円）にし、備品300,000円について減価償却費30,000円（整理前累計額60,000円）を計上しました。抜粋を完成させてください。",
+    "statement": "売掛金400,000円に対して貸倒引当金を8,000円（整理前4,000円）にし、備品300,000円について間接法により減価償却費30,000円（整理前累計額60,000円）を計上しました。抜粋を完成させてください。",
     "columns": [
       {
         "key": "debit",
@@ -10061,8 +10674,9 @@ function renderTableOfContents() {
   if (!host) return;
   host.replaceChildren();
   const fragment = document.createDocumentFragment();
+  const learningSnapshot = buildLearningSnapshot(Runtime.state);
 
-  TOC_GROUPS.forEach(group => {
+  TOC_GROUPS.forEach((group, groupIndex) => {
     const wrapper = document.createElement('div');
     wrapper.className = 'toc-group';
     const details = document.createElement('details');
@@ -10071,7 +10685,10 @@ function renderTableOfContents() {
     label.textContent = group.title;
     const count = document.createElement('span');
     count.className = 'toc-group-count';
-    count.textContent = `Q${String(group.start).padStart(3, '0')}〜Q${String(group.end).padStart(3, '0')}`;
+    count.dataset.learningTopicId = `journal-${groupIndex + 1}`;
+    count.dataset.rangeLabel = `Q${String(group.start).padStart(3, '0')}〜Q${String(group.end).padStart(3, '0')}`;
+    const topicState = learningSnapshot.topics.find(topic => topic.id === count.dataset.learningTopicId);
+    count.textContent = `Lv.${topicState?.level || 1}・${count.dataset.rangeLabel}`;
     summary.append(label, count);
     details.appendChild(summary);
 
@@ -10135,8 +10752,9 @@ function renderTableToc() {
   host.replaceChildren();
   const fragment = document.createDocumentFragment();
   const now = new Date();
+  const learningSnapshot = buildLearningSnapshot(Runtime.state);
 
-  TABLE_TOC_GROUPS.forEach(group => {
+  TABLE_TOC_GROUPS.forEach((group, groupIndex) => {
     const wrapper = document.createElement('div');
     wrapper.className = 'toc-group';
     const details = document.createElement('details');
@@ -10145,7 +10763,10 @@ function renderTableToc() {
     label.textContent = group.title;
     const count = document.createElement('span');
     count.className = 'toc-group-count';
-    count.textContent = `T${String(group.start).padStart(3, '0')}〜T${String(group.end).padStart(3, '0')}`;
+    count.dataset.learningTopicId = `table-${groupIndex + 1}`;
+    count.dataset.rangeLabel = `T${String(group.start).padStart(3, '0')}〜T${String(group.end).padStart(3, '0')}`;
+    const topicState = learningSnapshot.topics.find(topic => topic.id === count.dataset.learningTopicId);
+    count.textContent = `Lv.${topicState?.level || 1}・${count.dataset.rangeLabel}`;
     summary.append(label, count);
     details.appendChild(summary);
     const list = document.createElement('div');
@@ -10230,7 +10851,13 @@ const VALID_QUESTION_IDS = new Set(QUESTION_DATABASE.map(q => q.id));
 
 // v7.0→v7.1で内容を変更した問題ID（旧学習履歴を引き継がない）
 const UPDATED_FROM_V7_0_IDS = new Set(["Q012","Q024","Q029","Q036","Q039","Q052","Q053","Q055","Q056","Q067","Q074","Q075","Q076","Q079","Q111","Q120","Q121","Q122","Q124","Q125","Q126","Q128","Q140","Q142","Q143","Q145","Q151","Q152","Q153","Q154","Q155","Q156","Q157","Q158","Q159","Q162","Q163","Q164","Q165","Q169","Q170","Q171","Q173","Q174","Q175","Q176","Q177","Q181","Q182","Q185","Q186","Q190","Q192","Q193","Q196","Q197","Q198","Q200"]);
+// v7.1→v7.2で問題文の取引時点・減価償却方法を明確化した問題ID。
+// 正答形式は同じでも、復習時に旧文面と混在しないよう当該問題の旧履歴だけを引き継がない。
+const UPDATED_FROM_V7_1_IDS = new Set(["Q065", "Q179"]);
+const COMPATIBLE_JOURNAL_BANK_VERSIONS = new Set(['v7.0', 'v7.1', 'v7.2']);
+const COMPATIBLE_TABLE_BANK_VERSIONS = new Set(['v8.3', 'v8.4']);
 
+// ===== Infrastructure / Integrity: 保存・バックアップ・問題バンク整合性 =====
 // --- LocalStorage 管理クラス（JSONバックアップ／復元対応） ---
 function stableBankHash(value) {
   const text = JSON.stringify(value);
@@ -10240,6 +10867,254 @@ function stableBankHash(value) {
     hash = Math.imul(hash, 0x01000193) >>> 0;
   }
   return hash.toString(16).padStart(8, '0');
+}
+
+
+const LEARNING_GAME_VERSION = 1;
+const QUESTION_MASTERY_XP_MAX = 40;
+const TOPIC_LEVEL_MAX = 10;
+const OVERALL_LEVEL_MAX = 30;
+const DAILY_STUDY_TARGET = 10;
+
+// 学習レベルは既存の目次区分をそのまま「項目」として扱う。
+// 問題を増減しない限り、Q001〜Q200 / T001〜T040 を重複なく1回ずつ覆う。
+const LEARNING_TOPICS = Object.freeze([
+  ...TOC_GROUPS.map((group, index) => Object.freeze({
+    id: `journal-${index + 1}`,
+    type: 'journal',
+    title: group.title,
+    start: group.start,
+    end: group.end,
+    questionIds: Object.freeze(Array.from({ length: group.end - group.start + 1 }, (_, i) => `Q${String(group.start + i).padStart(3, '0')}`))
+  })),
+  ...TABLE_TOC_GROUPS.map((group, index) => Object.freeze({
+    id: `table-${index + 1}`,
+    type: 'table',
+    title: group.title,
+    start: group.start,
+    end: group.end,
+    questionIds: Object.freeze(Array.from({ length: group.end - group.start + 1 }, (_, i) => `T${String(group.start + i).padStart(3, '0')}`))
+  }))
+]);
+
+const ACHIEVEMENT_DEFINITIONS = Object.freeze([
+  Object.freeze({ id:'journal-10', label:'仕訳10問', check:snapshot => snapshot.journalStudied >= 10 }),
+  Object.freeze({ id:'journal-50', label:'仕訳50問', check:snapshot => snapshot.journalStudied >= 50 }),
+  Object.freeze({ id:'journal-100', label:'仕訳100問', check:snapshot => snapshot.journalStudied >= 100 }),
+  Object.freeze({ id:'journal-200', label:'仕訳200問一巡', check:snapshot => snapshot.journalStudied >= 200 }),
+  Object.freeze({ id:'table-10', label:'表問題10問', check:snapshot => snapshot.tableAttempted >= 10 }),
+  Object.freeze({ id:'table-40', label:'表問題40問一巡', check:snapshot => snapshot.tableAttempted >= 40 }),
+  Object.freeze({ id:'streak-7', label:'7日連続学習', check:snapshot => snapshot.streak >= 7 }),
+  Object.freeze({ id:'all-240', label:'全240問に学習履歴', check:snapshot => snapshot.totalStudied >= 240 }),
+  Object.freeze({ id:'overall-10', label:'総合Lv.10', check:snapshot => snapshot.overall.level >= 10 }),
+  Object.freeze({ id:'overall-20', label:'総合Lv.20', check:snapshot => snapshot.overall.level >= 20 }),
+  Object.freeze({ id:'overall-30', label:'総合Lv.30', check:snapshot => snapshot.overall.level >= 30 })
+]);
+const ACHIEVEMENT_ID_SET = new Set(ACHIEVEMENT_DEFINITIONS.map(item => item.id));
+
+function clampLearningNumber(value, min, max) {
+  return Math.min(max, Math.max(min, Number(value) || 0));
+}
+
+function calculateMasteryCandidate(progress, { correct = null, quality = null } = {}) {
+  if (!progress || typeof progress !== 'object') return 0;
+  const repetition = Number.isFinite(progress.repetitionCount) ? Math.max(0, Math.floor(progress.repetitionCount)) : 0;
+  const interval = Number.isFinite(progress.intervalDays) ? Math.max(0, Math.floor(progress.intervalDays)) : 0;
+  const inferredCorrect = correct == null
+    ? Boolean(repetition > 0 || progress.correct === true || progress.lastResultCorrect === true)
+    : Boolean(correct);
+
+  // 触れたこと自体は4EXP。正解・復習定着に応じて段階的に最大40EXPまで伸びる。
+  // 保存済みEXPは後でmaxを取るため、不正解や時間経過でレベルが下がることはない。
+  let xp = 4;
+  if (inferredCorrect) {
+    xp = 14 + Math.min(repetition, 4) * 4;
+    if (interval >= 3) xp += 3;
+    if (interval >= 7) xp += 3;
+    if (interval >= 21) xp += 2;
+    if (interval >= 60) xp += 2;
+    if (quality === 3) xp += 2;
+  }
+  return Math.round(clampLearningNumber(xp, 0, QUESTION_MASTERY_XP_MAX));
+}
+
+function isMasteryGrowthEligible(previous, now = new Date()) {
+  if (!previous || typeof previous !== 'object') return true;
+  if (!previous.nextReviewDate || Number.isNaN(Date.parse(previous.nextReviewDate))) return true;
+  return new Date(previous.nextReviewDate) <= now;
+}
+
+function createDefaultLearningGameState() {
+  return {
+    version: LEARNING_GAME_VERSION,
+    journalXp: {},
+    tableXp: {},
+    todayDate: getTodayString(),
+    todayXp: 0,
+    dailyGoalCelebratedDate: null,
+    announcedAchievements: {}
+  };
+}
+
+function sanitizeLearningXpMap(rawMap, validIds) {
+  const result = {};
+  if (!rawMap || typeof rawMap !== 'object' || Array.isArray(rawMap)) return result;
+  Object.entries(rawMap).forEach(([id, value]) => {
+    if (!validIds.has(id) || !Number.isFinite(value)) return;
+    result[id] = Math.round(clampLearningNumber(value, 0, QUESTION_MASTERY_XP_MAX));
+  });
+  return result;
+}
+
+function getLearningTopicForQuestion(type, questionId) {
+  if (typeof questionId !== 'string') return null;
+  return LEARNING_TOPICS.find(topic => topic.type === type && topic.questionIds.includes(questionId)) || null;
+}
+
+function scaledLearningLevel(xp, maxXp, maxLevel) {
+  if (!(maxXp > 0)) return 1;
+  const ratio = clampLearningNumber(xp / maxXp, 0, 1);
+  if (ratio >= 1) return maxLevel;
+  return Math.min(maxLevel, 1 + Math.floor(ratio * (maxLevel - 1)));
+}
+
+function levelWindowProgress(xp, maxXp, level, maxLevel) {
+  if (!(maxXp > 0) || level >= maxLevel) return { fraction: 1, xpToNext: 0 };
+  const lowerRatio = (level - 1) / (maxLevel - 1);
+  const upperRatio = level / (maxLevel - 1);
+  const ratio = clampLearningNumber(xp / maxXp, 0, 1);
+  const fraction = clampLearningNumber((ratio - lowerRatio) / (upperRatio - lowerRatio), 0, 1);
+  const nextThresholdXp = Math.ceil(maxXp * upperRatio);
+  return { fraction, xpToNext: Math.max(0, nextThresholdXp - xp) };
+}
+
+function getOverallLearningTitle(level) {
+  if (level >= 30) return '教材内Lv.MAX';
+  if (level >= 25) return '教材内・総合演習の熟練者';
+  if (level >= 20) return '会計の実践者';
+  if (level >= 15) return '決算の探究者';
+  if (level >= 10) return '帳簿の使い手';
+  if (level >= 5) return '仕訳の旅人';
+  return '簿記見習い';
+}
+
+function buildLearningSnapshot(state) {
+  const game = state?.learningGame || createDefaultLearningGameState();
+  const journalXp = game.journalXp || {};
+  const tableXp = game.tableXp || {};
+  const journalStudied = QUESTION_DATABASE.reduce((count, q) => count + (state?.progress?.[q.id] ? 1 : 0), 0);
+  const tableAttempted = TABLE_DATABASE.reduce((count, q) => count + ((state?.tableProgress?.[q.id]?.attempts || 0) > 0 ? 1 : 0), 0);
+  const topics = LEARNING_TOPICS.map(topic => {
+    const map = topic.type === 'journal' ? journalXp : tableXp;
+    const xp = topic.questionIds.reduce((sum, id) => sum + (Number(map[id]) || 0), 0);
+    const maxXp = topic.questionIds.length * QUESTION_MASTERY_XP_MAX;
+    const level = scaledLearningLevel(xp, maxXp, TOPIC_LEVEL_MAX);
+    const window = levelWindowProgress(xp, maxXp, level, TOPIC_LEVEL_MAX);
+    return { ...topic, xp, maxXp, level, levelProgress: window.fraction, xpToNext: window.xpToNext, ratio: maxXp ? xp / maxXp : 0 };
+  });
+  const totalXp = topics.reduce((sum, topic) => sum + topic.xp, 0);
+  const maxXp = topics.reduce((sum, topic) => sum + topic.maxXp, 0);
+  const overallLevel = scaledLearningLevel(totalXp, maxXp, OVERALL_LEVEL_MAX);
+  const overallWindow = levelWindowProgress(totalXp, maxXp, overallLevel, OVERALL_LEVEL_MAX);
+  return {
+    journalStudied,
+    tableAttempted,
+    totalStudied: journalStudied + tableAttempted,
+    streak: Number.isFinite(state?.streak) ? Math.max(0, Math.floor(state.streak)) : 0,
+    topics,
+    totalXp,
+    maxXp,
+    overall: {
+      level: overallLevel,
+      title: getOverallLearningTitle(overallLevel),
+      levelProgress: overallWindow.fraction,
+      xpToNext: overallWindow.xpToNext
+    }
+  };
+}
+
+function achievedAchievementIds(snapshot) {
+  return ACHIEVEMENT_DEFINITIONS.filter(item => item.check(snapshot)).map(item => item.id);
+}
+
+function sanitizeLearningGameState(rawGame, progress = {}, tableProgress = {}, todayCount = 0, lastStudyDate = null, streak = 0) {
+  const hadGame = Boolean(rawGame && typeof rawGame === 'object' && !Array.isArray(rawGame));
+  const game = createDefaultLearningGameState();
+  if (hadGame) {
+    game.journalXp = sanitizeLearningXpMap(rawGame.journalXp, VALID_QUESTION_IDS);
+    game.tableXp = sanitizeLearningXpMap(rawGame.tableXp, VALID_TABLE_IDS);
+    game.todayDate = typeof rawGame.todayDate === 'string' ? rawGame.todayDate : getTodayString();
+    game.todayXp = Number.isFinite(rawGame.todayXp) && rawGame.todayXp >= 0 ? Math.floor(rawGame.todayXp) : 0;
+    game.dailyGoalCelebratedDate = typeof rawGame.dailyGoalCelebratedDate === 'string' ? rawGame.dailyGoalCelebratedDate : null;
+    if (rawGame.announcedAchievements && typeof rawGame.announcedAchievements === 'object' && !Array.isArray(rawGame.announcedAchievements)) {
+      Object.entries(rawGame.announcedAchievements).forEach(([id, value]) => {
+        if (ACHIEVEMENT_ID_SET.has(id) && value === true) game.announcedAchievements[id] = true;
+      });
+    }
+  }
+
+  // v9.9以前の履歴でも、現在保存されているSRS状態から復元できる範囲のEXPを初期値にする。
+  Object.entries(progress || {}).forEach(([id, item]) => {
+    if (!VALID_QUESTION_IDS.has(id)) return;
+    if (!Object.prototype.hasOwnProperty.call(game.journalXp, id)) {
+      const candidate = calculateMasteryCandidate(item, { correct: Number(item?.repetitionCount || 0) > 0, quality: item?.lastQuality });
+      game.journalXp[id] = candidate;
+    }
+  });
+  Object.entries(tableProgress || {}).forEach(([id, item]) => {
+    if (!VALID_TABLE_IDS.has(id)) return;
+    if (!Object.prototype.hasOwnProperty.call(game.tableXp, id)) {
+      const candidate = calculateMasteryCandidate(item, { correct: item?.correct === true || item?.lastResultCorrect === true });
+      game.tableXp[id] = candidate;
+    }
+  });
+
+  const today = getTodayString();
+  if (game.todayDate !== today) {
+    game.todayDate = today;
+    game.todayXp = 0;
+  }
+
+  // 旧版から初めて移行したとき、過去に達成済みの節目を次回操作時にまとめて再通知しない。
+  if (!hadGame) {
+    const tempState = { progress, tableProgress, streak: Number.isFinite(streak) ? Math.max(0, Math.floor(streak)) : 0, learningGame: game };
+    achievedAchievementIds(buildLearningSnapshot(tempState)).forEach(id => { game.announcedAchievements[id] = true; });
+  }
+  return game;
+}
+
+function validateLearningLevelSystem() {
+  const issues = [];
+  const journalCoverage = new Map();
+  const tableCoverage = new Map();
+  LEARNING_TOPICS.forEach(topic => topic.questionIds.forEach(id => {
+    const map = topic.type === 'journal' ? journalCoverage : tableCoverage;
+    map.set(id, (map.get(id) || 0) + 1);
+  }));
+  QUESTION_DATABASE.forEach(q => { if (journalCoverage.get(q.id) !== 1) issues.push(`${q.id}: 学習レベル項目の割当が${journalCoverage.get(q.id) || 0}件`); });
+  TABLE_DATABASE.forEach(q => { if (tableCoverage.get(q.id) !== 1) issues.push(`${q.id}: 学習レベル項目の割当が${tableCoverage.get(q.id) || 0}件`); });
+  if (LEARNING_TOPICS.length !== TOC_GROUPS.length + TABLE_TOC_GROUPS.length) issues.push('学習レベル項目数が目次区分と一致しません');
+  const p1 = { repetitionCount: 1, intervalDays: 1 };
+  const p2 = { repetitionCount: 2, intervalDays: 3 };
+  const p3 = { repetitionCount: 3, intervalDays: 8 };
+  const x1 = calculateMasteryCandidate(p1, { correct: true, quality: 2 });
+  const x2 = calculateMasteryCandidate(p2, { correct: true, quality: 2 });
+  const x3 = calculateMasteryCandidate(p3, { correct: true, quality: 3 });
+  if (!(x1 > 4 && x2 > x1 && x3 > x2 && x3 <= QUESTION_MASTERY_XP_MAX)) issues.push('定着度EXPの段階増加ロジックが不正です');
+  const gateNow = new Date('2026-08-15T00:00:00.000Z');
+  if (isMasteryGrowthEligible({ nextReviewDate:'2026-08-16T00:00:00.000Z' }, gateNow)) issues.push('復習期限前のEXP増加ゲートが機能していません');
+  if (!isMasteryGrowthEligible({ nextReviewDate:'2026-08-14T00:00:00.000Z' }, gateNow)) issues.push('復習期限到来後のEXP増加が許可されません');
+  const defaultState = { progress:{}, tableProgress:{}, streak:0, learningGame:createDefaultLearningGameState() };
+  const blank = buildLearningSnapshot(defaultState);
+  if (blank.overall.level !== 1 || blank.topics.some(topic => topic.level !== 1)) issues.push('未学習時のレベル初期値がLv.1ではありません');
+  const maxGame = createDefaultLearningGameState();
+  QUESTION_DATABASE.forEach(q => { maxGame.journalXp[q.id] = QUESTION_MASTERY_XP_MAX; });
+  TABLE_DATABASE.forEach(q => { maxGame.tableXp[q.id] = QUESTION_MASTERY_XP_MAX; });
+  const maxState = { progress:Object.fromEntries(QUESTION_DATABASE.map(q => [q.id, { repetitionCount:4 }])), tableProgress:Object.fromEntries(TABLE_DATABASE.map(q => [q.id, { attempts:1 }])), streak:7, learningGame:maxGame };
+  const maxSnapshot = buildLearningSnapshot(maxState);
+  if (maxSnapshot.overall.level !== OVERALL_LEVEL_MAX) issues.push('最大EXPで総合Lv.30になりません');
+  if (maxSnapshot.topics.some(topic => topic.level !== TOPIC_LEVEL_MAX)) issues.push('最大EXPで項目Lv.10にならない区分があります');
+  return issues;
 }
 
 function validateQuestionBanks() {
@@ -10278,7 +11153,6 @@ function validateQuestionBanks() {
         if (Object.prototype.hasOwnProperty.call(cell, 'answer')) {
           answerCells += 1;
           if (!Number.isInteger(cell.answer) || cell.answer < 0) issues.push(`${q.id}: 表の不正金額 ${cell.answer}`);
-          if (cell.answer === 0) issues.push(`${q.id}: 0円セルは入力欄ではなく固定表示にする`);
         }
       });
     });
@@ -10314,9 +11188,37 @@ function validateBackupUtilities() {
   if (!restored.ok) issues.push(`バックアップ往復検証に失敗: ${restored.error}`);
   if (restored.ok && !restored.state.progress.Q001) issues.push('仕訳履歴のバックアップ復元検証に失敗');
   if (restored.ok && !restored.state.tableProgress.T001) issues.push('表履歴のバックアップ復元検証に失敗');
+  if (restored.ok && !(restored.state.learningGame?.journalXp?.Q001 > 0)) issues.push('学習レベルEXPのバックアップ復元検証に失敗');
   const tampered = JSON.parse(JSON.stringify(payload));
   tampered.state.todayCount = 99;
   if (StorageManager.sanitizeBackupState(tampered).ok) issues.push('改変バックアップのチェックサム検出に失敗');
+
+  const legacy = JSON.parse(JSON.stringify(payload));
+  legacy.state.journalBankVersion = 'v7.1';
+  legacy.state.tableBankVersion = 'v8.3';
+  legacy.journalBankVersion = 'v7.1';
+  legacy.tableBankVersion = 'v8.3';
+  legacy.state.progress.Q065 = { intervalDays: 5, repetitionCount: 3, easeFactor: 2.5, nextReviewDate: '2026-08-20T00:00:00.000Z', lastReviewed: '2026-08-15T00:00:00.000Z' };
+  legacy.state.progress.Q002 = { intervalDays: 5, repetitionCount: 3, easeFactor: 2.5, nextReviewDate: '2026-08-20T00:00:00.000Z', lastReviewed: '2026-08-15T00:00:00.000Z' };
+  legacy.stateChecksum = stableBankHash(legacy.state);
+  const migrated = StorageManager.sanitizeBackupState(legacy);
+  if (!migrated.ok) issues.push(`旧版バックアップ移行検証に失敗: ${migrated.error}`);
+  if (migrated.ok && migrated.state.progress.Q065) issues.push('内容変更対象Q065の旧履歴が除外されていません');
+  if (migrated.ok && !migrated.state.progress.Q002) issues.push('変更対象外Q002の旧履歴が移行されていません');
+
+  // v9.9相当（backup format 1 / schema 2 / learningGameなし）からv10.0へ移行できることを検証する。
+  const legacyV99 = JSON.parse(JSON.stringify(payload));
+  legacyV99.backupFormatVersion = 1;
+  legacyV99.state.schemaVersion = 2;
+  legacyV99.schemaVersion = 2;
+  legacyV99.state.appVersion = 'v9.9';
+  legacyV99.appVersion = 'v9.9';
+  delete legacyV99.state.learningGame;
+  legacyV99.stateChecksum = stableBankHash(legacyV99.state);
+  const migratedV99 = StorageManager.sanitizeBackupState(legacyV99);
+  if (!migratedV99.ok) issues.push(`v9.9バックアップ移行検証に失敗: ${migratedV99.error}`);
+  if (migratedV99.ok && migratedV99.state.schemaVersion !== STORAGE_SCHEMA_VERSION) issues.push('v9.9バックアップが現行schemaへ移行されていません');
+  if (migratedV99.ok && !(migratedV99.state.learningGame?.journalXp?.Q001 > 0)) issues.push('v9.9履歴から学習レベルEXPを復元できません');
   return issues;
 }
 
@@ -10339,6 +11241,92 @@ function validateVisibleProductClaims() {
     .map(claim => `根拠を限定していない表示があります: ${claim}`);
 }
 
+const REQUIRED_DOM_IDS = Object.freeze(['account-effect-list', 'account-nature-details', 'add-row-btn', 'backup-status', 'calc-display', 'calc-expression', 'calc-learning-note', 'calculator-modal', 'correct-journal-content', 'data-integrity-banner', 'diagnostic-box', 'diagnostic-list', 'diagnostic-summary', 'eval-btn-0', 'eval-btn-2', 'eval-btn-3', 'eval-instruction', 'explanation-reference-list', 'explanation-reference-policy', 'hint-box', 'journal-mode-section', 'journal-rows', 'journal-account-selection-help', 'learning-achievement-count', 'learning-growth-card', 'learning-next-goal', 'learning-next-stage-body', 'learning-next-stage-card', 'learning-next-stage-status', 'learning-next-stage-title', 'learning-overall-bar', 'learning-overall-level', 'learning-overall-progress-text', 'learning-overall-title', 'learning-studied-count', 'learning-today-summary', 'learning-toast', 'learning-topic-list', 'learning-weakest-topic', 'mode-journal-btn', 'mode-table-btn', 'problem-category', 'problem-difficulty', 'problem-id-text', 'problem-statement', 'problem-topic-level', 'progress-bar', 'progress-import-input', 'progress-text', 'quiz-card', 'remove-row-btn', 'result-box', 'result-detail', 'result-title', 'scenario-amount-section', 'scenario-amount-text', 'scenario-confusion-section', 'scenario-confusion-text', 'scenario-cue-list', 'scenario-guide-box', 'scenario-reading-text', 'scenario-reason-text', 'stat-due', 'stat-overall-level', 'stat-streak', 'stat-total', 'stat-unstudied', 'submit-btn', 'table-exercise-host', 'table-exercise-wrapper', 'table-explanation-box', 'table-hint-box', 'table-mode-section', 'table-problem-category', 'table-problem-givens', 'table-problem-givens-block', 'table-problem-id-text', 'table-problem-instruction', 'table-problem-statement', 'table-problem-targets', 'table-problem-targets-block', 'table-problem-topic-level', 'table-quiz-card', 'table-result-box', 'table-result-detail', 'table-result-title', 'table-segment-nav', 'table-submit-btn', 'table-toc-card', 'table-toc-details', 'table-toc-groups', 'table-workspace-help', 'table-workspace-title', 'toc-card', 'toc-details', 'toc-groups']);
+
+function validateUiStructure() {
+  const issues = [];
+  const seen = new Set();
+  document.querySelectorAll('[id]').forEach(el => {
+    if (seen.has(el.id)) issues.push(`HTML id重複: ${el.id}`);
+    seen.add(el.id);
+  });
+  REQUIRED_DOM_IDS.forEach(id => { if (!document.getElementById(id)) issues.push(`getElementById参照先なし: ${id}`); });
+  if (document.querySelector('[onclick]')) issues.push('インラインonclickが残っています');
+  const styleText = [...document.querySelectorAll('style')].map(style => style.textContent || '').join('\n');
+  if (typeof addJournalRow !== 'function' || !styleText.includes('.journal-account-display') || !styleText.includes('.journal-account-wrap select')) issues.push('長い勘定科目名の独自表示機構を確認できません');
+  if (!styleText.includes('@media (forced-colors: active)') || !styleText.includes('outline: 3px solid Highlight')) issues.push('High Contrast向けフォーカス表示CSSを確認できません');
+  const sampleJournalSelect = document.querySelector('#journal-rows select');
+  if (sampleJournalSelect && sampleJournalSelect.getAttribute('aria-describedby') !== 'journal-account-selection-help') issues.push('仕訳勘定科目selectに読み上げ補助説明が関連付けられていません');
+  if (!document.getElementById('table-workspace-guide')) issues.push('表問題の見方ガイドがありません');
+  if (!document.getElementById('table-problem-instruction') || !document.getElementById('table-problem-givens') || !document.getElementById('table-problem-targets')) {
+    issues.push('表問題の「指示・与件・入力対象」構造がありません');
+  }
+  const visibleText = String(document.body?.innerText || '');
+  if (visibleText.includes('iPhone入力') || visibleText.includes('全体表')) issues.push('表問題UIに端末・実装寄りの表示名が残っています');
+  return issues;
+}
+
+function validateTablePresentationUtilities() {
+  const issues = [];
+  TABLE_DATABASE.forEach(q => {
+    const parts = getTableStatementParts(q);
+    if (!String(parts.instruction || '').trim()) issues.push(`${q.id}: 問題の指示が空です`);
+    if (!String(parts.givens || '').trim()) issues.push(`${q.id}: 与件表示が空です`);
+
+    const normalRows = (q.rows || []).filter(row => !row.isTotal).length;
+    if (q.group === '残高試算表') {
+      const items = parseBalanceTrialGivens(parts.givens);
+      if (items.length !== normalRows) issues.push(`${q.id}: 与件残高の表示行数 ${items.length} / 期待 ${normalRows}`);
+    }
+    if (q.group === '合計試算表') {
+      const items = parseTotalTrialGivens(parts.givens);
+      if (items.length !== normalRows) issues.push(`${q.id}: 元帳集計の表示行数 ${items.length} / 期待 ${normalRows}`);
+    }
+
+    if (!getTableTargetLabels(q).length) issues.push(`${q.id}: 入力対象行を特定できません`);
+  });
+  return issues;
+}
+
+function validateCalculatorUtilities() {
+  const issues = [];
+  const keys = [...document.querySelectorAll('.calc-grid [data-action="calc-key"]')].map(btn => btn.dataset.value);
+  const expectedPrefix = ['AC','C','DEL','/','7','8','9','*'];
+  if (expectedPrefix.some((value, index) => keys[index] !== value)) issues.push('電卓キー上段または7・8・9配列が想定どおりではありません');
+  if (keys.filter(value => value === '9').length !== 1) issues.push('電卓の9キーが一意に存在しません');
+  if (!keys.includes('AC') || !keys.includes('C')) issues.push('電卓のAC/Cキーが不足しています');
+  if (!document.getElementById('calc-expression')) issues.push('電卓の演算子・式表示欄がありません');
+  const calcNote = String(document.getElementById('calc-learning-note')?.textContent || '');
+  if (!calcNote.includes('100で割る')) issues.push('電卓の％キー仕様が利用者向けに明示されていません');
+  const percent50 = calculatePercentValue(50);
+  if (!Number.isFinite(percent50) || percent50 !== 0.5) issues.push('電卓の％単項処理（50→0.5）異常');
+
+  const calcSnapshot = { ...Runtime.calculator };
+  try {
+    resetCalculatorAll();
+    calcAction('1'); calcAction('0'); calcAction('0');
+    calcAction('+');
+    calcAction('1'); calcAction('0');
+    calcAction('%');
+    calcAction('=');
+    if (Number(Runtime.calculator.current) !== 100.1) issues.push('電卓の％単項処理と保留演算の連携異常（100＋10％＝100.1）');
+  } finally {
+    Object.assign(Runtime.calculator, calcSnapshot);
+    updateCalcDisplay();
+  }
+
+  const plus = calculateBinaryOperation(12, '+', 3);
+  const minus = calculateBinaryOperation(12, '-', 3);
+  const multiply = calculateBinaryOperation(12, '*', 3);
+  const divide = calculateBinaryOperation(12, '/', 3);
+  if (!plus.ok || plus.value !== 15) issues.push('電卓の加算ユーティリティ異常');
+  if (!minus.ok || minus.value !== 9) issues.push('電卓の減算ユーティリティ異常');
+  if (!multiply.ok || multiply.value !== 36) issues.push('電卓の乗算ユーティリティ異常');
+  if (!divide.ok || divide.value !== 4) issues.push('電卓の除算ユーティリティ異常');
+  if (calculateBinaryOperation(1, '/', 0).ok) issues.push('電卓の0除算拒否に失敗');
+  return issues;
+}
+
 function validateRuntimeShape() {
   const issues = [];
   if (!Object.isSealed(Runtime)) issues.push('Runtime本体がsealされていません');
@@ -10348,8 +11336,57 @@ function validateRuntimeShape() {
   return issues;
 }
 
-function runIntegrityCheck() {
+// ===== Integrity / QA: 二段階起動時自己検査 =====
+// critical: 問題バンク・Hash・必須DOM・Runtime形状。描画前に同期実行する。
+// detailed: 解説整合、入力・バックアップ・電卓・学習レベル等。初期描画後に実行する。
+const IntegrityRuntime = { critical: null, detailed: null, detailedScheduled: false };
+
+function integrityNowMs() {
+  return (typeof performance !== 'undefined' && typeof performance.now === 'function') ? performance.now() : Date.now();
+}
+
+function collectIntegrityIssues() {
+  return [
+    ...(IntegrityRuntime.critical?.issues || []),
+    ...(IntegrityRuntime.detailed?.issues || [])
+  ];
+}
+
+function renderIntegrityStatus() {
+  const issues = collectIntegrityIssues();
+  const banner = document.getElementById('data-integrity-banner');
+  if (issues.length) {
+    if (banner) {
+      banner.textContent = `教材データまたは採点診断の整合性エラーを検出しました。\n${issues.join('\n')}`;
+      banner.classList.add('visible');
+    }
+  } else if (banner) {
+    banner.textContent = '';
+    banner.classList.remove('visible');
+  }
+  return issues;
+}
+
+function runCriticalIntegrityCheck() {
+  const startedAt = integrityNowMs();
   const result = validateQuestionBanks();
+  const runtimeShapeIssues = validateRuntimeShape();
+  const uiStructureIssues = validateUiStructure();
+  result.runtimeShapeIssues = runtimeShapeIssues;
+  result.uiStructureIssues = uiStructureIssues;
+  result.issues.push(...runtimeShapeIssues.map(issue => `実行時状態: ${issue}`));
+  result.issues.push(...uiStructureIssues.map(issue => `UI: ${issue}`));
+  result.durationMs = Math.max(0, integrityNowMs() - startedAt);
+  IntegrityRuntime.critical = result;
+  const issues = renderIntegrityStatus();
+  if (issues.length) console.error('起動時必須整合性チェックエラー', result);
+  else console.info(`起動時必須整合性チェック OK (${result.durationMs.toFixed(1)}ms)`, result);
+  return result;
+}
+
+function runDetailedIntegrityCheck() {
+  const startedAt = integrityNowMs();
+  const result = { issues: [] };
   const diagnosticIssues = validateDiagnosticEngine();
   const classificationIssues = validateAccountClassifications();
   const explanationIssues = validateExplanationStructure();
@@ -10362,20 +11399,15 @@ function runIntegrityCheck() {
   const sourceAuditedCaseIssues = validateSourceAuditedCoreCases();
   const sourceAuditedTextIssues = validateSourceAuditedTextExpectations();
   const visibleClaimIssues = validateVisibleProductClaims();
-  const runtimeShapeIssues = validateRuntimeShape();
-  result.diagnosticIssues = diagnosticIssues;
-  result.classificationIssues = classificationIssues;
-  result.explanationIssues = explanationIssues;
-  result.explanationAlignmentIssues = explanationAlignmentIssues;
-  result.learningSupportIssues = learningSupportIssues;
-  result.numericInputIssues = numericInputIssues;
-  result.backupIssues = backupIssues;
-  result.confusionNoteIssues = confusionNoteIssues;
-  result.referenceCatalogIssues = referenceCatalogIssues;
-  result.sourceAuditedCaseIssues = sourceAuditedCaseIssues;
-  result.sourceAuditedTextIssues = sourceAuditedTextIssues;
-  result.visibleClaimIssues = visibleClaimIssues;
-  result.runtimeShapeIssues = runtimeShapeIssues;
+  const tablePresentationIssues = validateTablePresentationUtilities();
+  const calculatorIssues = validateCalculatorUtilities();
+  const learningLevelIssues = validateLearningLevelSystem();
+  Object.assign(result, {
+    diagnosticIssues, classificationIssues, explanationIssues, explanationAlignmentIssues,
+    learningSupportIssues, numericInputIssues, backupIssues, confusionNoteIssues,
+    referenceCatalogIssues, sourceAuditedCaseIssues, sourceAuditedTextIssues,
+    visibleClaimIssues, tablePresentationIssues, calculatorIssues, learningLevelIssues
+  });
   result.issues.push(...diagnosticIssues.map(issue => `誤答診断: ${issue}`));
   result.issues.push(...classificationIssues.map(account => `勘定科目分類未登録: ${account}`));
   result.issues.push(...explanationIssues.map(issue => `解説構造: ${issue}`));
@@ -10388,32 +11420,71 @@ function runIntegrityCheck() {
   result.issues.push(...sourceAuditedCaseIssues.map(issue => `重点論点監査: ${issue}`));
   result.issues.push(...sourceAuditedTextIssues.map(issue => `重点説明監査: ${issue}`));
   result.issues.push(...visibleClaimIssues.map(issue => `表示表現: ${issue}`));
-  result.issues.push(...runtimeShapeIssues.map(issue => `実行時状態: ${issue}`));
-  const banner = document.getElementById('data-integrity-banner');
-  if (result.issues.length) {
-    console.error('起動時整合性チェックエラー', result);
-    if (banner) {
-      banner.textContent = `教材データまたは採点診断の整合性エラーを検出しました。\n${result.issues.join('\n')}`;
-      banner.classList.add('visible');
-    }
-  } else {
-    console.info('教材データ・採点診断の整合性チェック OK', result);
-    if (banner) banner.classList.remove('visible');
-  }
+  result.issues.push(...tablePresentationIssues.map(issue => `表問題表示: ${issue}`));
+  result.issues.push(...calculatorIssues.map(issue => `電卓: ${issue}`));
+  result.issues.push(...learningLevelIssues.map(issue => `学習レベル: ${issue}`));
+  result.durationMs = Math.max(0, integrityNowMs() - startedAt);
+  IntegrityRuntime.detailed = result;
+  renderIntegrityStatus();
+  if (result.issues.length) console.error('起動時詳細整合性チェックエラー', result);
+  else console.info(`起動時詳細整合性チェック OK (${result.durationMs.toFixed(1)}ms)`, result);
   return result;
+}
+
+function scheduleDetailedIntegrityCheck() {
+  if (IntegrityRuntime.detailedScheduled || IntegrityRuntime.detailed) return;
+  IntegrityRuntime.detailedScheduled = true;
+  const run = () => {
+    IntegrityRuntime.detailedScheduled = false;
+    try {
+      runDetailedIntegrityCheck();
+    } catch (error) {
+      console.error('起動時詳細整合性チェックの実行に失敗しました。', error);
+      IntegrityRuntime.detailed = { issues: [`詳細自己検査の実行に失敗: ${error instanceof Error ? error.message : String(error)}`] };
+      renderIntegrityStatus();
+    }
+  };
+
+  // requestIdleCallback対応ブラウザでは空き時間を使う。Safari等は1回描画を挟んで次タスクで実行する。
+  if (typeof window.requestIdleCallback === 'function') {
+    window.requestIdleCallback(run, { timeout: 1200 });
+  } else if (typeof window.requestAnimationFrame === 'function') {
+    window.requestAnimationFrame(() => setTimeout(run, 0));
+  } else {
+    setTimeout(run, 0);
+  }
+}
+
+// QA・デバッグ時に全検査を同期実行したい場合の互換エントリ。通常起動では使用しない。
+function runIntegrityCheck() {
+  const critical = runCriticalIntegrityCheck();
+  const detailed = runDetailedIntegrityCheck();
+  return { critical, detailed, issues: collectIntegrityIssues() };
 }
 
 deepFreeze(QUESTION_DATABASE);
 deepFreeze(TABLE_DATABASE);
 
-const APP_VERSION = 'v9.8';
-const STORAGE_SCHEMA_VERSION = 2;
-const JOURNAL_BANK_VERSION = 'v7.1';
-const TABLE_BANK_VERSION = 'v8.3';
-const EXPECTED_QUESTION_BANK_HASH = '1be23a26';
-const EXPECTED_TABLE_BANK_HASH = 'ffad1361';
+const APP_VERSION = 'v10.2';
+const STORAGE_SCHEMA_VERSION = 3;
+const COMPATIBLE_STORAGE_SCHEMA_VERSIONS = new Set([2, 3]);
+const JOURNAL_BANK_VERSION = 'v7.2';
+const TABLE_BANK_VERSION = 'v8.4';
+
+/*
+ * ===== 問題バンク更新手順（保守用） =====
+ * 1) QUESTION_DATABASE / TABLE_DATABASE を変更した場合だけ、対応するバンクversionを更新する。
+ * 2) validateQuestionBanks() が返す journalHash / tableHash（stableBankHashで算出）を確認し、
+ *    下記 EXPECTED_*_BANK_HASH を新しい値へ更新する。
+ * 3) 問題条件・正答・意味が変わり旧学習履歴をそのまま使えないIDは、互換移行時のpurge setへ追加する。
+ * 4) runIntegrityCheck() と外部QAを再実行し、問題数・ID・貸借・正答候補・解説整合・バックアップ移行を確認する。
+ * 5) stableBankHashは破損・意図しない変更を検知するための32bitチェックサムであり、暗号学的署名ではない。
+ */
+const EXPECTED_QUESTION_BANK_HASH = '7eec5e67';
+const EXPECTED_TABLE_BANK_HASH = 'eb9a19c3';
 const BACKUP_PRODUCT_ID = 'boki3-comprehensive';
-const BACKUP_FORMAT_VERSION = 1;
+const BACKUP_FORMAT_VERSION = 2;
+const COMPATIBLE_BACKUP_FORMAT_VERSIONS = new Set([1, 2]);
 const MAX_BACKUP_FILE_BYTES = 2 * 1024 * 1024;
 
 class StorageManager {
@@ -10431,39 +11502,42 @@ class StorageManager {
       const serialized = localStorage.getItem(this.KEY);
       if (!serialized) return defaultState;
       const parsed = JSON.parse(serialized);
-      if (typeof parsed !== 'object' || parsed === null) return defaultState;
-      if (parsed.schemaVersion != null && parsed.schemaVersion !== STORAGE_SCHEMA_VERSION) return defaultState;
+      if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) return defaultState;
+      const parsedSchema = parsed.schemaVersion == null ? 2 : parsed.schemaVersion;
+      if (!COMPATIBLE_STORAGE_SCHEMA_VERSIONS.has(parsedSchema)) return defaultState;
 
       const legacyJournalVersion = typeof parsed.journalBankVersion === 'string'
         ? parsed.journalBankVersion
         : parsed.bankVersion;
       let purgeSet = new Set();
-      let journalCompatible = true;
-      if (legacyJournalVersion === 'v7.0') purgeSet = UPDATED_FROM_V7_0_IDS;
-      else if (legacyJournalVersion !== JOURNAL_BANK_VERSION) journalCompatible = false;
+      const journalCompatible = COMPATIBLE_JOURNAL_BANK_VERSIONS.has(legacyJournalVersion);
+      if (legacyJournalVersion === 'v7.0') purgeSet = new Set([...UPDATED_FROM_V7_0_IDS, ...UPDATED_FROM_V7_1_IDS]);
+      else if (legacyJournalVersion === 'v7.1') purgeSet = UPDATED_FROM_V7_1_IDS;
 
-      const tableCompatible = !parsed.tableBankVersion || parsed.tableBankVersion === TABLE_BANK_VERSION;
+      const legacyTableVersion = typeof parsed.tableBankVersion === 'string' ? parsed.tableBankVersion : TABLE_BANK_VERSION;
+      const tableCompatible = COMPATIBLE_TABLE_BANK_VERSIONS.has(legacyTableVersion);
       const sanitizedProgress = {};
-      if (journalCompatible && typeof parsed.progress === 'object' && parsed.progress !== null) {
+      if (journalCompatible && typeof parsed.progress === 'object' && parsed.progress !== null && !Array.isArray(parsed.progress)) {
         Object.keys(parsed.progress).forEach(id => {
           if (!VALID_QUESTION_IDS.has(id) || purgeSet.has(id)) return;
           const item = parsed.progress[id];
-          if (!item || typeof item !== 'object') return;
+          if (!item || typeof item !== 'object' || Array.isArray(item)) return;
           const interval = Number.isFinite(item.intervalDays) && item.intervalDays >= 0 ? Math.floor(item.intervalDays) : 0;
           const rep = Number.isFinite(item.repetitionCount) && item.repetitionCount >= 0 ? Math.floor(item.repetitionCount) : 0;
           const ease = Number.isFinite(item.easeFactor) && item.easeFactor >= 1.3 && item.easeFactor <= 5.0 ? item.easeFactor : 2.50;
           const nextDate = typeof item.nextReviewDate === 'string' && !Number.isNaN(Date.parse(item.nextReviewDate)) ? item.nextReviewDate : new Date().toISOString();
           const lastRev = typeof item.lastReviewed === 'string' && !Number.isNaN(Date.parse(item.lastReviewed)) ? item.lastReviewed : new Date().toISOString();
-          sanitizedProgress[id] = { intervalDays: interval, repetitionCount: rep, easeFactor: Number(ease.toFixed(2)), nextReviewDate: nextDate, lastReviewed: lastRev };
+          const lastQuality = [0, 2, 3].includes(item.lastQuality) ? item.lastQuality : null;
+          sanitizedProgress[id] = { intervalDays: interval, repetitionCount: rep, easeFactor: Number(ease.toFixed(2)), nextReviewDate: nextDate, lastReviewed: lastRev, lastQuality };
         });
       }
 
       const sanitizedTableProgress = {};
-      if (tableCompatible && typeof parsed.tableProgress === 'object' && parsed.tableProgress !== null) {
+      if (tableCompatible && typeof parsed.tableProgress === 'object' && parsed.tableProgress !== null && !Array.isArray(parsed.tableProgress)) {
         Object.keys(parsed.tableProgress).forEach(id => {
           if (!VALID_TABLE_IDS.has(id)) return;
           const item = parsed.tableProgress[id];
-          if (!item || typeof item !== 'object') return;
+          if (!item || typeof item !== 'object' || Array.isArray(item)) return;
           const attempts = Number.isFinite(item.attempts) && item.attempts >= 0 ? Math.floor(item.attempts) : 0;
           const correct = item.correct === true;
           const lastAttempt = typeof item.lastAttempt === 'string' && !Number.isNaN(Date.parse(item.lastAttempt)) ? item.lastAttempt : null;
@@ -10483,6 +11557,11 @@ class StorageManager {
         });
       }
 
+      const streak = Number.isFinite(parsed.streak) && parsed.streak >= 0 ? Math.floor(parsed.streak) : 0;
+      const lastStudyDate = typeof parsed.lastStudyDate === 'string' && !Number.isNaN(Date.parse(parsed.lastStudyDate)) ? parsed.lastStudyDate : null;
+      const todayCount = Number.isFinite(parsed.todayCount) && parsed.todayCount >= 0 ? Math.floor(parsed.todayCount) : 0;
+      const learningGame = sanitizeLearningGameState(parsed.learningGame, sanitizedProgress, sanitizedTableProgress, todayCount, lastStudyDate, streak);
+
       return {
         schemaVersion: STORAGE_SCHEMA_VERSION,
         appVersion: APP_VERSION,
@@ -10490,9 +11569,10 @@ class StorageManager {
         tableBankVersion: TABLE_BANK_VERSION,
         progress: sanitizedProgress,
         tableProgress: sanitizedTableProgress,
-        streak: Number.isFinite(parsed.streak) && parsed.streak >= 0 ? Math.floor(parsed.streak) : 0,
-        lastStudyDate: typeof parsed.lastStudyDate === 'string' && !Number.isNaN(Date.parse(parsed.lastStudyDate)) ? parsed.lastStudyDate : null,
-        todayCount: Number.isFinite(parsed.todayCount) && parsed.todayCount >= 0 ? Math.floor(parsed.todayCount) : 0
+        streak,
+        lastStudyDate,
+        todayCount,
+        learningGame
       };
     } catch (error) {
       console.error('LocalStorage load failed; using default state.', error);
@@ -10506,6 +11586,14 @@ class StorageManager {
       appState.appVersion = APP_VERSION;
       appState.journalBankVersion = JOURNAL_BANK_VERSION;
       appState.tableBankVersion = TABLE_BANK_VERSION;
+      appState.learningGame = sanitizeLearningGameState(
+        appState.learningGame,
+        appState.progress,
+        appState.tableProgress,
+        appState.todayCount,
+        appState.lastStudyDate,
+        appState.streak
+      );
       localStorage.setItem(this.KEY, JSON.stringify(appState));
       return true;
     } catch (error) {
@@ -10521,6 +11609,7 @@ class StorageManager {
     snapshot.appVersion = APP_VERSION;
     snapshot.journalBankVersion = JOURNAL_BANK_VERSION;
     snapshot.tableBankVersion = TABLE_BANK_VERSION;
+    snapshot.learningGame = sanitizeLearningGameState(snapshot.learningGame, snapshot.progress, snapshot.tableProgress, snapshot.todayCount, snapshot.lastStudyDate, snapshot.streak);
     return {
       productId: BACKUP_PRODUCT_ID,
       backupFormatVersion: BACKUP_FORMAT_VERSION,
@@ -10547,8 +11636,9 @@ class StorageManager {
       result.error = '別のアプリで作成されたバックアップのため復元できません。';
       return result;
     }
-    if (payload.backupFormatVersion != null && payload.backupFormatVersion !== BACKUP_FORMAT_VERSION) {
-      result.error = `未対応のバックアップ形式です（format ${payload.backupFormatVersion}）。`;
+    const backupFormat = payload.backupFormatVersion == null ? 1 : payload.backupFormatVersion;
+    if (!COMPATIBLE_BACKUP_FORMAT_VERSIONS.has(backupFormat)) {
+      result.error = `未対応のバックアップ形式です（format ${backupFormat}）。`;
       return result;
     }
 
@@ -10557,21 +11647,13 @@ class StorageManager {
       result.error = '学習履歴データが見つかりません。';
       return result;
     }
-    if (raw.schemaVersion !== STORAGE_SCHEMA_VERSION) {
+    const rawSchema = raw.schemaVersion == null ? 2 : raw.schemaVersion;
+    if (!COMPATIBLE_STORAGE_SCHEMA_VERSIONS.has(rawSchema)) {
       result.error = `保存形式のバージョンが異なるため復元できません（schema ${raw.schemaVersion ?? '不明'}）。`;
       return result;
     }
 
-    const journalVersion = typeof raw.journalBankVersion === 'string' ? raw.journalBankVersion : raw.bankVersion;
-    if (journalVersion !== JOURNAL_BANK_VERSION) {
-      result.error = `仕訳問題データのバージョンが異なるため復元できません（${journalVersion || '不明'} → ${JOURNAL_BANK_VERSION}）。`;
-      return result;
-    }
-    if (raw.tableBankVersion !== TABLE_BANK_VERSION) {
-      result.error = `表問題データのバージョンが異なるため復元できません（${raw.tableBankVersion || '不明'} → ${TABLE_BANK_VERSION}）。`;
-      return result;
-    }
-
+    // チェックサムは変換前の受領データで検査する。暗号学的署名ではない。
     if (payload.stateChecksum != null && payload.state) {
       const actual = stableBankHash(raw);
       if (String(payload.stateChecksum) !== actual) {
@@ -10580,17 +11662,35 @@ class StorageManager {
       }
     }
 
+    const journalVersion = typeof raw.journalBankVersion === 'string' ? raw.journalBankVersion : raw.bankVersion;
+    if (!COMPATIBLE_JOURNAL_BANK_VERSIONS.has(journalVersion)) {
+      result.error = `仕訳問題データのバージョンが異なるため復元できません（${journalVersion || '不明'} → ${JOURNAL_BANK_VERSION}）。`;
+      return result;
+    }
+    const tableVersion = typeof raw.tableBankVersion === 'string' ? raw.tableBankVersion : TABLE_BANK_VERSION;
+    if (!COMPATIBLE_TABLE_BANK_VERSIONS.has(tableVersion)) {
+      result.error = `表問題データのバージョンが異なるため復元できません（${tableVersion || '不明'} → ${TABLE_BANK_VERSION}）。`;
+      return result;
+    }
+    const backupJournalPurgeSet = journalVersion === 'v7.0'
+      ? new Set([...UPDATED_FROM_V7_0_IDS, ...UPDATED_FROM_V7_1_IDS])
+      : journalVersion === 'v7.1' ? UPDATED_FROM_V7_1_IDS : new Set();
+    if (journalVersion !== JOURNAL_BANK_VERSION) result.warnings.push(`旧仕訳問題データ ${journalVersion} の履歴を互換移行します。内容変更対象の履歴は除外します。`);
+    if (tableVersion !== TABLE_BANK_VERSION) result.warnings.push(`旧表問題データ ${tableVersion} の履歴を互換移行します。`);
+    if (rawSchema !== STORAGE_SCHEMA_VERSION || backupFormat !== BACKUP_FORMAT_VERSION) result.warnings.push('旧版の学習履歴を現在の保存形式へ移行します。');
+
     const progress = {};
     let droppedJournal = 0;
     if (raw.progress && typeof raw.progress === 'object' && !Array.isArray(raw.progress)) {
       Object.entries(raw.progress).forEach(([id, item]) => {
-        if (!VALID_QUESTION_IDS.has(id) || !item || typeof item !== 'object' || Array.isArray(item)) { droppedJournal += 1; return; }
+        if (!VALID_QUESTION_IDS.has(id) || backupJournalPurgeSet.has(id) || !item || typeof item !== 'object' || Array.isArray(item)) { droppedJournal += 1; return; }
         const interval = Number.isFinite(item.intervalDays) && item.intervalDays >= 0 ? Math.floor(item.intervalDays) : 0;
         const repetitionCount = Number.isFinite(item.repetitionCount) && item.repetitionCount >= 0 ? Math.floor(item.repetitionCount) : 0;
         const easeFactor = Number.isFinite(item.easeFactor) && item.easeFactor >= 1.3 && item.easeFactor <= 5.0 ? Number(item.easeFactor.toFixed(2)) : 2.50;
         const nextReviewDate = typeof item.nextReviewDate === 'string' && !Number.isNaN(Date.parse(item.nextReviewDate)) ? item.nextReviewDate : new Date().toISOString();
         const lastReviewed = typeof item.lastReviewed === 'string' && !Number.isNaN(Date.parse(item.lastReviewed)) ? item.lastReviewed : new Date().toISOString();
-        progress[id] = { intervalDays: interval, repetitionCount, easeFactor, nextReviewDate, lastReviewed };
+        const lastQuality = [0, 2, 3].includes(item.lastQuality) ? item.lastQuality : null;
+        progress[id] = { intervalDays: interval, repetitionCount, easeFactor, nextReviewDate, lastReviewed, lastQuality };
       });
     }
 
@@ -10622,6 +11722,11 @@ class StorageManager {
       result.warnings.push(`不正または未知の履歴 ${droppedJournal + droppedTable} 件は取り込み対象から除外しました。`);
     }
 
+    const streak = Number.isFinite(raw.streak) && raw.streak >= 0 ? Math.floor(raw.streak) : 0;
+    const lastStudyDate = typeof raw.lastStudyDate === 'string' && !Number.isNaN(Date.parse(raw.lastStudyDate)) ? raw.lastStudyDate : null;
+    const todayCount = Number.isFinite(raw.todayCount) && raw.todayCount >= 0 ? Math.floor(raw.todayCount) : 0;
+    const learningGame = sanitizeLearningGameState(raw.learningGame, progress, tableProgress, todayCount, lastStudyDate, streak);
+
     result.state = {
       schemaVersion: STORAGE_SCHEMA_VERSION,
       appVersion: APP_VERSION,
@@ -10629,9 +11734,10 @@ class StorageManager {
       tableBankVersion: TABLE_BANK_VERSION,
       progress,
       tableProgress,
-      streak: Number.isFinite(raw.streak) && raw.streak >= 0 ? Math.floor(raw.streak) : 0,
-      lastStudyDate: typeof raw.lastStudyDate === 'string' && !Number.isNaN(Date.parse(raw.lastStudyDate)) ? raw.lastStudyDate : null,
-      todayCount: Number.isFinite(raw.todayCount) && raw.todayCount >= 0 ? Math.floor(raw.todayCount) : 0
+      streak,
+      lastStudyDate,
+      todayCount,
+      learningGame
     };
     result.summary = { journalRecords: Object.keys(progress).length, tableRecords: Object.keys(tableProgress).length };
     result.ok = true;
@@ -10644,7 +11750,12 @@ class StorageManager {
       appVersion: APP_VERSION,
       journalBankVersion: JOURNAL_BANK_VERSION,
       tableBankVersion: TABLE_BANK_VERSION,
-      progress: {}, tableProgress: {}, streak: 0, lastStudyDate: null, todayCount: 0
+      progress: {},
+      tableProgress: {},
+      streak: 0,
+      lastStudyDate: null,
+      todayCount: 0,
+      learningGame: createDefaultLearningGameState()
     };
   }
 }
@@ -10657,8 +11768,8 @@ function createRuntime() {
     mode: 'journal',
     journal: { currentQuestionIndex: -1, currentErrorType: 'NONE', isAnswered: false, isEvalCompleted: false, lastFocusedInput: null },
     table: { currentIndex: -1, answered: false, lastFocusedInput: null, viewMode: 'full', viewPreference: 'auto', segmentIndex: 0, hintLevel: 0, draft: {} },
-    calculator: { current: '0', prev: null, op: null, resetOnNext: false, error: false },
-    ui: { quizCardTemplate: null, journalResizeTimer: null, journalRefitRaf: null, tableMediaQuery: null, tableMediaHandler: null, resizeObserver: null }
+    calculator: { current: '0', prev: null, op: null, resetOnNext: false, error: false, lastOperand: null, lastOp: null },
+    ui: { quizCardTemplate: null, journalResizeTimer: null, journalRefitRaf: null, tableMediaQuery: null, tableMediaHandler: null, resizeObserver: null, learningToastTimer: null }
   };
   Object.seal(runtime.journal);
   Object.seal(runtime.table);
@@ -10674,22 +11785,233 @@ function getTodayString() {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
+function calendarDayDiff(fromDateString, toDateString) {
+  const parseLocal = value => {
+    const match = String(value || '').match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (!match) return null;
+    return new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+  };
+  const from = parseLocal(fromDateString);
+  const to = parseLocal(toDateString);
+  if (!from || !to) return null;
+  return Math.round((to - from) / 86400000);
+}
+
+function ensureTodayLearningGame() {
+  const today = getTodayString();
+  if (!Runtime.state.learningGame || typeof Runtime.state.learningGame !== 'object') {
+    Runtime.state.learningGame = sanitizeLearningGameState(null, Runtime.state.progress, Runtime.state.tableProgress, Runtime.state.todayCount, Runtime.state.lastStudyDate, Runtime.state.streak);
+  }
+  if (Runtime.state.learningGame.todayDate !== today) {
+    Runtime.state.learningGame.todayDate = today;
+    Runtime.state.learningGame.todayXp = 0;
+  }
+  return Runtime.state.learningGame;
+}
+
 function checkDailyStreak() {
   const today = getTodayString();
-  if (!Runtime.state.lastStudyDate) return;
-
-  const lastDate = new Date(Runtime.state.lastStudyDate);
-  const currentDate = new Date(today);
-  const diffDays = Math.round((currentDate - lastDate) / (1000 * 60 * 60 * 24));
-
-  if (diffDays > 1) {
-    Runtime.state.streak = 0;
-    Runtime.state.todayCount = 0;
-    StorageManager.saveState(Runtime.state);
-  } else if (Runtime.state.lastStudyDate !== today) {
-    Runtime.state.todayCount = 0;
-    StorageManager.saveState(Runtime.state);
+  const game = ensureTodayLearningGame();
+  let changed = false;
+  if (!Runtime.state.lastStudyDate) {
+    if (Runtime.state.todayCount !== 0) { Runtime.state.todayCount = 0; changed = true; }
+  } else if (String(Runtime.state.lastStudyDate).slice(0, 10) !== today) {
+    const diffDays = calendarDayDiff(Runtime.state.lastStudyDate, today);
+    if (diffDays != null && diffDays > 1 && Runtime.state.streak !== 0) { Runtime.state.streak = 0; changed = true; }
+    if (Runtime.state.todayCount !== 0) { Runtime.state.todayCount = 0; changed = true; }
   }
+  if (game.todayDate !== today) {
+    game.todayDate = today;
+    game.todayXp = 0;
+    changed = true;
+  }
+  if (changed) StorageManager.saveState(Runtime.state);
+}
+
+function registerStudyActivity() {
+  const today = getTodayString();
+  const game = ensureTodayLearningGame();
+  const previousCount = Number.isFinite(Runtime.state.todayCount) ? Math.max(0, Math.floor(Runtime.state.todayCount)) : 0;
+  const lastDate = Runtime.state.lastStudyDate ? String(Runtime.state.lastStudyDate).slice(0, 10) : null;
+
+  if (!lastDate) {
+    Runtime.state.streak = 1;
+    Runtime.state.todayCount = 0;
+  } else if (lastDate !== today) {
+    const diffDays = calendarDayDiff(lastDate, today);
+    Runtime.state.streak = diffDays === 1 ? Math.max(1, Runtime.state.streak + 1) : 1;
+    Runtime.state.todayCount = 0;
+  }
+
+  Runtime.state.lastStudyDate = today;
+  const countBeforeIncrement = Number.isFinite(Runtime.state.todayCount) ? Math.max(0, Math.floor(Runtime.state.todayCount)) : 0;
+  Runtime.state.todayCount = countBeforeIncrement + 1;
+  game.todayDate = today;
+
+  const reachedDailyGoal = Runtime.state.todayCount >= DAILY_STUDY_TARGET
+    && (lastDate !== today || previousCount < DAILY_STUDY_TARGET)
+    && game.dailyGoalCelebratedDate !== today;
+  if (reachedDailyGoal) game.dailyGoalCelebratedDate = today;
+  return { reachedDailyGoal, todayCount: Runtime.state.todayCount };
+}
+
+function awardQuestionMasteryXp(type, questionId, updatedProgress, { correct = null, quality = null, allowGrowth = true } = {}) {
+  const game = ensureTodayLearningGame();
+  const map = type === 'table' ? game.tableXp : game.journalXp;
+  const previousXp = Number(map[questionId]) || 0;
+  if (!allowGrowth) return 0;
+  const candidate = calculateMasteryCandidate(updatedProgress, { correct, quality });
+  const nextXp = Math.max(previousXp, candidate);
+  const gained = Math.max(0, nextXp - previousXp);
+  if (gained > 0) {
+    map[questionId] = nextXp;
+    game.todayXp = Math.max(0, Math.floor(Number(game.todayXp) || 0)) + gained;
+  }
+  return gained;
+}
+
+function markNewAchievements(snapshot) {
+  const game = ensureTodayLearningGame();
+  if (!game.announcedAchievements || typeof game.announcedAchievements !== 'object') game.announcedAchievements = {};
+  const newlyUnlocked = [];
+  ACHIEVEMENT_DEFINITIONS.forEach(item => {
+    if (item.check(snapshot) && game.announcedAchievements[item.id] !== true) {
+      game.announcedAchievements[item.id] = true;
+      newlyUnlocked.push(item);
+    }
+  });
+  return newlyUnlocked;
+}
+
+function getNextLearningGoal(snapshot) {
+  if (snapshot.journalStudied < 10) return `次の節目：仕訳10問まであと ${10 - snapshot.journalStudied}問`;
+  if (snapshot.journalStudied < 50) return `次の節目：仕訳50問まであと ${50 - snapshot.journalStudied}問`;
+  if (snapshot.journalStudied < 100) return `次の節目：仕訳100問まであと ${100 - snapshot.journalStudied}問`;
+  if (snapshot.journalStudied < 200) return `次の節目：仕訳200問一巡まであと ${200 - snapshot.journalStudied}問`;
+  if (snapshot.tableAttempted < 10) return `次の節目：表問題10問まであと ${10 - snapshot.tableAttempted}問`;
+  if (snapshot.tableAttempted < 40) return `次の節目：表問題40問一巡まであと ${40 - snapshot.tableAttempted}問`;
+  if (snapshot.totalStudied < 240) return `次の節目：全240問の学習一巡まであと ${240 - snapshot.totalStudied}問`;
+  if (snapshot.overall.level < OVERALL_LEVEL_MAX) return `全240問を一巡済み。復習で定着度を上げ、総合Lv.${snapshot.overall.level + 1}を目指せます。`;
+  return '教材内レベル上限に到達しています。復習期限が来た問題で定着を維持しましょう。';
+}
+
+function refreshTocLevelLabels(snapshot) {
+  const byId = new Map(snapshot.topics.map(topic => [topic.id, topic]));
+  document.querySelectorAll('[data-learning-topic-id][data-range-label]').forEach(el => {
+    const topic = byId.get(el.dataset.learningTopicId);
+    el.textContent = `Lv.${topic?.level || 1}・${el.dataset.rangeLabel}`;
+  });
+}
+
+function renderCurrentTopicLevel(type, questionId, targetId, snapshot = null) {
+  const target = document.getElementById(targetId);
+  if (!target) return;
+  const currentSnapshot = snapshot || buildLearningSnapshot(Runtime.state);
+  const topic = getLearningTopicForQuestion(type, questionId);
+  const topicState = topic ? currentSnapshot.topics.find(item => item.id === topic.id) : null;
+  target.textContent = topicState ? `${topicState.title} Lv.${topicState.level}` : '項目 Lv.1';
+}
+
+function renderLearningDashboard() {
+  const snapshot = buildLearningSnapshot(Runtime.state);
+  const game = ensureTodayLearningGame();
+  const setText = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = String(value); };
+
+  setText('learning-overall-level', `Lv.${snapshot.overall.level}`);
+  setText('learning-overall-title', snapshot.overall.title);
+  setText('stat-overall-level', `Lv.${snapshot.overall.level}`);
+  setText('learning-today-summary', `今日 +${Math.max(0, Math.floor(Number(game.todayXp) || 0))} EXP・${Runtime.state.todayCount || 0}問`);
+  const overallBar = document.getElementById('learning-overall-bar');
+  if (overallBar) overallBar.style.width = `${Math.round(snapshot.overall.levelProgress * 100)}%`;
+  setText('learning-overall-progress-text', snapshot.overall.level >= OVERALL_LEVEL_MAX
+    ? `総合EXP ${snapshot.totalXp.toLocaleString('ja-JP')} / ${snapshot.maxXp.toLocaleString('ja-JP')}・教材内レベル上限`
+    : `次のLvまで ${snapshot.overall.xpToNext.toLocaleString('ja-JP')} EXP　｜　総合EXP ${snapshot.totalXp.toLocaleString('ja-JP')} / ${snapshot.maxXp.toLocaleString('ja-JP')}`);
+  setText('learning-studied-count', `${snapshot.totalStudied} / 240`);
+  const achieved = ACHIEVEMENT_DEFINITIONS.filter(item => item.check(snapshot));
+  setText('learning-achievement-count', `${achieved.length} / ${ACHIEVEMENT_DEFINITIONS.length}`);
+  const weakest = [...snapshot.topics].sort((a, b) => a.ratio - b.ratio || a.id.localeCompare(b.id))[0];
+  setText('learning-weakest-topic', weakest ? `${weakest.title} Lv.${weakest.level}` : '—');
+  setText('learning-next-goal', getNextLearningGoal(snapshot));
+
+  const topicHost = document.getElementById('learning-topic-list');
+  if (topicHost) {
+    const fragment = document.createDocumentFragment();
+    snapshot.topics.forEach(topic => {
+      const card = document.createElement('div');
+      card.className = 'learning-topic-card';
+      const name = document.createElement('div');
+      name.className = 'learning-topic-name';
+      name.textContent = topic.title;
+      const level = document.createElement('div');
+      level.className = 'learning-topic-level';
+      level.textContent = `Lv.${topic.level}`;
+      const track = document.createElement('div');
+      track.className = 'learning-topic-track';
+      track.setAttribute('aria-hidden', 'true');
+      const fill = document.createElement('div');
+      fill.className = 'learning-topic-fill';
+      fill.style.width = `${Math.round(topic.levelProgress * 100)}%`;
+      track.appendChild(fill);
+      const meta = document.createElement('div');
+      meta.className = 'learning-topic-meta';
+      meta.textContent = topic.level >= TOPIC_LEVEL_MAX
+        ? `EXP ${topic.xp.toLocaleString('ja-JP')} / ${topic.maxXp.toLocaleString('ja-JP')}・Lv.10`
+        : `次のLvまで ${topic.xpToNext.toLocaleString('ja-JP')} EXP`;
+      card.append(name, level, track, meta);
+      fragment.appendChild(card);
+    });
+    topicHost.replaceChildren(fragment);
+  }
+
+  const stageCard = document.getElementById('learning-next-stage-card');
+  const allStudied = snapshot.totalStudied >= 240;
+  if (stageCard) stageCard.classList.toggle('ready', allStudied);
+  setText('learning-next-stage-title', allStudied ? '次のステージ：日商簿記2級' : '3級教材を一巡すると、次の学習候補を表示します');
+  setText('learning-next-stage-status', allStudied
+    ? 'この教材の全240問に学習履歴がつきました（教材内の「一巡」）。'
+    : `全240問の学習一巡まであと ${Math.max(0, 240 - snapshot.totalStudied)}問です。`);
+  setText('learning-next-stage-body', allStudied
+    ? 'これは日商簿記3級の合格判定ではありません。日本商工会議所の2026年度案内では、2級は高度な商業簿記に加え、工業簿記（原価計算を含む）を扱います。3級で練習した仕訳・集計・決算の基礎を整理したうえで、2級の公式出題範囲へ進むための橋渡しとして表示しています。'
+    : '一巡後もレベルは下がりません。復習期限が来た問題で項目EXPを伸ばしながら、2級へ進む前の弱点確認に使えます。');
+
+  refreshTocLevelLabels(snapshot);
+  if (Runtime.journal.currentQuestionIndex >= 0) renderCurrentTopicLevel('journal', QUESTION_DATABASE[Runtime.journal.currentQuestionIndex]?.id, 'problem-topic-level', snapshot);
+  if (Runtime.table.currentIndex >= 0) renderCurrentTopicLevel('table', TABLE_DATABASE[Runtime.table.currentIndex]?.id, 'table-problem-topic-level', snapshot);
+  return snapshot;
+}
+
+function announceLearningGrowth({ before, after, gainedXp = 0, topicType, questionId, recovered = false, dailyGoal = false, achievements = [] }) {
+  const lines = [];
+  let hasLevelUp = false;
+  if (after.overall.level > before.overall.level) {
+    lines.push(`LEVEL UP!　総合 Lv.${before.overall.level} → Lv.${after.overall.level}`);
+    hasLevelUp = true;
+  }
+  const topic = getLearningTopicForQuestion(topicType, questionId);
+  if (topic) {
+    const oldTopic = before.topics.find(item => item.id === topic.id);
+    const newTopic = after.topics.find(item => item.id === topic.id);
+    if (oldTopic && newTopic && newTopic.level > oldTopic.level) {
+      lines.push(`LEVEL UP!　${topic.title} Lv.${oldTopic.level} → Lv.${newTopic.level}`);
+      hasLevelUp = true;
+    }
+  }
+  if (recovered) lines.push('成長記録：前回は要復習 → 今回は正解');
+  if (gainedXp > 0) lines.push(`定着EXP +${gainedXp}`);
+  if (dailyGoal) lines.push(`✓ 今日の目標 ${DAILY_STUDY_TARGET}問を達成しました`);
+  if (achievements.length) lines.push(`達成：${achievements.map(item => item.label).join('・')}`);
+  if (!lines.length) return;
+
+  const toast = document.getElementById('learning-toast');
+  if (!toast) return;
+  toast.textContent = lines.join('\n');
+  toast.classList.toggle('level-up', hasLevelUp);
+  toast.hidden = false;
+  if (Runtime.ui.learningToastTimer != null) clearTimeout(Runtime.ui.learningToastTimer);
+  Runtime.ui.learningToastTimer = setTimeout(() => {
+    toast.hidden = true;
+    Runtime.ui.learningToastTimer = null;
+  }, 4200);
 }
 
 function setEvalButtonsDisabled(disabled, isCorrect = false) {
@@ -10739,17 +12061,14 @@ function updateDashboard() {
   const total = QUESTION_DATABASE.length;
   let dueCount = 0;
   let unstudiedCount = 0;
-  let totalEase = 0;
   const now = new Date();
 
   QUESTION_DATABASE.forEach(q => {
     const p = Runtime.state.progress[q.id];
     if (p) {
       if (new Date(p.nextReviewDate) <= now) dueCount++;
-      totalEase += p.easeFactor;
     } else {
       unstudiedCount++;
-      totalEase += 2.5;
     }
   });
 
@@ -10757,12 +12076,11 @@ function updateDashboard() {
   document.getElementById('stat-due').innerText = dueCount;
   document.getElementById('stat-unstudied').innerText = unstudiedCount;
   document.getElementById('stat-streak').innerText = `${Runtime.state.streak} 日`;
-  document.getElementById('stat-ease').innerText = (totalEase / total).toFixed(2);
 
-  const dailyTarget = 10;
-  const percent = Math.min(Math.round((Runtime.state.todayCount / dailyTarget) * 100), 100);
+  const percent = Math.min(Math.round((Runtime.state.todayCount / DAILY_STUDY_TARGET) * 100), 100);
   document.getElementById('progress-bar').style.width = `${percent}%`;
-  document.getElementById('progress-text').innerText = `${Runtime.state.todayCount} / ${dailyTarget} 問完了`;
+  document.getElementById('progress-text').innerText = `${Runtime.state.todayCount} / ${DAILY_STUDY_TARGET} 問完了`;
+  renderLearningDashboard();
 }
 
 function getNextQuestionIndex() {
@@ -10829,6 +12147,7 @@ function loadQuestion(index) {
 
   const q = QUESTION_DATABASE[index];
   renderJournalDifficulty(q);
+  renderCurrentTopicLevel('journal', q.id, 'problem-topic-level');
   updateTocActive(q.id);
 
   document.getElementById('problem-category').innerText = q.category;
@@ -10858,72 +12177,76 @@ function loadQuestion(index) {
   setInputFieldsDisabled(false);
 }
 
+// ===== Presentation Utility: 仕訳金額のiPhone向け表示幅調整 =====
+const JOURNAL_AMOUNT_FONT_MAX = 16;
+const JOURNAL_AMOUNT_FONT_MIN = 11;
+const JOURNAL_AMOUNT_MEASURE_CACHE_LIMIT = 512;
+const journalAmountMeasureCache = new Map();
+let journalAmountMeasureCanvas = null;
+
+function cachedJournalTextWidth(ctx, value, size, fontStyle, fontWeight, fontFamily) {
+  const normalizedSize = Math.round(Number(size) * 100) / 100;
+  const key = `${fontStyle}|${fontWeight}|${fontFamily}|${normalizedSize}|${value}`;
+  const cached = journalAmountMeasureCache.get(key);
+  if (cached != null) return cached;
+
+  ctx.font = `${fontStyle} ${fontWeight} ${normalizedSize}px ${fontFamily}`;
+  const width = ctx.measureText(value).width + 2; // 末尾の描画余裕
+  if (journalAmountMeasureCache.size >= JOURNAL_AMOUNT_MEASURE_CACHE_LIMIT) journalAmountMeasureCache.clear();
+  journalAmountMeasureCache.set(key, width);
+  return width;
+}
+
 // 仕訳金額欄の「実際の表示幅」に合わせて文字サイズを自動調整する。
-// type="text" + inputmode="numeric" を使うことで、モバイルでも16px固定にならず文字縮小を反映できる。
-// 桁数の決め打ちではなく、Canvasで現在の文字幅を測定し、入力欄内に収まる最大サイズを求める。
+// CSSのコンテナ幅単位は文字列自体の描画幅を測れないため、実文字幅のCanvas計測を維持する。
+// 同じ文字列・フォント・サイズの測定結果はキャッシュし、リサイズ時の不要なmeasureTextを避ける。
 function fitJournalAmountFont(input) {
   if (!input) return;
 
   const value = String(input.value ?? '');
-  const MAX_SIZE = 16;
-  const MIN_SIZE = 11;
 
-  // iPhone Safariでは16px未満の入力欄を再フォーカスした際にズームが起こり得るため、
-  // 編集中は必ず16pxを維持する。表示用の縮小はblur後にだけ行う。
+  // iPhone Safariのフォーカス時ズームを避けるため、編集中は16pxを維持する。
   if (document.activeElement === input) {
-    input.style.fontSize = `${MAX_SIZE}px`;
+    input.style.fontSize = `${JOURNAL_AMOUNT_FONT_MAX}px`;
     return;
   }
 
-  // 空欄は標準サイズへ戻す。
   if (value === '') {
-    input.style.fontSize = `${MAX_SIZE}px`;
+    input.style.fontSize = `${JOURNAL_AMOUNT_FONT_MAX}px`;
     return;
   }
 
   const style = window.getComputedStyle(input);
   const padLeft = parseFloat(style.paddingLeft) || 0;
   const padRight = parseFloat(style.paddingRight) || 0;
-  // clientWidthは現在の端末・向き・表幅を反映した実幅。
   const availableWidth = Math.max(1, input.clientWidth - padLeft - padRight - 2);
 
-  if (!fitJournalAmountFont.canvas) {
-    fitJournalAmountFont.canvas = document.createElement('canvas');
-  }
-  const ctx = fitJournalAmountFont.canvas.getContext('2d');
+  if (!journalAmountMeasureCanvas) journalAmountMeasureCanvas = document.createElement('canvas');
+  const ctx = journalAmountMeasureCanvas.getContext('2d');
   if (!ctx) {
-    input.style.fontSize = `${MAX_SIZE}px`;
+    input.style.fontSize = `${JOURNAL_AMOUNT_FONT_MAX}px`;
     return;
   }
 
   const fontFamily = style.fontFamily || 'sans-serif';
   const fontWeight = style.fontWeight || '600';
   const fontStyle = style.fontStyle || 'normal';
+  const measureAt = size => cachedJournalTextWidth(ctx, value, size, fontStyle, fontWeight, fontFamily);
 
-  const measureAt = (size) => {
-    ctx.font = `${fontStyle} ${fontWeight} ${size}px ${fontFamily}`;
-    // Safari等で末尾が窮屈にならないよう2px分の余裕を持たせる。
-    return ctx.measureText(value).width + 2;
-  };
-
-  // 入るなら最大サイズのまま。
-  if (measureAt(MAX_SIZE) <= availableWidth) {
-    input.style.fontSize = `${MAX_SIZE}px`;
+  if (measureAt(JOURNAL_AMOUNT_FONT_MAX) <= availableWidth) {
+    input.style.fontSize = `${JOURNAL_AMOUNT_FONT_MAX}px`;
     return;
   }
 
-  // 実幅に収まる最大フォントサイズを二分探索する。
-  // 11～16pxの5px幅なら7回で0.1px未満まで絞れるため、過剰なCanvas計測を避ける。
-  let low = MIN_SIZE;
-  let high = MAX_SIZE;
+  let low = JOURNAL_AMOUNT_FONT_MIN;
+  let high = JOURNAL_AMOUNT_FONT_MAX;
   for (let i = 0; i < 7; i++) {
     const mid = (low + high) / 2;
     if (measureAt(mid) <= availableWidth) low = mid;
     else high = mid;
   }
 
-  // 0.1px単位で切り下げ、ブラウザ描画誤差によるはみ出しを避ける。
-  const fitted = Math.max(MIN_SIZE, Math.floor(low * 10) / 10);
+  const fitted = Math.max(JOURNAL_AMOUNT_FONT_MIN, Math.floor(low * 10) / 10);
   input.style.fontSize = `${fitted}px`;
 }
 
@@ -11018,6 +12341,7 @@ function validateNumericInputUtilities() {
   if (parseFormattedAmount('1,234') !== 1234) issues.push('カンマ付き数値の数値化に失敗');
   if (!Number.isNaN(parseFormattedAmount('12A34'))) issues.push('数字以外を含む値の拒否に失敗');
   if (!Number.isNaN(parseFormattedAmount(''))) issues.push('空欄の拒否に失敗');
+  if (parseFormattedAmount('0') !== 0) issues.push('0円の数値化に失敗');
   return issues;
 }
 
@@ -11129,6 +12453,7 @@ function addJournalRow() {
     const select = document.createElement('select');
     select.className = className;
     select.setAttribute('aria-label', label);
+    select.setAttribute('aria-describedby', 'journal-account-selection-help');
     const blank = document.createElement('option');
     blank.value = '';
     blank.textContent = '(選択)';
@@ -11567,7 +12892,7 @@ function parseExplanationSections(explanation) {
   return result;
 }
 
-// === v9.8 解説の安全化・外部参照方針・整合性監査 ===
+// === v9.9 解説の安全化・外部参照方針・整合性監査 ===
 // 個別問題の場面説明は、QUESTION_DATABASE に問題ごとに登録済みの
 // 【考え方】と hint だけを使用する。問題文・カテゴリーのキーワードから
 // 場面を推測する処理は行わない。これにより、返金を売上処理と誤認する等の
@@ -11587,7 +12912,7 @@ function getAuditedCueNotes(q) {
   return hint ? [hint] : [];
 }
 
-// v9.8: 日本商工会議所の公開資料を出題範囲・勘定科目・ネット試験公開仕様の一次資料とする。
+// v9.9: 日本商工会議所の公開資料を出題範囲・勘定科目・ネット試験公開仕様の一次資料とする。
 // マネーフォワード クラウドとFunda簿記は、説明順序・取引パターン・混同しやすい科目の区別を補助的に照合する。
 // 外部記事の記述を無批判に正答へ採用せず、問題条件・正答仕訳・解説の整合性を個別に確認する。文章は転載しない。
 // 代表的な公開ページを論点横断で参照しているが、全240問が各ページと1対1で対応するという意味ではない。
@@ -11600,6 +12925,7 @@ const CONTENT_REFERENCE_CATALOG = Object.freeze([
   { id:'jcci-scope', publisher:'日本商工会議所', title:'簿記 出題区分表', role:'2026年度の出題範囲確認', url:'https://www.kentei.ne.jp/bookkeeping/exam-list' },
   { id:'jcci-net', publisher:'日本商工会議所', title:'日商簿記検定試験（2級・3級等）ネット試験について', role:'ネット試験の公開仕様確認', url:'https://www.kentei.ne.jp/33013' },
   { id:'jcci-accounts', publisher:'日本商工会議所', title:'商業簿記標準・許容勘定科目表（2022年度適用）', role:'3級の主要な標準・許容勘定科目の確認', url:'https://www.kentei.ne.jp/wp/wp-content/uploads/2021/12/2022_kamoku.pdf' },
+  { id:'jcci-class2', publisher:'日本商工会議所', title:'簿記2級', role:'3級学習後の次の学習範囲を案内する際の公式確認', url:'https://www.kentei.ne.jp/bookkeeping/class2' },
 
   { id:'mf-prepaid', publisher:'マネーフォワード クラウド', title:'前払金の仕訳例と前払費用との使い分け', role:'前払金・前払費用の区別', url:'https://biz.moneyforward.com/accounting/basic/47073/' },
   { id:'mf-unpaid', publisher:'マネーフォワード クラウド', title:'未払金とは？未払費用や買掛金との違いや決算時に未払計上する仕訳例を解説', role:'未払金・未払費用・買掛金の区別', url:'https://biz.moneyforward.com/accounting/basic/48133/' },
@@ -11965,37 +13291,34 @@ function applySelfEval(quality) {
     alert('「解答を提出する」ボタンを押して採点を行ってから自己評価を選択してください。');
     return;
   }
+  if (![0, 2, 3].includes(quality)) return;
 
   const q = QUESTION_DATABASE[Runtime.journal.currentQuestionIndex];
-  const today = getTodayString();
-
-  if (!Runtime.state.lastStudyDate) {
-    Runtime.state.streak = 1;
-    Runtime.state.todayCount = 1;
-    Runtime.state.lastStudyDate = today;
-  } else if (Runtime.state.lastStudyDate !== today) {
-    const last = new Date(Runtime.state.lastStudyDate);
-    const current = new Date(today);
-    const diffDays = Math.round((current - last) / (1000 * 3600 * 24));
-    
-    if (diffDays === 1) {
-      Runtime.state.streak += 1;
-    } else {
-      Runtime.state.streak = 1;
-    }
-    Runtime.state.todayCount = 1;
-    Runtime.state.lastStudyDate = today;
-  } else {
-    Runtime.state.todayCount += 1;
-  }
-
+  const before = buildLearningSnapshot(Runtime.state);
   const previous = Runtime.state.progress[q.id] || null;
-  Runtime.state.progress[q.id] = computeSrsProgress(previous, quality, Runtime.journal.currentErrorType);
+  const now = new Date();
+  const reviewWasDue = isMasteryGrowthEligible(previous, now);
+  const recovered = Boolean(previous && previous.lastQuality === 0 && quality >= 2);
+  const activity = registerStudyActivity();
+  const updated = { ...computeSrsProgress(previous, quality, Runtime.journal.currentErrorType, now), lastQuality: quality };
+  Runtime.state.progress[q.id] = updated;
+  const gainedXp = awardQuestionMasteryXp('journal', q.id, updated, { correct: quality >= 2, quality, allowGrowth: reviewWasDue });
+  const after = buildLearningSnapshot(Runtime.state);
+  const achievements = markNewAchievements(after);
 
   Runtime.journal.isEvalCompleted = true;
-
   StorageManager.saveState(Runtime.state);
   updateDashboard();
+  announceLearningGrowth({
+    before,
+    after,
+    gainedXp,
+    topicType: 'journal',
+    questionId: q.id,
+    recovered,
+    dailyGoal: activity.reachedDailyGoal,
+    achievements
+  });
   nextQuestion();
 }
 
@@ -12013,12 +13336,25 @@ function formatTableValue(v) {
 
 function tableDraftKey(rowIndex, columnKey) { return `${rowIndex}:${columnKey}`; }
 
+const TABLE_SECTION_LABELS = Object.freeze({
+  '試算表': '試算表',
+  '修正': '修正記入',
+  '損益': '損益計算書',
+  '貸借': '貸借対照表'
+});
+
+function normalizeTableSectionLabel(label) {
+  const base = String(label || '').replace(/\s*(借方残高|貸方残高|借方合計|貸方合計|借方|貸方|借|貸|金額)\s*$/u, '').trim();
+  return TABLE_SECTION_LABELS[base] || base;
+}
+
 function getTableSegments(q) {
   const segments = [];
   for (let i = 0; i < q.columns.length; i += 2) {
     const columns = q.columns.slice(i, i + 2);
-    const bases = columns.map(c => c.label.replace(/\s*(借|貸|借方|貸方)\s*$/u, '').trim());
-    const label = bases.length === 2 && bases[0] === bases[1] ? bases[0] : columns.map(c => c.label).join('・');
+    const bases = columns.map(c => normalizeTableSectionLabel(c.label));
+    const sameBase = bases.length === 2 && bases[0] && bases[0] === bases[1];
+    const label = sameBase ? bases[0] : columns.map(c => c.label).join('・');
     segments.push({ label, columns });
   }
   return segments;
@@ -12047,26 +13383,280 @@ function currentVisibleTableColumns(q) {
   return segments[Math.min(Runtime.table.segmentIndex, segments.length - 1)]?.columns || q.columns.slice(0, 2);
 }
 
-function renderTableViewControls(q) {
-  const switcher = document.getElementById('table-view-switcher');
-  const segmentNav = document.getElementById('table-segment-nav');
-  if (!switcher || !segmentNav) return;
-  const hasMultipleSegments = q.columns.length > 2;
-  switcher.hidden = !hasMultipleSegments;
-  switcher.querySelectorAll('.table-view-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.view === Runtime.table.viewMode));
+function splitJapaneseSentences(text) {
+  return String(text || '')
+    .replace(/\r\n?/g, '\n')
+    .split(/(?<=。)\s*|\n+/u)
+    .map(part => part.trim())
+    .filter(Boolean);
+}
+
+function isTableInstructionSentence(sentence) {
+  return /(完成させてください|完成してください|求めてください|記入してください|入力してください)/u.test(String(sentence || ''));
+}
+
+function defaultTableInstruction(q) {
+  if (!q) return '下の表の枠線がある欄を入力してください。';
+  if (q.group === '損益計算書') return '与えられた金額をもとに、下の損益計算書の空欄を完成させてください。';
+  if (q.group === '貸借対照表') return '与えられた金額をもとに、下の貸借対照表の空欄を完成させてください。';
+  if (q.group === '決算整理後残高試算表') return '決算整理後の残高を求め、下の表の空欄を完成させてください。';
+  if (q.group === '8桁精算表') return '与えられた決算整理事項を反映し、下の精算表の空欄を完成させてください。';
+  return '与えられた情報をもとに、下の表の枠線がある欄を完成させてください。';
+}
+
+function getTableStatementParts(q) {
+  const raw = String(q?.statement || '').trim();
+  if (!raw) return { instruction: defaultTableInstruction(q), givens: '' };
+
+  if (q?.group === '残高試算表' && raw.includes('\n')) {
+    const [first, ...rest] = raw.split(/\n+/u);
+    return { instruction: first.trim() || defaultTableInstruction(q), givens: rest.join(' ').trim() };
+  }
+
+  const sentences = splitJapaneseSentences(raw);
+  const instructionSentences = [];
+  const givenSentences = [];
+  sentences.forEach(sentence => {
+    if (isTableInstructionSentence(sentence)) instructionSentences.push(sentence);
+    else givenSentences.push(sentence);
+  });
+
+  return {
+    instruction: instructionSentences.join(' ') || defaultTableInstruction(q),
+    givens: givenSentences.join(' ').trim() || raw
+  };
+}
+
+function parseBalanceTrialGivens(text) {
+  const items = [];
+  const re = /([^、。\n]+?)\s+([\d,]+)円/gu;
+  let match;
+  while ((match = re.exec(String(text || ''))) !== null) {
+    items.push({ account: match[1].trim(), amount: match[2] });
+  }
+  return items;
+}
+
+function parseTotalTrialGivens(text) {
+  const items = [];
+  const re = /([^。、]+?)（借方合計([\d,]+)円・貸方合計([\d,]+)円）/gu;
+  let match;
+  while ((match = re.exec(String(text || ''))) !== null) {
+    items.push({ account: match[1].trim(), debit: match[2], credit: match[3] });
+  }
+  return items;
+}
+
+function appendAmountHighlightedText(container, text, group) {
+  container.replaceChildren();
+  const source = String(text || '').trim();
+  if (!source) return;
+
+  const parts = /^(損益計算書|貸借対照表)$/u.test(String(group || ''))
+    ? source.split(/、/u).map(part => part.trim()).filter(Boolean)
+    : splitJapaneseSentences(source);
+
+  const list = document.createElement(parts.length > 1 ? 'ul' : 'div');
+  if (list.tagName === 'UL') {
+    list.style.margin = '0';
+    list.style.paddingLeft = '1.25rem';
+    list.style.display = 'grid';
+    list.style.gap = '4px';
+  }
+
+  const appendRichText = (target, value) => {
+    String(value || '').split(/([\d,]+円)/u).forEach(token => {
+      if (!token) return;
+      if (/^[\d,]+円$/u.test(token)) {
+        const strong = document.createElement('strong');
+        strong.textContent = token;
+        target.appendChild(strong);
+      } else {
+        target.appendChild(document.createTextNode(token));
+      }
+    });
+  };
+
+  parts.forEach(part => {
+    const item = document.createElement(list.tagName === 'UL' ? 'li' : 'p');
+    appendRichText(item, part);
+    list.appendChild(item);
+  });
+  container.appendChild(list);
+}
+
+function renderTableGivenSummary(q, givensText) {
+  const host = document.getElementById('table-problem-givens');
+  if (!host) return;
+  host.replaceChildren();
+
+  if (q.group === '残高試算表') {
+    const items = parseBalanceTrialGivens(givensText);
+    if (items.length) {
+      const table = document.createElement('table');
+      table.className = 'table-given-summary-table';
+      table.setAttribute('aria-label', '与えられた各勘定の残高');
+      const thead = document.createElement('thead');
+      const hr = document.createElement('tr');
+      ['勘定科目', '残高'].forEach(label => {
+        const th = document.createElement('th'); th.textContent = label; hr.appendChild(th);
+      });
+      thead.appendChild(hr);
+      const tbody = document.createElement('tbody');
+      items.forEach(item => {
+        const tr = document.createElement('tr');
+        const name = document.createElement('td');
+        const amount = document.createElement('td');
+        name.textContent = item.account;
+        amount.textContent = `${item.amount}円`;
+        tr.append(name, amount);
+        tbody.appendChild(tr);
+      });
+      table.append(thead, tbody);
+      host.appendChild(table);
+      return;
+    }
+  }
+
+  if (q.group === '合計試算表') {
+    const items = parseTotalTrialGivens(givensText);
+    if (items.length) {
+      const table = document.createElement('table');
+      table.className = 'table-given-summary-table';
+      table.setAttribute('aria-label', '総勘定元帳の借方合計と貸方合計');
+      const thead = document.createElement('thead');
+      const hr = document.createElement('tr');
+      ['勘定科目', '借方合計', '貸方合計'].forEach(label => {
+        const th = document.createElement('th'); th.textContent = label; hr.appendChild(th);
+      });
+      thead.appendChild(hr);
+      const tbody = document.createElement('tbody');
+      items.forEach(item => {
+        const tr = document.createElement('tr');
+        [item.account, `${item.debit}円`, `${item.credit}円`].forEach(value => {
+          const td = document.createElement('td'); td.textContent = value; tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      });
+      table.append(thead, tbody);
+      host.appendChild(table);
+      return;
+    }
+  }
+
+  appendAmountHighlightedText(host, givensText, q.group);
+}
+
+function getTableTargetLabels(q) {
+  const labels = [];
+  (q?.rows || []).forEach(row => {
+    const hasAnswer = (q.columns || []).some(column => {
+      const cell = (row.cells || {})[column.key];
+      return cell && Object.prototype.hasOwnProperty.call(cell, 'answer');
+    });
+    if (hasAnswer && !labels.includes(row.label)) labels.push(row.label);
+  });
+  return labels;
+}
+
+function renderTableTargets(q) {
+  const host = document.getElementById('table-problem-targets');
+  if (!host) return;
+  host.replaceChildren();
+
+  const labels = getTableTargetLabels(q);
+  const shouldList = q.columns.length === 1 || labels.length <= 4;
+  if (shouldList && labels.length) {
+    labels.forEach(label => {
+      const chip = document.createElement('span');
+      chip.className = 'table-problem-target-chip';
+      chip.textContent = label;
+      host.appendChild(chip);
+    });
+    return;
+  }
+
+  const note = document.createElement('p');
+  note.className = 'table-problem-target-note';
+  note.textContent = `下の「${q.group}」で枠線が付いている欄だけを入力します。`;
+  host.appendChild(note);
+}
+
+function renderStructuredTableStatement(q) {
+  const instruction = document.getElementById('table-problem-instruction');
+  const givensBlock = document.getElementById('table-problem-givens-block');
+  if (!instruction || !givensBlock) return;
+  const parts = getTableStatementParts(q);
+  instruction.textContent = parts.instruction;
+  givensBlock.hidden = !parts.givens;
+  renderTableGivenSummary(q, parts.givens);
+  renderTableTargets(q);
+}
+
+function tableWorkspaceHelp(q) {
+  if (!q) return '';
+  const compact = Runtime.table.viewMode === 'compact';
   const segments = getTableSegments(q);
+  const currentSegment = segments[Math.min(Runtime.table.segmentIndex, Math.max(0, segments.length - 1))];
+
+  if (q.group === '残高試算表') {
+    return '各勘定の残高を、借方残高または貸方残高のどちらか一方に記入します。最後に借方合計と貸方合計が一致することを確認します。';
+  }
+  if (q.group === '合計試算表') {
+    return '各勘定について、借方に記入された合計額と貸方に記入された合計額をそれぞれ記入します。残高ではなく取引の累計額です。';
+  }
+  if (q.group === '8桁精算表') {
+    if (compact && currentSegment) {
+      return `現在は「${currentSegment.label}」の欄を入力します。上のボタンで「試算表 → 修正記入 → 損益計算書 → 貸借対照表」を切り替えられます。入力済みの数値は切り替えても保持されます。`;
+    }
+    return '左から「試算表 → 修正記入 → 損益計算書 → 貸借対照表」の順に確認します。各区分は借方・貸方の2列で構成されています。';
+  }
+  if (q.group === '決算整理後残高試算表') {
+    return '決算整理仕訳を反映した後の残高を、借方残高または貸方残高に記入します。';
+  }
+  if (q.group === '損益計算書') {
+    return '収益と費用を確認し、指定された金額欄を入力します。利益・損失の位置は問題文と表の項目名を確認してください。';
+  }
+  if (q.group === '貸借対照表') {
+    return '資産・負債・純資産の金額を確認し、指定された金額欄を入力します。';
+  }
+  return '項目名と列見出しを確認し、枠線の付いた欄に数字を入力してください。';
+}
+
+function renderTableViewControls(q) {
+  const segmentNav = document.getElementById('table-segment-nav');
+  const title = document.getElementById('table-workspace-title');
+  const help = document.getElementById('table-workspace-help');
+  if (!segmentNav || !title || !help) return;
+
+  const segments = getTableSegments(q);
+  const compact = Runtime.table.viewMode === 'compact';
+  const currentSegment = segments[Math.min(Runtime.table.segmentIndex, Math.max(0, segments.length - 1))];
+
+  title.textContent = compact && q.columns.length > 2 && currentSegment
+    ? `入力中：${currentSegment.label}`
+    : `${q.group}の見方`;
+  help.textContent = tableWorkspaceHelp(q);
+
   segmentNav.replaceChildren();
-  if (Runtime.table.viewMode === 'compact' && segments.length > 1) {
+  if (compact && segments.length > 1) {
     segmentNav.hidden = false;
     segments.forEach((segment, index) => {
       const btn = document.createElement('button');
-      btn.type = 'button'; btn.className = 'table-segment-btn';
-      if (index === Runtime.table.segmentIndex) btn.classList.add('active');
-      btn.dataset.action = 'set-table-segment'; btn.dataset.segment = String(index);
+      btn.type = 'button';
+      btn.className = 'table-segment-btn';
+      if (index === Runtime.table.segmentIndex) {
+        btn.classList.add('active');
+        btn.setAttribute('aria-current', 'true');
+      }
+      btn.dataset.action = 'set-table-segment';
+      btn.dataset.segment = String(index);
       btn.textContent = segment.label;
       segmentNav.appendChild(btn);
     });
-  } else segmentNav.hidden = true;
+  } else {
+    segmentNav.hidden = true;
+  }
 }
 
 function handleTableInputKeydown(event, input) {
@@ -12078,7 +13668,46 @@ function handleTableInputKeydown(event, input) {
   if (event.key === 'ArrowLeft' || event.key === 'ArrowUp' || (event.key === 'Enter' && event.shiftKey)) direction = -1;
   event.preventDefault();
   const next = fields[index + direction];
-  if (next) { next.focus(); next.select(); }
+  if (next) {
+    next.focus();
+    next.select();
+    return;
+  }
+
+  // 狭い画面の精算表などでは、現在区分の端まで入力したら次/前の区分へ移動できる。
+  // 入力値は再描画前にdraftへ保存し、区分切替後の最初/最後の入力欄へフォーカスする。
+  if (Runtime.table.viewMode !== 'compact' || Runtime.table.currentIndex < 0) return;
+  const q = TABLE_DATABASE[Runtime.table.currentIndex];
+  const segments = getTableSegments(q);
+  if (segments.length <= 1) return;
+  const targetSegment = Runtime.table.segmentIndex + direction;
+  if (targetSegment < 0 || targetSegment >= segments.length) return;
+  syncVisibleTableDraft();
+  Runtime.table.segmentIndex = targetSegment;
+  Runtime.table.viewPreference = 'manual';
+  renderTableViewControls(q);
+  renderTableQuestionTable(q);
+  requestAnimationFrame(() => {
+    const nextFields = [...document.querySelectorAll('#table-exercise-host .table-answer-input:not(:disabled)')];
+    const target = direction > 0 ? nextFields[0] : nextFields[nextFields.length - 1];
+    if (target) { target.focus(); target.select(); }
+  });
+}
+
+function splitTableColumnLabel(label) {
+  const text = String(label || '').trim();
+  const match = text.match(/^(.*?)(?:\s+)(借|貸)$/u);
+  if (match) {
+    return {
+      group: TABLE_SECTION_LABELS[match[1]] || match[1],
+      side: match[2] === '借' ? '借方' : '貸方'
+    };
+  }
+  if (text === '借方残高') return { group: '', side: '借方残高' };
+  if (text === '貸方残高') return { group: '', side: '貸方残高' };
+  if (text === '借方合計') return { group: '', side: '借方合計' };
+  if (text === '貸方合計') return { group: '', side: '貸方合計' };
+  return { group: '', side: text };
 }
 
 function renderTableQuestionTable(q) {
@@ -12091,10 +13720,53 @@ function renderTableQuestionTable(q) {
   const table = document.createElement('table');
   table.className = compact ? 'exercise-table compact' : `exercise-table${q.columns.length >= 6 ? ' wide' : ''}`;
   const thead = document.createElement('thead');
-  const headRow = document.createElement('tr');
-  const firstTh = document.createElement('th'); firstTh.textContent = '勘定科目・項目'; headRow.appendChild(firstTh);
-  visibleColumns.forEach(column => { const th = document.createElement('th'); th.textContent = column.label; headRow.appendChild(th); });
-  thead.appendChild(headRow); table.appendChild(thead);
+  const parsedHeaders = visibleColumns.map(column => splitTableColumnLabel(column.label));
+  const canGroupHeaders = parsedHeaders.length >= 2 && parsedHeaders.every(h => h.group);
+  if (canGroupHeaders) {
+    const groupRow = document.createElement('tr');
+    groupRow.className = 'table-group-header-row';
+    const firstTh = document.createElement('th');
+    firstTh.textContent = '勘定科目・項目';
+    firstTh.rowSpan = 2;
+    groupRow.appendChild(firstTh);
+    let i = 0;
+    while (i < parsedHeaders.length) {
+      const group = parsedHeaders[i].group;
+      let span = 1;
+      while (i + span < parsedHeaders.length && parsedHeaders[i + span].group === group) span += 1;
+      const th = document.createElement('th');
+      th.textContent = group;
+      th.colSpan = span;
+      th.className = 'table-section-header';
+      groupRow.appendChild(th);
+      i += span;
+    }
+    thead.appendChild(groupRow);
+
+    const sideRow = document.createElement('tr');
+    sideRow.className = 'table-side-header-row';
+    parsedHeaders.forEach(header => {
+      const th = document.createElement('th');
+      th.textContent = header.side;
+      th.className = header.side === '借方' ? 'table-debit-header' : header.side === '貸方' ? 'table-credit-header' : '';
+      sideRow.appendChild(th);
+    });
+    thead.appendChild(sideRow);
+  } else {
+    const headRow = document.createElement('tr');
+    const firstTh = document.createElement('th');
+    firstTh.textContent = '勘定科目・項目';
+    headRow.appendChild(firstTh);
+    parsedHeaders.forEach(header => {
+      const th = document.createElement('th');
+      th.textContent = header.side;
+      if (/^借方/u.test(header.side)) th.classList.add('table-debit-header');
+      if (/^貸方/u.test(header.side)) th.classList.add('table-credit-header');
+      headRow.appendChild(th);
+    });
+    thead.appendChild(headRow);
+  }
+  table.appendChild(thead);
 
   const tbody = document.createElement('tbody');
   const fragment = document.createDocumentFragment();
@@ -12105,9 +13777,11 @@ function renderTableQuestionTable(q) {
       const td = document.createElement('td');
       const cell = (row.cells || {})[column.key] || { given: '—' };
       if (Object.prototype.hasOwnProperty.call(cell, 'answer')) {
+        td.classList.add('table-input-cell');
         const input = document.createElement('input');
         input.type = 'text'; input.inputMode = 'numeric'; input.pattern = '[0-9０-９,，]*'; input.autocomplete = 'off';
         input.className = 'table-answer-input'; input.dataset.row = String(rowIndex); input.dataset.key = column.key; input.dataset.answer = String(cell.answer);
+        input.setAttribute('aria-label', `${row.label}・${column.label}の金額`);
         const key = tableDraftKey(rowIndex, column.key); input.value = formatJournalAmountValue(Runtime.table.draft[key] ?? '');
         input.disabled = Runtime.table.answered;
         if (Runtime.table.answered) {
@@ -12125,6 +13799,7 @@ function renderTableQuestionTable(q) {
         input.addEventListener('keydown', event => handleTableInputKeydown(event, input));
         td.appendChild(input);
       } else {
+        td.classList.add('table-given-cell');
         const span = document.createElement('span'); span.className = 'table-given'; span.textContent = formatTableValue(cell.given); td.appendChild(span);
       }
       tr.appendChild(td);
@@ -12152,16 +13827,6 @@ function syncTableViewToViewport() {
   renderTableQuestionTable(q);
 }
 
-function setTableView(view) {
-  if (Runtime.table.currentIndex < 0) return;
-  syncVisibleTableDraft();
-  Runtime.table.viewPreference = 'manual';
-  Runtime.table.viewMode = view === 'full' ? 'full' : 'compact';
-  Runtime.table.segmentIndex = Math.max(0, Runtime.table.segmentIndex);
-  const q = TABLE_DATABASE[Runtime.table.currentIndex];
-  renderTableViewControls(q); renderTableQuestionTable(q);
-}
-
 function setTableSegment(index) {
   if (Runtime.table.currentIndex < 0) return;
   syncVisibleTableDraft();
@@ -12179,9 +13844,10 @@ function loadTableQuestion(index) {
   Runtime.table.viewPreference = 'auto'; Runtime.table.segmentIndex = 0; Runtime.table.hintLevel = 0; Runtime.table.draft = {};
   const q = TABLE_DATABASE[index];
   Runtime.table.viewMode = getResponsiveTableView();
+  renderCurrentTopicLevel('table', q.id, 'table-problem-topic-level');
   document.getElementById('table-problem-category').innerText = q.category;
   document.getElementById('table-problem-id-text').innerText = `ID: ${q.id} (${index + 1} / ${TABLE_DATABASE.length})`;
-  document.getElementById('table-problem-statement').innerText = q.statement;
+  renderStructuredTableStatement(q);
   const hint = document.getElementById('table-hint-box'); hint.innerText = tableHintFor(q, 1); hint.style.display = 'none';
   renderTableViewControls(q); renderTableQuestionTable(q);
   const rb = document.getElementById('table-result-box'); rb.className = 'table-result-box'; rb.style.display = 'none';
@@ -12203,7 +13869,7 @@ function tableHintFor(q, level = 1) {
   const map={
     '残高試算表':'資産・費用は通常借方残高、負債・純資産・収益は通常貸方残高です。最後に借方合計と貸方合計を照合します。',
     '合計試算表':'残高ではなく、各勘定の借方記入額・貸方記入額の累計をそのまま記入します。',
-    '8桁精算表':'試算表→修正記入→損益計算書・貸借対照表の順に、各勘定の性質と決算整理後の残高を追います。iPhone入力では2列ずつ切り替えて入力できます。',
+    '8桁精算表':'試算表→修正記入→損益計算書→貸借対照表の順に、各勘定の性質と決算整理後の残高を追います。画面が狭い場合は、この4つの欄を上のボタンで切り替えて入力します。',
     '決算整理後残高試算表':'決算整理仕訳を反映した後の各勘定残高を求めます。資産・費用は借方、負債・純資産・収益は貸方が基本です。',
     '損益計算書':'収益合計から費用合計を差し引きます。収益＞費用なら当期純利益、収益＜費用なら当期純損失です。',
     '貸借対照表':'資産＝負債＋純資産になることを最後に確認します。貸倒引当金や減価償却累計額は関連する資産から控除して考えます。'
@@ -12253,23 +13919,64 @@ function checkTableAnswer() {
     return;
   }
 
-  let wrong = 0; const wrongItems = [];
+  let wrong = 0;
+  const wrongItems = [];
   specs.forEach(spec => {
     const raw = Runtime.table.draft[tableDraftKey(spec.rowIndex, spec.columnKey)];
-    const num = parseFormattedAmount(raw); const ok = raw !== '' && Number.isInteger(num) && num >= 0 && num === spec.answer;
-    if (!ok) { wrong += 1; wrongItems.push(`${spec.rowLabel}・${spec.columnLabel}：入力 ${Number.isFinite(num) ? num.toLocaleString() : raw}円 / 正答 ${spec.answer.toLocaleString()}円`); }
+    const num = parseFormattedAmount(raw);
+    const ok = raw !== '' && Number.isInteger(num) && num >= 0 && num === spec.answer;
+    if (!ok) {
+      wrong += 1;
+      wrongItems.push(`${spec.rowLabel}・${spec.columnLabel}：入力 ${Number.isFinite(num) ? num.toLocaleString() : raw}円 / 正答 ${spec.answer.toLocaleString()}円`);
+    }
   });
-  Runtime.table.answered = true; document.getElementById('table-submit-btn').disabled = true;
+
+  Runtime.table.answered = true;
+  document.getElementById('table-submit-btn').disabled = true;
   renderTableQuestionTable(q);
-  const isCorrect = wrong === 0; const now = new Date(); const prev = Runtime.state.tableProgress[q.id] || { attempts: 0, correct: false };
+
+  const isCorrect = wrong === 0;
+  const now = new Date();
+  const prev = Runtime.state.tableProgress[q.id] || { attempts: 0, correct: false };
+  const before = buildLearningSnapshot(Runtime.state);
+  const reviewWasDue = !(prev.attempts > 0) || isMasteryGrowthEligible(prev, now);
+  const recovered = Boolean((prev.attempts || 0) > 0 && prev.lastResultCorrect === false && isCorrect);
+  const activity = registerStudyActivity();
   const srs = computeSrsProgress(prev, isCorrect ? 2 : 0, 'NONE', now);
-  Runtime.state.tableProgress[q.id] = { ...prev, ...srs, attempts: (Number.isFinite(prev.attempts) ? prev.attempts : 0) + 1, correct: Boolean(prev.correct || isCorrect), lastResultCorrect: isCorrect, lastAttempt: now.toISOString() };
+  const updated = {
+    ...prev,
+    ...srs,
+    attempts: (Number.isFinite(prev.attempts) ? prev.attempts : 0) + 1,
+    correct: Boolean(prev.correct || isCorrect),
+    lastResultCorrect: isCorrect,
+    lastAttempt: now.toISOString()
+  };
+  Runtime.state.tableProgress[q.id] = updated;
+  const gainedXp = awardQuestionMasteryXp('table', q.id, updated, { correct: isCorrect, quality: isCorrect ? 2 : 0, allowGrowth: reviewWasDue });
+  const after = buildLearningSnapshot(Runtime.state);
+  const achievements = markNewAchievements(after);
   StorageManager.saveState(Runtime.state);
-  const box = document.getElementById('table-result-box'); box.className = `table-result-box ${isCorrect ? 'correct' : 'incorrect'}`; box.style.display = 'block';
+
+  const box = document.getElementById('table-result-box');
+  box.className = `table-result-box ${isCorrect ? 'correct' : 'incorrect'}`;
+  box.style.display = 'block';
   document.getElementById('table-result-title').innerText = isCorrect ? '正解' : '不正解';
   document.getElementById('table-result-detail').innerText = isCorrect ? 'すべての空欄が一致しています。' : `${wrong}か所不一致です。\n${wrongItems.join('\n')}`;
   document.getElementById('table-explanation-box').innerText = q.explanation;
-  updateTableDashboard(); renderTableToc(); updateTableTocActive(q.id);
+  updateDashboard();
+  updateTableDashboard();
+  renderTableToc();
+  updateTableTocActive(q.id);
+  announceLearningGrowth({
+    before,
+    after,
+    gainedXp,
+    topicType: 'table',
+    questionId: q.id,
+    recovered,
+    dailyGoal: activity.reachedDailyGoal,
+    achievements
+  });
 }
 
 function updateTableDashboard() {
@@ -12337,22 +14044,70 @@ function toggleCalculator() {
   modal.style.display = (modal.style.display === 'block') ? 'none' : 'block';
 }
 
+function calculatorOperatorSymbol(op) {
+  return ({ '+': '＋', '-': '−', '*': '×', '/': '÷' })[op] || '';
+}
+
+function formatCalculatorDisplayValue(raw) {
+  const text = String(raw ?? '0');
+  const num = Number(text);
+  if (!Number.isFinite(num) || text.includes('.')) return text;
+  return num.toLocaleString('ja-JP');
+}
+
 function updateCalcDisplay() {
+  const calc = Runtime.calculator;
   const disp = document.getElementById('calc-display');
+  const expression = document.getElementById('calc-expression');
   if (!disp) return;
-  if (Runtime.calculator.error) { disp.textContent = Runtime.calculator.current; return; }
-  const num = Number(Runtime.calculator.current);
-  disp.textContent = Number.isFinite(num) && !Runtime.calculator.current.includes('.')
-    ? num.toLocaleString()
-    : Runtime.calculator.current;
+
+  if (calc.error) {
+    disp.textContent = calc.current;
+    if (expression) expression.textContent = '';
+  } else {
+    disp.textContent = formatCalculatorDisplayValue(calc.current);
+    if (expression) {
+      const left = calc.prev !== null ? formatCalculatorDisplayValue(calc.prev) : '';
+      const symbol = calculatorOperatorSymbol(calc.op);
+      expression.textContent = left && symbol ? `${left} ${symbol}` : '';
+    }
+  }
+
+  document.querySelectorAll('.calc-btn.op[data-value]').forEach(button => {
+    button.classList.toggle('active', Boolean(calc.op && button.dataset.value === calc.op));
+    button.setAttribute('aria-pressed', calc.op && button.dataset.value === calc.op ? 'true' : 'false');
+  });
+}
+
+function resetCalculatorAll() {
+  const calc = Runtime.calculator;
+  calc.current = '0';
+  calc.prev = null;
+  calc.op = null;
+  calc.resetOnNext = false;
+  calc.error = false;
+  calc.lastOperand = null;
+  calc.lastOp = null;
+}
+
+function clearCalculatorEntry() {
+  const calc = Runtime.calculator;
+  calc.current = '0';
+  calc.error = false;
+  // 直前に演算子を押した直後のCは、保留中の演算を残したまま右辺を0にする。
+  // 数値入力中のCは現在入力だけを0に戻す。
+  calc.resetOnNext = false;
 }
 
 function setCalculatorError(message) {
-  Runtime.calculator.current = message;
-  Runtime.calculator.prev = null;
-  Runtime.calculator.op = null;
-  Runtime.calculator.resetOnNext = true;
-  Runtime.calculator.error = true;
+  const calc = Runtime.calculator;
+  calc.current = message;
+  calc.prev = null;
+  calc.op = null;
+  calc.resetOnNext = true;
+  calc.error = true;
+  calc.lastOperand = null;
+  calc.lastOp = null;
 }
 
 function roundCalculatorValue(value) {
@@ -12360,22 +14115,41 @@ function roundCalculatorValue(value) {
   return Math.round((value + Number.EPSILON) * 1e10) / 1e10;
 }
 
-function evaluatePendingCalculatorOperation() {
+// ％キーは一般電卓の機種依存な演算子連動％ではなく、表示値÷100の単項処理とする。
+// 教材UIにも同じ仕様を明記し、calculateBinaryOperationとは独立させる。
+function calculatePercentValue(value) {
+  const num = Number(value);
+  if (!Number.isFinite(num)) return NaN;
+  return roundCalculatorValue(num / 100);
+}
+
+function calculateBinaryOperation(left, op, right) {
+  let result;
+  if (op === '+') result = left + right;
+  else if (op === '-') result = left - right;
+  else if (op === '*') result = left * right;
+  else if (op === '/') {
+    if (right === 0) return { ok: false, error: '0除算不可' };
+    result = left / right;
+  } else return { ok: false, error: 'Error' };
+  result = roundCalculatorValue(result);
+  return Number.isFinite(result) ? { ok: true, value: result } : { ok: false, error: 'Error' };
+}
+
+function evaluatePendingCalculatorOperation({ rememberForRepeat = false } = {}) {
   const calc = Runtime.calculator;
   if (!calc.op || calc.prev === null) return true;
   const current = Number(calc.current);
   if (!Number.isFinite(current)) { setCalculatorError('Error'); return false; }
-  let result;
-  if (calc.op === '+') result = calc.prev + current;
-  else if (calc.op === '-') result = calc.prev - current;
-  else if (calc.op === '*') result = calc.prev * current;
-  else if (calc.op === '/') {
-    if (current === 0) { setCalculatorError('0除算不可'); return false; }
-    result = calc.prev / current;
+  const pendingOp = calc.op;
+  const pendingLeft = calc.prev;
+  const evaluated = calculateBinaryOperation(pendingLeft, pendingOp, current);
+  if (!evaluated.ok) { setCalculatorError(evaluated.error); return false; }
+  calc.current = String(evaluated.value);
+  if (rememberForRepeat) {
+    calc.lastOp = pendingOp;
+    calc.lastOperand = current;
   }
-  result = roundCalculatorValue(result);
-  if (!Number.isFinite(result)) { setCalculatorError('Error'); return false; }
-  calc.current = String(result);
   calc.prev = null;
   calc.op = null;
   calc.error = false;
@@ -12384,41 +14158,61 @@ function evaluatePendingCalculatorOperation() {
 
 function calcAction(val) {
   const calc = Runtime.calculator;
-  if (val === 'C') {
-    calc.current = '0'; calc.prev = null; calc.op = null; calc.resetOnNext = false; calc.error = false;
+
+  if (val === 'AC') {
+    resetCalculatorAll();
+  } else if (val === 'C') {
+    clearCalculatorEntry();
   } else if (val === 'DEL') {
-    if (calc.error) { calc.current = '0'; calc.error = false; calc.resetOnNext = false; }
-    else calc.current = calc.current.length > 1 ? calc.current.slice(0, -1) : '0';
+    if (calc.error) {
+      clearCalculatorEntry();
+    } else if (!calc.resetOnNext) {
+      const negative = calc.current.startsWith('-');
+      const digits = negative ? calc.current.slice(1) : calc.current;
+      const shortened = digits.length > 1 ? digits.slice(0, -1) : '0';
+      calc.current = negative && shortened !== '0' ? `-${shortened}` : shortened;
+    }
   } else if (['+', '-', '*', '/'].includes(val)) {
     if (calc.error) return updateCalcDisplay();
     if (calc.op && calc.prev !== null && !calc.resetOnNext) {
       if (!evaluatePendingCalculatorOperation()) return updateCalcDisplay();
     }
-    if (calc.op && calc.prev !== null && calc.resetOnNext) {
-      calc.op = val; // 演算子の連続入力は直前の演算子を置き換える。
-    } else {
-      calc.prev = Number(calc.current);
-      calc.op = val;
-    }
+    calc.prev = Number(calc.current);
+    calc.op = val;
     calc.resetOnNext = true;
+    calc.lastOperand = null;
+    calc.lastOp = null;
   } else if (val === '%') {
     if (calc.error) return updateCalcDisplay();
-    const num = Number(calc.current);
-    if (Number.isFinite(num)) calc.current = String(roundCalculatorValue(num / 100));
-    calc.resetOnNext = true;
+    const percentValue = calculatePercentValue(calc.current);
+    if (Number.isFinite(percentValue)) calc.current = String(percentValue);
+    // ％は「表示値÷100」で得た値そのものを右辺として使用できる単項処理。
+    calc.resetOnNext = false;
   } else if (val === '=') {
-    if (!calc.error && calc.op && calc.prev !== null) {
-      evaluatePendingCalculatorOperation();
-      calc.resetOnNext = true;
+    if (calc.error) return updateCalcDisplay();
+    if (calc.op && calc.prev !== null) {
+      // 演算子直後に＝を押した場合は、表示中の左辺を右辺にも使う。
+      if (calc.resetOnNext) calc.current = String(calc.prev);
+      if (evaluatePendingCalculatorOperation({ rememberForRepeat: true })) calc.resetOnNext = true;
+    } else if (calc.lastOp && calc.lastOperand !== null) {
+      const left = Number(calc.current);
+      const evaluated = calculateBinaryOperation(left, calc.lastOp, calc.lastOperand);
+      if (!evaluated.ok) setCalculatorError(evaluated.error);
+      else {
+        calc.current = String(evaluated.value);
+        calc.resetOnNext = true;
+      }
     }
-  } else {
+  } else if (/^\d{1,2}$/.test(val)) {
     if (calc.error || calc.resetOnNext) {
       calc.current = val === '00' ? '0' : val;
       calc.resetOnNext = false;
       calc.error = false;
+      calc.lastOperand = null;
+      calc.lastOp = null;
     } else if (calc.current === '0') {
       calc.current = val === '00' ? '0' : val;
-    } else if (calc.current.length < 12) {
+    } else if (calc.current.replace('-', '').length + val.length <= 12) {
       calc.current += val;
     }
   }
@@ -12583,7 +14377,6 @@ function handleDelegatedAction(event) {
     case 'journal-eval': applySelfEval(Number(trigger.dataset.quality)); break;
     case 'toggle-table-hint': toggleTableHint(); break;
     case 'check-table': checkTableAnswer(); break;
-    case 'set-table-view': setTableView(trigger.dataset.view); break;
     case 'set-table-segment': setTableSegment(Number(trigger.dataset.segment)); break;
     case 'open-toc': openTableOfContents(); break;
     case 'next-table': nextTableQuestion(); break;
@@ -12601,7 +14394,7 @@ function handleDelegatedAction(event) {
 document.addEventListener('click', handleDelegatedAction);
 
 function initializeApp() {
-  runIntegrityCheck();
+  runCriticalIntegrityCheck();
   const importInput = document.getElementById('progress-import-input');
   if (importInput) importInput.addEventListener('change', handleProgressRestoreFile);
   const quizCard = document.getElementById('quiz-card');
@@ -12632,6 +14425,9 @@ function initializeApp() {
     observer.observe(wrapper);
     Runtime.ui.resizeObserver = observer;
   }
+
+  // 初期UIを構築した後で、意味論・ユーティリティの詳細自己監査を実行する。
+  scheduleDetailedIntegrityCheck();
 }
 
 initializeApp();
