@@ -933,7 +933,30 @@
 
   
 
-    /* ===== v8.8 iPhone-first overrides ===== */
+    .journal-option-mode {
+      display: grid;
+      grid-template-columns: auto 1fr 1fr;
+      gap: 7px;
+      align-items: center;
+      margin: 2px 0 5px;
+    }
+    .journal-option-mode-label { font-size: .78rem; font-weight: 800; color: #475569; }
+    .journal-option-mode-btn {
+      min-height: 44px;
+      border: 1px solid var(--border-color);
+      border-radius: 7px;
+      background: #fff;
+      color: #334155;
+      font-weight: 800;
+      touch-action: manipulation;
+    }
+    .journal-option-mode-btn.active { background: #334155; color: #fff; border-color: #334155; }
+    .journal-option-mode-note { margin: 0 0 8px; font-size: .73rem; line-height: 1.45; color: var(--text-muted); }
+    .scenario-reading-section { background: #f8fafc; border-radius: 7px; padding: 9px 10px; }
+    .scenario-correct-box { margin: 10px 0; }
+    #scenario-confusion-section { border-left: 3px solid #f59e0b; padding-left: 10px; }
+
+    /* ===== v8.9 iPhone-first overrides ===== */
     html { min-height: 100%; }
     body {
       padding-top: calc(8px + env(safe-area-inset-top));
@@ -1073,8 +1096,7 @@
     }
     .table-answer-input { min-height: 44px; font-size: 16px; }
 
-    /* 解答後は、抽象的な5大要素より先に「この場面で何が起きたか」を読む。
-       文章は各問題に登録済みの教科書解説を再構成して表示し、機械的な推測文は生成しない。 */
+    /* 解答後は、問題文の場面→処理内容→金額→正解仕訳→理由の順で確認する。 */
     .scenario-guide-box {
       margin-top: 10px;
       padding: 12px;
@@ -1157,7 +1179,7 @@
 <div class="container">
   <header>
     <h1>日商簿記3級 総合演習システム（仕訳200問＋表問題40問）</h1>
-    <p>2026年度出題区分対応 × 仕訳200問 × 表・決算演習40問 × 教科書型解説 × 教材版 v8.8</p>
+    <p>2026年度出題区分対応 × 仕訳200問 × 表・決算演習40問 × 解説 × 教材版 v8.9</p>
   </header>
   <div id="data-integrity-banner" class="data-integrity-banner" role="alert" aria-live="polite"></div>
 
@@ -1238,6 +1260,13 @@
     </div>
     <div class="hint-box" id="hint-box"></div>
 
+    <div class="journal-option-mode" aria-label="勘定科目の選択モード">
+      <span class="journal-option-mode-label">科目選択</span>
+      <button type="button" class="journal-option-mode-btn active" data-action="set-journal-option-mode" data-option-mode="guided">学習</button>
+      <button type="button" class="journal-option-mode-btn" data-action="set-journal-option-mode" data-option-mode="broad">実戦</button>
+    </div>
+    <div class="journal-option-mode-note" id="journal-option-mode-note">学習：この問題に必要な候補から選びます。</div>
+
     <!-- マス目型仕訳入力グリッド -->
     <div class="grid-table-wrapper">
       <table class="grid-table">
@@ -1268,34 +1297,42 @@
       <div id="result-detail" style="margin-top: 2px; font-size: 0.8rem;"></div>
 
       <div class="diagnostic-box" id="diagnostic-box" aria-live="polite">
-        <div class="diagnostic-title">今回の不正解ポイント</div>
+        <div class="diagnostic-title">ここを確認しよう</div>
         <div class="diagnostic-summary" id="diagnostic-summary"></div>
         <ul class="diagnostic-list" id="diagnostic-list"></ul>
-        <div class="diagnostic-note">この診断は、入力した仕訳と登録済み正解仕訳の差分を機械的に表示したものです。会計処理の理由は、下の「教科書解説」で確認してください。</div>
-      </div>
-
-      <!-- 正解仕訳表示 -->
-      <div class="correct-journal-box" id="correct-journal-box">
-        <div class="correct-journal-title">正解仕訳:</div>
-        <div id="correct-journal-content"></div>
       </div>
 
       <div class="scenario-guide-box" id="scenario-guide-box">
-        <div class="scenario-guide-title">取引の流れを整理しよう</div>
+        <div class="scenario-guide-title">解説</div>
+        <div class="scenario-section scenario-reading-section">
+          <div class="scenario-section-title">まず、問題文の場面をつかむ</div>
+          <div class="scenario-section-text" id="scenario-reading-text"></div>
+        </div>
         <div class="scenario-section">
-          <div class="scenario-section-title">この取引では何が起きている？</div>
+          <div class="scenario-section-title">この取引で何を処理する？</div>
           <div class="scenario-section-text" id="scenario-thinking-text"></div>
         </div>
         <div class="scenario-section" id="scenario-amount-section" hidden>
-          <div class="scenario-section-title">金額はどう考える？</div>
+          <div class="scenario-section-title">金額はこう考える</div>
           <div class="scenario-section-text" id="scenario-amount-text"></div>
         </div>
+
+        <!-- 正解仕訳表示 -->
+        <div class="correct-journal-box scenario-correct-box" id="correct-journal-box">
+          <div class="correct-journal-title">正解仕訳</div>
+          <div id="correct-journal-content"></div>
+        </div>
+
         <div class="scenario-section">
-          <div class="scenario-section-title">だから、この仕訳になる</div>
+          <div class="scenario-section-title">なぜこの仕訳になる？</div>
           <div class="scenario-section-text" id="scenario-reason-text"></div>
         </div>
+        <div class="scenario-section" id="scenario-confusion-section" hidden>
+          <div class="scenario-section-title">間違えやすいところ</div>
+          <div class="scenario-section-text" id="scenario-confusion-text"></div>
+        </div>
         <details class="account-nature-details" id="account-nature-details">
-          <summary>勘定科目の性質も確認する</summary>
+          <summary>借方・貸方をもう一度確認する（必要なとき）</summary>
           <div class="account-effect-list" id="account-effect-list"></div>
         </details>
       </div>
@@ -1413,7 +1450,7 @@
 <script type="module">
 'use strict';
 
-// 仕訳200問データベース（2026年度適用 出題区分対応・教科書型解説 v8.8）
+// 仕訳200問データベース（2026年度適用 出題区分対応・解説 v8.9）
 const QUESTION_DATABASE = [
   {
     "id": "Q001",
@@ -10057,12 +10094,15 @@ function runIntegrityCheck() {
   const diagnosticIssues = validateDiagnosticEngine();
   const classificationIssues = validateAccountClassifications();
   const explanationIssues = validateExplanationStructure();
+  const learningSupportIssues = validateLearningSupport();
   result.diagnosticIssues = diagnosticIssues;
   result.classificationIssues = classificationIssues;
   result.explanationIssues = explanationIssues;
+  result.learningSupportIssues = learningSupportIssues;
   result.issues.push(...diagnosticIssues.map(issue => `誤答診断: ${issue}`));
   result.issues.push(...classificationIssues.map(account => `勘定科目分類未登録: ${account}`));
   result.issues.push(...explanationIssues.map(issue => `解説構造: ${issue}`));
+  result.issues.push(...learningSupportIssues.map(issue => `学習支援: ${issue}`));
   const banner = document.getElementById('data-integrity-banner');
   if (result.issues.length) {
     console.error('起動時整合性チェックエラー', result);
@@ -10080,7 +10120,7 @@ function runIntegrityCheck() {
 deepFreeze(QUESTION_DATABASE);
 deepFreeze(TABLE_DATABASE);
 
-const APP_VERSION = 'v8.8';
+const APP_VERSION = 'v8.9';
 const STORAGE_SCHEMA_VERSION = 2;
 const JOURNAL_BANK_VERSION = 'v7.1';
 const TABLE_BANK_VERSION = 'v8.3';
@@ -10198,7 +10238,7 @@ class StorageManager {
 const Runtime = {
   state: StorageManager.loadState(),
   mode: 'journal',
-  journal: { currentQuestionIndex: -1, currentErrorType: 'NONE', isAnswered: false, isEvalCompleted: false, lastFocusedInput: null },
+  journal: { currentQuestionIndex: -1, currentErrorType: 'NONE', isAnswered: false, isEvalCompleted: false, lastFocusedInput: null, optionMode: 'guided' },
   table: { currentIndex: -1, answered: false, lastFocusedInput: null, viewMode: 'full', viewPreference: 'auto', segmentIndex: 0, hintLevel: 0, draft: {} },
   calculator: { current: '0', prev: null, op: null, resetOnNext: false, error: false },
   ui: { quizCardTemplate: null, journalResizeTimer: null, tableMediaQuery: null, tableMediaHandler: null }
@@ -10258,12 +10298,14 @@ function setInputFieldsDisabled(disabled) {
   const addBtn = document.getElementById('add-row-btn');
   const removeBtn = document.getElementById('remove-row-btn');
   const submitBtn = document.getElementById('submit-btn');
+  const optionModeBtns = document.querySelectorAll('.journal-option-mode-btn');
 
   selects.forEach(s => s.disabled = disabled);
   inputs.forEach(i => i.disabled = disabled);
   if (addBtn) addBtn.disabled = disabled;
   if (removeBtn) removeBtn.disabled = disabled;
   if (submitBtn) submitBtn.disabled = disabled;
+  optionModeBtns.forEach(btn => { btn.disabled = disabled; });
 }
 
 function updateDashboard() {
@@ -10351,6 +10393,7 @@ function loadQuestion(index) {
   setEvalButtonsDisabled(true);
 
   const q = QUESTION_DATABASE[index];
+  updateJournalOptionModeUi();
   updateTocActive(q.id);
 
   document.getElementById('problem-category').innerText = q.category;
@@ -10453,6 +10496,57 @@ function refitAllJournalAmountFonts() {
 }
 
 // iPhone-first 4列仕訳テーブル行の生成（借方科目・金額・貸方科目・金額）
+const JOURNAL_ACCOUNT_MASTER = Object.freeze(
+  [...new Set(QUESTION_DATABASE.flatMap(q => Array.isArray(q.options) ? q.options : []))]
+    .sort((a, b) => a.localeCompare(b, 'ja'))
+);
+
+function getJournalAccountOptions(q) {
+  if (Runtime.journal.optionMode === 'broad') return JOURNAL_ACCOUNT_MASTER;
+  return Array.isArray(q?.options) ? q.options : [];
+}
+
+function updateJournalOptionModeUi() {
+  document.querySelectorAll('.journal-option-mode-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.optionMode === Runtime.journal.optionMode);
+  });
+  const note = document.getElementById('journal-option-mode-note');
+  if (note) {
+    note.textContent = Runtime.journal.optionMode === 'broad'
+      ? `実戦：この教材で扱う${JOURNAL_ACCOUNT_MASTER.length}科目の候補から選びます。`
+      : '学習：この問題に必要な候補から選びます。';
+  }
+}
+
+function refillJournalAccountSelect(select, options) {
+  if (!select) return;
+  const current = select.value;
+  const fragment = document.createDocumentFragment();
+  const blank = document.createElement('option');
+  blank.value = '';
+  blank.textContent = '(選択)';
+  fragment.appendChild(blank);
+  options.forEach(opt => {
+    const option = document.createElement('option');
+    option.value = opt;
+    option.textContent = opt;
+    fragment.appendChild(option);
+  });
+  select.replaceChildren(fragment);
+  if (current && options.includes(current)) select.value = current;
+}
+
+function setJournalOptionMode(mode) {
+  if (!['guided', 'broad'].includes(mode) || Runtime.journal.isAnswered) return;
+  Runtime.journal.optionMode = mode;
+  const q = QUESTION_DATABASE[Runtime.journal.currentQuestionIndex];
+  if (!q) return;
+  const options = getJournalAccountOptions(q);
+  document.querySelectorAll('#journal-rows .debit-account, #journal-rows .credit-account')
+    .forEach(select => refillJournalAccountSelect(select, options));
+  updateJournalOptionModeUi();
+}
+
 function addJournalRow() {
   const tbody = document.getElementById('journal-rows');
   if (!tbody || Runtime.journal.currentQuestionIndex === -1 || Runtime.journal.isAnswered) return;
@@ -10468,7 +10562,7 @@ function addJournalRow() {
     blank.value = '';
     blank.textContent = '(選択)';
     select.appendChild(blank);
-    q.options.forEach(opt => {
+    getJournalAccountOptions(q).forEach(opt => {
       const option = document.createElement('option');
       option.value = opt;
       option.textContent = opt;
@@ -10874,23 +10968,198 @@ function parseExplanationSections(explanation) {
   return result;
 }
 
+function buildSituationLead(q) {
+  const s = String(q?.statement || '');
+  const c = String(q?.category || '');
+  const has = (...words) => words.some(word => s.includes(word) || c.includes(word));
+
+  if (has('当座借越')) {
+    return '当座預金の残高だけでは支払いきれず、銀行との当座借越契約を使う場面です。二勘定法では、当座預金で賄えない超過分を「当座借越」という負債で処理します。決算整理なら、その残高を借入金へ振り替えるかを確認します。';
+  }
+  if (has('小口現金')) {
+    return '日常の少額支払いを小口現金係に任せる場面です。支払報告を受けたときは使った費用を記録し、補給するときは減った小口現金を元の定額まで戻す流れとして考えます。';
+  }
+  if ((c.includes('貸倒れ') || c.includes('貸倒債権') || s.includes('回収不能')) && !c.includes('貸倒引当金の設定')) {
+    if (s.includes('当期に発生') || c.includes('当期発生')) {
+      return '当期に生じた売掛金などが、その同じ期のうちに回収不能になった場面です。この場合は、以前の期の債権に備えて設定した貸倒引当金ではなく、回収不能額を貸倒損失として処理します。';
+    }
+    return '前期以前から残っていた売掛金などが回収不能になった場面です。まず貸倒引当金で補える金額を使い、引当金で足りない部分があれば貸倒損失として処理します。';
+  }
+  if (s.includes('貸倒処理していた') && has('回収', '受け取', '入金')) {
+    return '以前に回収不能として貸倒処理した債権から、あとになって代金を回収できた場面です。通常の売掛金回収ではなく、すでに帳簿から消した債権の回収として処理します。';
+  }
+  if (has('買い替え')) {
+    return '古い固定資産を下取りに出す「売却」と、新しい固定資産を取得する「購入」が同時に起きる場面です。旧資産の帳簿価額と下取価額の差で売却損益を求め、新資産の取得額と未払額も別に整理します。';
+  }
+  if ((has('固定資産') && has('売却')) || (has('備品', '車両', '建物') && has('売却'))) {
+    return '使用していた固定資産を手放す場面です。取得原価と減価償却累計額を帳簿から外し、帳簿価額と売却価額の差が売却益か売却損かを確認します。';
+  }
+  if (has('減価償却')) {
+    return '固定資産を使った期間に対応する分だけ、当期の費用として減価償却費を計上する場面です。取得原価そのものをそのまま費用にするのではなく、問題で指定された方法と期間で配分します。';
+  }
+  if (has('固定資産', '備品', '建物', '車両', '土地') && has('購入', '取得')) {
+    return '事業で使う固定資産を取得する場面です。本体代だけでなく、取得のために直接必要となった付随費用を取得原価に含めるかを確認します。支払方法は、その後に別途確認します。';
+  }
+  if (has('小切手帳')) {
+    return '銀行から小切手帳の交付を受け、その手数料が預金口座から引き落とされた場面です。小切手で商品代金を支払う取引ではなく、銀行へ支払う手数料として読みます。';
+  }
+
+  if (has('定期預金') && has('振替', '解約')) {
+    return '預金の種類を普通預金と定期預金の間で移す場面です。新しい収益や費用が生じたわけではなく、一方の預金という資産が減り、別の預金という資産が増える取引として整理します。';
+  }
+  if (has('仮払金') && has('精算')) {
+    return '出張などのために概算で先に渡していた仮払金について、実際に使った金額が確定した場面です。確定した費用へ振り替え、余った金額が返ってきたのか、不足分を追加で支払ったのかを確認します。';
+  }
+  if (has('貯蔵品') && has('使用', '払い出し', '再振替', '期首')) {
+    return '前期末などに資産として残していた切手や印紙などを、当期に使用する場面です。保管中は貯蔵品ですが、使用した時点で通信費や租税公課など本来の費用へ振り替えます。';
+  }
+  if (has('消耗品') && has('期首', '期末', '未使用', '決算整理', '振替')) {
+    return '事務用品などの消耗品について、使った分とまだ残っている分を決算や期首に整理する場面です。未使用分は資産、使用する期間の分は費用になるという違いを確認します。';
+  }
+  if (has('株式発行', '会社設立', '設立')) {
+    return '会社が株式を発行して出資を受け、事業を始めるための資金が払い込まれた場面です。受け取った預金が増える一方、返済義務のある借入金ではなく、株主からの出資として資本金を計上します。';
+  }
+  if (has('前受家賃') && has('再振替', '期首')) {
+    return '前期末に「次期分」として負債へ繰り延べた家賃収益を、期首になったので当期の収益へ戻す場面です。前期末に行った決算整理仕訳を反対に戻す再振替として考えます。';
+  }
+  if (has('商品券') && has('発行店', '発行元', '回収', '換金', '提示')) {
+    return '販売などで受け取って手許にあった商品券を、発行元へ持ち込んで現金などに換える場面です。新たな売上ではなく、商品券という資産が現金へ形を変える取引です。';
+  }
+  if (has('差入保証金', '保証金')) {
+    return '店舗などを借りる際に、契約終了時に返還される予定の保証金を差し入れる場面です。家賃などの費用ではなく、将来返してもらう権利があるため資産として扱います。';
+  }
+
+  if (has('売掛金') && has('回収', '入金', '振込入金')) {
+    return '以前に掛けで販売した代金を、今回回収する場面です。今回は新しい販売ではないため、入金をもう一度「売上」にするのではなく、残っていた売掛金を減らすことを考えます。';
+  }
+  if (has('買掛金') && has('支払', '振込')) {
+    return '以前に掛けで仕入れた代金を、今回支払う場面です。新しい仕入ではなく、未払いだった買掛金を消し、支払った現金や預金が減る取引として読みます。';
+  }
+  if (has('前受金', '手付金') && has('商品', '発送', '引き渡')) {
+    return '以前に受け取った手付金を、商品を引き渡したことで売上代金に充てる場面です。受取時に「前受金」としていた金額を取り崩し、残りの代金をどの方法で受け取るかを確認します。';
+  }
+  if (has('前払金', '内金') && has('仕入', '商品')) {
+    return '以前に支払った内金を、商品を受け取ったことで仕入代金に充てる場面です。前払金を減らし、残額が現金払いか掛けかを問題文から確認します。';
+  }
+  if (has('返品', '返戻')) {
+    return 'いったん成立した売買の一部を取り消す場面です。返品された部分について、最初の売買で増減した科目を反対向きに戻すと整理しやすくなります。';
+  }
+  if (has('現金過不足')) {
+    return '帳簿上の現金と実際の現金が一致していない場面です。原因がまだ分からない間は「現金過不足」で仮に処理し、原因が分かったら本来の勘定科目へ振り替えます。';
+  }
+  if (has('小切手')) {
+    return '小切手で代金を受け取る、または支払う場面です。ポイントは「誰が振り出した小切手か」です。他店振出なら現金、自店振出なら当座預金の動きとして考えます。';
+  }
+  if (has('電子記録債権', '電子記録債務')) {
+    return '売掛金・買掛金などの代金を電子記録による債権・債務として扱う場面です。新しい売上や仕入なのか、既存の債権・債務を電子記録へ切り替えるのかを問題文から区別します。';
+  }
+  if (has('手形')) {
+    return '約束手形を受け取る・振り出す、または期日に決済する場面です。商品の売買そのものなのか、すでにある売掛金・買掛金を手形へ切り替えるのかを先に見分けます。';
+  }
+  if (has('固定資産') && has('売却', '買い替え') || has('備品') && has('売却', '買い替え') || has('車両') && has('売却')) {
+    return '使用していた固定資産を手放す場面です。取得原価と減価償却累計額を帳簿から外し、帳簿価額と売却価額・下取価額の差が売却益か売却損かを確認します。';
+  }
+  if (has('減価償却')) {
+    return '固定資産を使った期間に対応する分だけ、当期の費用として減価償却費を計上する場面です。取得原価そのものをそのまま費用にするのではなく、問題で指定された方法と期間で配分します。';
+  }
+  if (has('固定資産', '備品', '建物', '車両', '土地') && has('購入', '取得')) {
+    return '事業で使う固定資産を取得する場面です。本体代だけでなく、取得のために直接必要となった付随費用を取得原価に含めるかを確認します。';
+  }
+  if (has('貸倒引当金')) {
+    return '将来回収できない可能性のある売上債権に備えて、決算で見積額を調整する場面です。すでにある貸倒引当金残高と、決算で必要な残高との差額を確認します。';
+  }
+  if (has('前払費用', '前受収益', '未払費用', '未収収益', '未払', '未収') && has('決算', '計上', '振替', '再振替')) {
+    return '決算で、現金の受け払い時期と収益・費用を計上すべき期間のずれを直す場面です。「当期分か次期分か」を先に分けてから、資産・負債へ振り替えます。';
+  }
+  if (has('給料', '給与') && has('所得税', '社会保険', '源泉', '控除', '天引')) {
+    return '従業員へ給料を支払う際に、会社が本人負担分の税金や社会保険料をいったん預かる場面です。給料の総額と、実際の支払額、会社が預かった金額を分けて考えます。';
+  }
+  if (has('消費税')) {
+    return '税抜方式で、取引時または決算時の消費税を処理する場面です。仕入時に支払った税額と売上時に預かった税額を分け、決算ではその差額を納付額または還付額として整理します。';
+  }
+  if (has('法人税')) {
+    return '法人税等を当期の費用として計上し、すでに中間納付している金額があれば差し引いて、残りを未払額として整理する場面です。';
+  }
+  if (has('配当', '利益準備金', '繰越利益剰余金')) {
+    return '会社が利益の処分を行う場面です。配当を決めた時点と、実際に支払う時点は別の取引なので、どちらの時点を問われているかを確認します。';
+  }
+  if (has('借入金') && has('借入れ', '返済', '利息')) {
+    return '銀行などから資金を借りる、元本を返す、または利息を支払う場面です。元本の増減と利息という費用を混同しないことがポイントです。';
+  }
+  if (has('貸付金') && has('貸付', '回収', '利息')) {
+    return '取引先などへ貸した資金を回収する、またはその利息を受け取る場面です。元本の回収と利息収益を分けて考えます。';
+  }
+  if (has('損益', '決算振替', '当期純利益', '当期純損失')) {
+    return '決算で、当期の収益・費用を締め切り、最終的な利益または損失を純資産へ振り替える場面です。日常の取引ではなく、決算の締切処理として読みます。';
+  }
+  if (has('仕入') && has('商品')) {
+    return '販売するための商品を仕入れる場面です。商品代金に加えて、引取運賃などを自社が負担しているか、代金を現金・掛け・前払金のどれで処理するかを確認します。';
+  }
+  if (has('売上', '販売') && has('商品')) {
+    return '商品を販売して売上を計上する場面です。代金をその場で受け取ったのか、掛けにしたのか、手付金や商品券などを充てたのかを確認します。';
+  }
+  if (has('支払い', '支払', '購入', '納付', '引き落とし')) {
+    return '会社が業務に必要な支出を行う場面です。何のための支出かを先に確認して費用・資産・負債のどれを動かすか決め、その後に現金や預金など支払手段の減少を考えます。';
+  }
+  if (has('受領', '受取', '受け取', '入金')) {
+    return '会社が代金や収益を受け取る場面です。今回新たに収益が生じたのか、それとも以前からある債権を回収しただけなのかを最初に見分けます。';
+  }
+  return '問題文では、まず「今回新しく発生した取引か」「以前に計上したものの精算か」「現金や預金が実際に動いたか」を分けて読みます。そのうえで、何を表す勘定科目が増減するかを確認します。';
+}
+
+function buildConfusionNote(q) {
+  const accounts = new Set([...(q?.debit || []), ...(q?.credit || [])].map(e => e.account));
+  const notes = [];
+  if (accounts.has('売掛金')) notes.push('売掛金は商品の販売代金が未回収のときに使います。商品売買以外の代金が未回収なら、通常は未収入金と区別します。');
+  if (accounts.has('未収入金')) notes.push('未収入金は商品売買以外で生じた未回収額に使います。商品の掛売上による未回収は売掛金です。');
+  if (accounts.has('買掛金')) notes.push('買掛金は商品の仕入代金が未払いのときに使います。商品売買以外の未払いは、通常は未払金と区別します。');
+  if (accounts.has('未払金')) notes.push('未払金は商品仕入以外で生じた未払いに使います。商品の掛仕入による未払いは買掛金です。');
+  if (accounts.has('前払金')) notes.push('前払金は商品などを受け取る前に支払った内金・手付金です。期間対応で次期へ繰り延べる前払費用とは場面が異なります。');
+  if (accounts.has('前払費用')) notes.push('前払費用は、すでに支払った費用のうち次期分を資産へ振り替える決算整理です。商品の内金に使う前払金とは区別します。');
+  if (accounts.has('前受金')) notes.push('前受金は商品を引き渡す前に受け取った内金・手付金です。期間対応で次期分の収益を繰り延べる前受収益とは場面が異なります。');
+  if (accounts.has('前受収益')) notes.push('前受収益は、すでに受け取った収益のうち次期分を負債へ振り替える決算整理です。商品の手付金に使う前受金とは区別します。');
+  if (accounts.has('立替金')) notes.push('立替金は本来は相手が負担すべき金額を会社が一時的に支払ったときに使います。会社自身の費用とは分けます。');
+  if (accounts.has('仮払金')) notes.push('仮払金は用途や金額がまだ確定していない支払いを一時的に処理する科目です。相手負担分を立て替えた立替金とは意味が異なります。');
+  if (accounts.has('貸倒引当金繰入')) notes.push('貸倒引当金繰入は決算で将来の貸倒れを見積もる費用です。実際に債権が回収不能になったときの貸倒損失とは区別します。');
+  if (accounts.has('貸倒損失')) notes.push('貸倒損失は債権が実際に回収不能になったときの損失です。決算で将来の貸倒れを見積もる貸倒引当金繰入とは区別します。');
+  return notes.join('\n');
+}
+
+function validateLearningSupport() {
+  const issues = [];
+  QUESTION_DATABASE.forEach(q => {
+    const lead = buildSituationLead(q);
+    if (typeof lead !== 'string' || !lead.trim()) issues.push(`${q.id}: 場面解説が空です`);
+    [...q.debit, ...q.credit].forEach(entry => {
+      if (!JOURNAL_ACCOUNT_MASTER.includes(entry.account)) issues.push(`${q.id}: 実戦科目候補に正答科目がありません ${entry.account}`);
+    });
+  });
+  return issues;
+}
+
 function renderScenarioGuide(q) {
   const box = document.getElementById('scenario-guide-box');
+  const readingText = document.getElementById('scenario-reading-text');
   const thinkingText = document.getElementById('scenario-thinking-text');
   const amountSection = document.getElementById('scenario-amount-section');
   const amountText = document.getElementById('scenario-amount-text');
   const reasonText = document.getElementById('scenario-reason-text');
+  const confusionSection = document.getElementById('scenario-confusion-section');
+  const confusionText = document.getElementById('scenario-confusion-text');
   const details = document.getElementById('account-nature-details');
   const list = document.getElementById('account-effect-list');
-  if (!box || !thinkingText || !amountSection || !amountText || !reasonText || !details || !list || !q) return;
+  if (!box || !readingText || !thinkingText || !amountSection || !amountText || !reasonText || !confusionSection || !confusionText || !details || !list || !q) return;
 
-  // ここでは新しい会計理由を推測して作らない。
-  // 各問題に登録済みの教科書解説を、場面→金額→仕訳理由の順に読みやすく再配置する。
+  // 会計処理そのものは登録済み解説を使用し、問題文の読み方だけを補助する。
   const sections = parseExplanationSections(q.explanation);
+  readingText.textContent = buildSituationLead(q);
   thinkingText.textContent = sections.thinking || q.explanation || '';
   amountSection.hidden = !sections.amount;
   amountText.textContent = sections.amount;
   reasonText.textContent = sections.reason || q.explanation || '';
+  const confusion = buildConfusionNote(q);
+  confusionSection.hidden = !confusion;
+  confusionText.textContent = confusion;
 
   list.replaceChildren();
   const add = (side, label, entry) => {
@@ -11470,6 +11739,7 @@ function handleDelegatedAction(event) {
   switch (action) {
     case 'switch-mode': switchMode(trigger.dataset.mode); break;
     case 'toggle-hint': toggleHint(); break;
+    case 'set-journal-option-mode': setJournalOptionMode(trigger.dataset.optionMode); break;
     case 'toggle-calculator': toggleCalculator(); break;
     case 'add-journal-row': addJournalRow(); break;
     case 'remove-last-journal-row': removeLastJournalRow(); break;
