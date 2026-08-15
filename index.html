@@ -126,6 +126,57 @@
       transition: width 0.3s ease;
     }
 
+    /* 学習履歴バックアップ */
+    .backup-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      margin-bottom: 10px;
+      overflow: hidden;
+    }
+
+    .backup-details > summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 11px 14px;
+      font-weight: 700;
+      color: #0f172a;
+      background: #f8fafc;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      user-select: none;
+    }
+
+    .backup-details > summary::-webkit-details-marker { display: none; }
+    .backup-details[open] > summary { border-bottom: 1px solid var(--border-color); }
+    .backup-summary-sub { color: var(--text-muted); font-size: .68rem; font-weight: 600; text-align: right; }
+    .backup-body { padding: 10px 12px 12px; }
+    .backup-help { margin: 0 0 9px; color: #475569; font-size: .76rem; line-height: 1.55; }
+    .backup-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .backup-btn {
+      min-height: 44px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      background: #fff;
+      color: #0f172a;
+      font-weight: 700;
+      font-size: .78rem;
+      cursor: pointer;
+      padding: 8px;
+    }
+    .backup-btn.primary { background: #eef2ff; border-color: #c7d2fe; color: #3730a3; }
+    .backup-btn:focus-visible { outline: 3px solid rgba(37,99,235,.25); outline-offset: 2px; }
+    .backup-status { margin-top: 8px; min-height: 1.2em; font-size: .72rem; line-height: 1.45; color: #475569; white-space: pre-line; }
+    .backup-status.success { color: #166534; }
+    .backup-status.error { color: #b91c1c; font-weight: 700; }
+
+    @media (max-width: 390px) {
+      .backup-summary-sub { max-width: 45%; }
+      .backup-actions { grid-template-columns: 1fr; }
+    }
+
 
     /* 項目別目次 */
     .toc-card {
@@ -990,6 +1041,23 @@
       line-height: 1.45;
       color: #475569;
     }
+    .journal-design-note {
+      margin: -3px 0 9px;
+      padding: 7px 9px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      background: #f8fafc;
+      color: #475569;
+      font-size: .72rem;
+      line-height: 1.5;
+    }
+    .calc-learning-note {
+      margin: 7px 10px 0;
+      color: #64748b;
+      font-size: .70rem;
+      line-height: 1.45;
+      text-align: left;
+    }
     .problem-difficulty-row {
       display: flex;
       justify-content: flex-end;
@@ -1163,7 +1231,59 @@
     }
     .account-effect-side { font-weight: 800; white-space: nowrap; }
 
-    /* v9.4: iPhoneのネイティブselectを操作面として残しつつ、選択済み科目は独自表示で折り返す。
+    .reference-policy-details {
+      margin-top: 10px;
+      border-top: 1px dashed #93c5fd;
+      padding-top: 8px;
+    }
+    .reference-policy-details summary {
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      color: #1e3a8a;
+      font-size: .82rem;
+      font-weight: 800;
+      touch-action: manipulation;
+    }
+    .reference-policy-details summary::-webkit-details-marker { display: none; }
+    .reference-policy-details summary::before { content: '＋'; margin-right: 6px; }
+    .reference-policy-details[open] summary::before { content: '－'; }
+    .reference-policy-copy {
+      margin: 2px 0 8px;
+      padding: 8px;
+      border-radius: 6px;
+      background: #f8fafc;
+      color: #475569;
+      font-size: .77rem;
+      line-height: 1.65;
+      white-space: pre-line;
+    }
+    .reference-source-group { margin-top: 8px; }
+    .reference-source-group-title {
+      margin-bottom: 4px;
+      color: #334155;
+      font-size: .78rem;
+      font-weight: 800;
+    }
+    .reference-source-list {
+      margin: 0;
+      padding-left: 1.15rem;
+      display: grid;
+      gap: 4px;
+      color: #475569;
+      font-size: .75rem;
+      line-height: 1.5;
+    }
+    .reference-source-list a {
+      color: #1d4ed8;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      overflow-wrap: anywhere;
+    }
+    .reference-source-role { color: #64748b; }
+
+    /* v9.8: iPhoneのネイティブselectを操作面として残しつつ、選択済み科目は独自表示で折り返す。
        長い勘定科目名も省略せず、必要に応じて複数行で読めるようにする。 */
     .grid-table td.account-cell {
       height: auto;
@@ -1256,7 +1376,7 @@
 <div class="container">
   <header>
     <h1>日商簿記3級 総合演習システム（仕訳200問＋表問題40問）</h1>
-    <p>2026年度出題区分対応 × 仕訳200問 × 表・決算演習40問 × 解説 × 教材版 v9.4</p>
+    <p>2026年度出題区分対応 × 仕訳200問 × 表・決算演習40問 × 解説 × 教材版 v9.8</p>
   </header>
   <div id="data-integrity-banner" class="data-integrity-banner" role="alert" aria-live="polite"></div>
 
@@ -1264,6 +1384,24 @@
     <button type="button" class="mode-btn active" id="mode-journal-btn" data-action="switch-mode" data-mode="journal">仕訳演習 200問</button>
     <button type="button" class="mode-btn" id="mode-table-btn" data-action="switch-mode" data-mode="table">表・決算演習 40問</button>
   </div>
+
+  <section class="backup-card" aria-label="学習履歴のバックアップ">
+    <details class="backup-details" id="backup-details">
+      <summary>
+        <span>💾 学習履歴のバックアップ</span>
+        <span class="backup-summary-sub">端末変更・ブラウザデータ削除に備える</span>
+      </summary>
+      <div class="backup-body">
+        <p class="backup-help">学習履歴はこのブラウザ内に保存されます。必要に応じてJSONファイルへ保存し、同じ教材へ復元できます。復元時はファイル形式と教材データの互換性を確認します。チェックサムは破損・意図しない変更の検出用で、暗号学的な署名ではありません。</p>
+        <div class="backup-actions">
+          <button type="button" class="backup-btn primary" data-action="export-progress-backup">JSONバックアップを保存</button>
+          <button type="button" class="backup-btn" data-action="choose-progress-restore">JSONから復元</button>
+        </div>
+        <input id="progress-import-input" type="file" accept="application/json,.json" hidden>
+        <div class="backup-status" id="backup-status" role="status" aria-live="polite"></div>
+      </div>
+    </details>
+  </section>
 
   <section id="journal-mode-section" class="mode-section">
 
@@ -1324,7 +1462,7 @@
     </div>
 
     <div class="problem-difficulty-row">
-      <span class="problem-difficulty" id="problem-difficulty" aria-label="問題の難易度">難易度 ★☆☆☆☆</span>
+      <span class="problem-difficulty" id="problem-difficulty" aria-label="問題の難易度">難易度 ★☆☆☆☆（教材内目安）</span>
     </div>
 
     <div class="statement" id="problem-statement">
@@ -1354,7 +1492,8 @@
         </tbody>
       </table>
     </div>
-    <div class="journal-cbt-note">同じ勘定科目は、借方・貸方それぞれで1回だけ使用します。金額は数字だけ入力すれば、3桁ごとのカンマが自動表示されます。</div>
+    <div class="journal-cbt-note">同じ勘定科目は、借方・貸方それぞれで1回までです。本教材では数字を3桁区切りで表示します（ネット試験ではカンマ入力は不要です）。</div>
+    <div class="journal-design-note">勘定科目候補はスマホでの反復学習用に、各問題5～6科目へ整理しています。本試験画面の候補数や画面配置を再現する機能ではありません。</div>
 
     <div class="journal-row-controls">
       <button type="button" class="row-control-btn" id="add-row-btn" data-action="add-journal-row">＋ 行を追加</button>
@@ -1406,6 +1545,11 @@
           <summary>借方・貸方をもう一度確認する（必要なとき）</summary>
           <div class="account-effect-list" id="account-effect-list"></div>
         </details>
+        <details class="reference-policy-details" id="explanation-reference-details">
+          <summary>解説の参考資料・作成方針</summary>
+          <div class="reference-policy-copy" id="explanation-reference-policy"></div>
+          <div id="explanation-reference-list"></div>
+        </details>
       </div>
 
       <div style="margin-top: 10px; font-weight: bold; font-size: 0.75rem;" id="eval-instruction">回答後の手応え:</div>
@@ -1447,7 +1591,7 @@
         <button type="button" class="tool-btn hint-btn" data-action="toggle-table-hint">💡 解き方のヒント</button>
       </div>
       <div class="hint-box" id="table-hint-box"></div>
-      <div class="table-note">空欄セルに金額を入力してください。数字だけ入力すれば、3桁ごとのカンマが自動表示されます。</div>
+      <div class="table-note">空欄セルに数字を入力してください。本教材では3桁区切りで表示します。</div>
       <div class="table-view-switcher" id="table-view-switcher" hidden aria-label="表の表示方法">
         <button type="button" class="table-view-btn" data-action="set-table-view" data-view="compact">iPhone入力</button>
         <button type="button" class="table-view-btn" data-action="set-table-view" data-view="full">全体表</button>
@@ -1483,6 +1627,7 @@
     <button type="button" class="calc-close-btn" data-action="toggle-calculator">✕</button>
   </div>
   <div class="calc-display" id="calc-display">0</div>
+  <div class="calc-learning-note">この電卓はスマホ学習用の補助機能です。試験会場の画面仕様を再現するものではありません。</div>
   
   <div class="calc-apply-bar">
     <button type="button" class="calc-apply-btn debit" data-action="apply-calc-journal" data-side="debit">📥 借方に反映</button>
@@ -1520,7 +1665,7 @@
 <script type="module">
 'use strict';
 
-// 仕訳200問データベース（2026年度適用 出題区分対応・解説 v8.9）
+// 仕訳200問データベース（2026年度適用 出題区分対応・解説監査 v9.8）
 const QUESTION_DATABASE = [
   {
     "id": "Q001",
@@ -2408,7 +2553,7 @@ const QUESTION_DATABASE = [
         "amount": 40000
       }
     ],
-    "explanation": "【考え方】決算では、当座預金勘定に生じている貸方残高をそのまま資産勘定に残さず、負債である当座借越へ振り替えます。\n【仕訳の理由】借方は「当座預金」40,000円（資産の増加）、貸方は「当座借越」40,000円（負債の増加）です。"
+    "explanation": "【考え方】決算では、当座預金勘定に生じている貸方残高をそのまま資産勘定に残さず、負債である当座借越へ振り替えます。\n【仕訳の理由】借方は「当座預金」40,000円として当座預金勘定の貸方残高を解消し、貸方は「当座借越」40,000円として負債へ振り替えます。"
   },
   {
     "id": "Q035",
@@ -3952,7 +4097,7 @@ const QUESTION_DATABASE = [
         "amount": 15000
       }
     ],
-    "explanation": "【考え方】前期末の逆仕訳により「受取利息」から控除調整します。\n【仕訳の理由】借方は「受取利息」15,000円（収益の減少・取消し）、貸方は「未収利息」15,000円（資産の減少）です。"
+    "explanation": "【考え方】前期末に計上した「未収利息／受取利息」の決算整理仕訳を、期首に再振替します。未収利息を取り崩し、受取利息を借方に計上して前期末の決算整理を取り消します。\n【仕訳の理由】借方は「受取利息」15,000円（収益の減少・取消し）、貸方は「未収利息」15,000円（資産の減少）です。"
   },
   {
     "id": "Q097",
@@ -4188,9 +4333,9 @@ const QUESTION_DATABASE = [
   },
   {
     "id": "Q106",
-    "category": "法人税等の見込計上（決算）",
-    "statement": "決算につき、当期の法人税、住民税及び事業税の計上額が ￥150,000 と見積もられた。",
-    "hint": "当期負担税額を「法人税、住民税及び事業税」、未払額を「未払法人税等」とします。",
+    "category": "法人税等の確定（中間納付なし）",
+    "statement": "決算において、当期の法人税、住民税及び事業税の確定額が ￥150,000 となった。中間納付はないものとする。",
+    "hint": "中間納付がないため、確定税額の全額を「未払法人税等」とします。",
     "options": [
       "法人税、住民税及び事業税",
       "未払法人税等"
@@ -4207,7 +4352,7 @@ const QUESTION_DATABASE = [
         "amount": 150000
       }
     ],
-    "explanation": "【考え方】「法人税、住民税及び事業税」の発生と「未払法人税等」の計上を行います。\n【仕訳の理由】借方は「法人税、住民税及び事業税」150,000円（費用の発生）、貸方は「未払法人税等」150,000円（負債の増加）です。"
+    "explanation": "【考え方】決算で法人税等の確定額を当期の費用として計上し、まだ納付していない全額を「未払法人税等」という負債にします。\n【仕訳の理由】借方は「法人税、住民税及び事業税」150,000円（費用の発生）、貸方は「未払法人税等」150,000円（負債の増加）です。"
   },
   {
     "id": "Q107",
@@ -5268,7 +5413,7 @@ const QUESTION_DATABASE = [
         "amount": 70000
       }
     ],
-    "explanation": "【考え方】決算では、当座預金勘定に生じている貸方残高を負債である当座借越へ振り替えます。\n【仕訳の理由】借方は「当座預金」70,000円（資産の増加）、貸方は「当座借越」70,000円（負債の増加）です。"
+    "explanation": "【考え方】決算では、当座預金勘定に生じている貸方残高を負債である当座借越へ振り替えます。\n【仕訳の理由】借方は「当座預金」70,000円として当座預金勘定の貸方残高を解消し、貸方は「当座借越」70,000円として負債へ振り替えます。"
   },
   {
     "id": "Q151",
@@ -5554,7 +5699,7 @@ const QUESTION_DATABASE = [
         "amount": 100000
       }
     ],
-    "explanation": "【考え方】複数の当座預金口座がある場合でも、決算では各口座の残高を確認します。借方残高は当座預金のまま、貸方残高だけを当座借越へ振り替えます。\n【金額の求め方】A銀行の当座預金300,000円は借方残高なので資産のままです。B銀行の貸方残高100,000円だけを当座借越100,000円へ振り替えます。\n【仕訳の理由】借方は「当座預金」100,000円（資産の増加）、貸方は「当座借越」100,000円（負債の増加）です。"
+    "explanation": "【考え方】複数の当座預金口座がある場合でも、決算では各口座の残高を確認します。借方残高は当座預金のまま、貸方残高だけを当座借越へ振り替えます。\n【金額の求め方】A銀行の当座預金300,000円は借方残高なので資産のままです。B銀行の貸方残高100,000円だけを当座借越100,000円へ振り替えます。\n【仕訳の理由】借方は「当座預金」100,000円としてB銀行分の貸方残高を解消し、貸方は「当座借越」100,000円として負債へ振り替えます。"
   },
   {
     "id": "Q163",
@@ -10086,7 +10231,7 @@ const VALID_QUESTION_IDS = new Set(QUESTION_DATABASE.map(q => q.id));
 // v7.0→v7.1で内容を変更した問題ID（旧学習履歴を引き継がない）
 const UPDATED_FROM_V7_0_IDS = new Set(["Q012","Q024","Q029","Q036","Q039","Q052","Q053","Q055","Q056","Q067","Q074","Q075","Q076","Q079","Q111","Q120","Q121","Q122","Q124","Q125","Q126","Q128","Q140","Q142","Q143","Q145","Q151","Q152","Q153","Q154","Q155","Q156","Q157","Q158","Q159","Q162","Q163","Q164","Q165","Q169","Q170","Q171","Q173","Q174","Q175","Q176","Q177","Q181","Q182","Q185","Q186","Q190","Q192","Q193","Q196","Q197","Q198","Q200"]);
 
-// --- 堅牢な LocalStorage 管理クラス ---
+// --- LocalStorage 管理クラス（JSONバックアップ／復元対応） ---
 function stableBankHash(value) {
   const text = JSON.stringify(value);
   let hash = 0x811c9dc5;
@@ -10159,20 +10304,91 @@ function deepFreeze(value) {
   return value;
 }
 
+function validateBackupUtilities() {
+  const issues = [];
+  const sample = StorageManager.getDefaultState();
+  sample.progress.Q001 = { intervalDays: 3, repetitionCount: 2, easeFactor: 2.5, nextReviewDate: '2026-08-20T00:00:00.000Z', lastReviewed: '2026-08-15T00:00:00.000Z' };
+  sample.tableProgress.T001 = { attempts: 1, correct: true, lastResultCorrect: true, intervalDays: 1, repetitionCount: 1, easeFactor: 2.5, nextReviewDate: '2026-08-16T00:00:00.000Z', lastAttempt: '2026-08-15T00:00:00.000Z', lastReviewed: '2026-08-15T00:00:00.000Z' };
+  const payload = StorageManager.createBackupPayload(sample);
+  const restored = StorageManager.sanitizeBackupState(payload);
+  if (!restored.ok) issues.push(`バックアップ往復検証に失敗: ${restored.error}`);
+  if (restored.ok && !restored.state.progress.Q001) issues.push('仕訳履歴のバックアップ復元検証に失敗');
+  if (restored.ok && !restored.state.tableProgress.T001) issues.push('表履歴のバックアップ復元検証に失敗');
+  const tampered = JSON.parse(JSON.stringify(payload));
+  tampered.state.todayCount = 99;
+  if (StorageManager.sanitizeBackupState(tampered).ok) issues.push('改変バックアップのチェックサム検出に失敗');
+  return issues;
+}
+
+const DISALLOWED_VISIBLE_PRODUCT_CLAIMS = Object.freeze([
+  'CBT完全準拠',
+  '本試験完全再現',
+  '全科目プルダウン',
+  'TAC監修',
+  'TAC公式',
+  'ハルシネーションゼロ',
+  '全240問を外部サイトと1対1で個別照合済み',
+  '全200問をマネーフォワードと個別照合済み',
+  '全200問をFunda簿記と個別照合済み'
+]);
+
+function validateVisibleProductClaims() {
+  const visibleText = String(document.body?.innerText || '');
+  return DISALLOWED_VISIBLE_PRODUCT_CLAIMS
+    .filter(claim => visibleText.includes(claim))
+    .map(claim => `根拠を限定していない表示があります: ${claim}`);
+}
+
+function validateRuntimeShape() {
+  const issues = [];
+  if (!Object.isSealed(Runtime)) issues.push('Runtime本体がsealされていません');
+  ['journal', 'table', 'calculator', 'ui'].forEach(key => {
+    if (!Object.isSealed(Runtime[key])) issues.push(`Runtime.${key}がsealされていません`);
+  });
+  return issues;
+}
+
 function runIntegrityCheck() {
   const result = validateQuestionBanks();
   const diagnosticIssues = validateDiagnosticEngine();
   const classificationIssues = validateAccountClassifications();
   const explanationIssues = validateExplanationStructure();
+  const explanationAlignmentIssues = validateExplanationAnswerAlignment();
   const learningSupportIssues = validateLearningSupport();
+  const numericInputIssues = validateNumericInputUtilities();
+  const backupIssues = validateBackupUtilities();
+  const confusionNoteIssues = validateConfusionNoteCatalog();
+  const referenceCatalogIssues = validateContentReferenceCatalog();
+  const sourceAuditedCaseIssues = validateSourceAuditedCoreCases();
+  const sourceAuditedTextIssues = validateSourceAuditedTextExpectations();
+  const visibleClaimIssues = validateVisibleProductClaims();
+  const runtimeShapeIssues = validateRuntimeShape();
   result.diagnosticIssues = diagnosticIssues;
   result.classificationIssues = classificationIssues;
   result.explanationIssues = explanationIssues;
+  result.explanationAlignmentIssues = explanationAlignmentIssues;
   result.learningSupportIssues = learningSupportIssues;
+  result.numericInputIssues = numericInputIssues;
+  result.backupIssues = backupIssues;
+  result.confusionNoteIssues = confusionNoteIssues;
+  result.referenceCatalogIssues = referenceCatalogIssues;
+  result.sourceAuditedCaseIssues = sourceAuditedCaseIssues;
+  result.sourceAuditedTextIssues = sourceAuditedTextIssues;
+  result.visibleClaimIssues = visibleClaimIssues;
+  result.runtimeShapeIssues = runtimeShapeIssues;
   result.issues.push(...diagnosticIssues.map(issue => `誤答診断: ${issue}`));
   result.issues.push(...classificationIssues.map(account => `勘定科目分類未登録: ${account}`));
   result.issues.push(...explanationIssues.map(issue => `解説構造: ${issue}`));
+  result.issues.push(...explanationAlignmentIssues.map(issue => `解説・正答整合: ${issue}`));
   result.issues.push(...learningSupportIssues.map(issue => `学習支援: ${issue}`));
+  result.issues.push(...numericInputIssues.map(issue => `金額入力: ${issue}`));
+  result.issues.push(...backupIssues.map(issue => `バックアップ: ${issue}`));
+  result.issues.push(...confusionNoteIssues.map(issue => `混同防止解説: ${issue}`));
+  result.issues.push(...referenceCatalogIssues.map(issue => `参照資料: ${issue}`));
+  result.issues.push(...sourceAuditedCaseIssues.map(issue => `重点論点監査: ${issue}`));
+  result.issues.push(...sourceAuditedTextIssues.map(issue => `重点説明監査: ${issue}`));
+  result.issues.push(...visibleClaimIssues.map(issue => `表示表現: ${issue}`));
+  result.issues.push(...runtimeShapeIssues.map(issue => `実行時状態: ${issue}`));
   const banner = document.getElementById('data-integrity-banner');
   if (result.issues.length) {
     console.error('起動時整合性チェックエラー', result);
@@ -10190,12 +10406,15 @@ function runIntegrityCheck() {
 deepFreeze(QUESTION_DATABASE);
 deepFreeze(TABLE_DATABASE);
 
-const APP_VERSION = 'v9.4';
+const APP_VERSION = 'v9.8';
 const STORAGE_SCHEMA_VERSION = 2;
 const JOURNAL_BANK_VERSION = 'v7.1';
 const TABLE_BANK_VERSION = 'v8.3';
-const EXPECTED_QUESTION_BANK_HASH = '1d8740e5';
+const EXPECTED_QUESTION_BANK_HASH = '1be23a26';
 const EXPECTED_TABLE_BANK_HASH = 'ffad1361';
+const BACKUP_PRODUCT_ID = 'boki3-comprehensive';
+const BACKUP_FORMAT_VERSION = 1;
+const MAX_BACKUP_FILE_BYTES = 2 * 1024 * 1024;
 
 class StorageManager {
   static KEY = 'boki3_system_state_v6_200';
@@ -10288,10 +10507,135 @@ class StorageManager {
       appState.journalBankVersion = JOURNAL_BANK_VERSION;
       appState.tableBankVersion = TABLE_BANK_VERSION;
       localStorage.setItem(this.KEY, JSON.stringify(appState));
+      return true;
     } catch (error) {
       console.error('Failed to save state to LocalStorage.', error);
       alert('【警告】ブラウザの保存領域（LocalStorage）に空きがないため、学習履歴が更新できません。');
+      return false;
     }
+  }
+
+  static createBackupPayload(appState) {
+    const snapshot = JSON.parse(JSON.stringify(appState || this.getDefaultState()));
+    snapshot.schemaVersion = STORAGE_SCHEMA_VERSION;
+    snapshot.appVersion = APP_VERSION;
+    snapshot.journalBankVersion = JOURNAL_BANK_VERSION;
+    snapshot.tableBankVersion = TABLE_BANK_VERSION;
+    return {
+      productId: BACKUP_PRODUCT_ID,
+      backupFormatVersion: BACKUP_FORMAT_VERSION,
+      exportedAt: new Date().toISOString(),
+      appVersion: APP_VERSION,
+      schemaVersion: STORAGE_SCHEMA_VERSION,
+      journalBankVersion: JOURNAL_BANK_VERSION,
+      tableBankVersion: TABLE_BANK_VERSION,
+      journalBankHash: EXPECTED_QUESTION_BANK_HASH,
+      tableBankHash: EXPECTED_TABLE_BANK_HASH,
+      stateChecksum: stableBankHash(snapshot),
+      state: snapshot
+    };
+  }
+
+  static sanitizeBackupState(payload) {
+    const result = { ok: false, error: '', warnings: [], state: null, summary: null };
+    if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
+      result.error = 'バックアップJSONの形式が正しくありません。';
+      return result;
+    }
+
+    if (payload.productId != null && payload.productId !== BACKUP_PRODUCT_ID) {
+      result.error = '別のアプリで作成されたバックアップのため復元できません。';
+      return result;
+    }
+    if (payload.backupFormatVersion != null && payload.backupFormatVersion !== BACKUP_FORMAT_VERSION) {
+      result.error = `未対応のバックアップ形式です（format ${payload.backupFormatVersion}）。`;
+      return result;
+    }
+
+    const raw = payload.state && typeof payload.state === 'object' ? payload.state : payload;
+    if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
+      result.error = '学習履歴データが見つかりません。';
+      return result;
+    }
+    if (raw.schemaVersion !== STORAGE_SCHEMA_VERSION) {
+      result.error = `保存形式のバージョンが異なるため復元できません（schema ${raw.schemaVersion ?? '不明'}）。`;
+      return result;
+    }
+
+    const journalVersion = typeof raw.journalBankVersion === 'string' ? raw.journalBankVersion : raw.bankVersion;
+    if (journalVersion !== JOURNAL_BANK_VERSION) {
+      result.error = `仕訳問題データのバージョンが異なるため復元できません（${journalVersion || '不明'} → ${JOURNAL_BANK_VERSION}）。`;
+      return result;
+    }
+    if (raw.tableBankVersion !== TABLE_BANK_VERSION) {
+      result.error = `表問題データのバージョンが異なるため復元できません（${raw.tableBankVersion || '不明'} → ${TABLE_BANK_VERSION}）。`;
+      return result;
+    }
+
+    if (payload.stateChecksum != null && payload.state) {
+      const actual = stableBankHash(raw);
+      if (String(payload.stateChecksum) !== actual) {
+        result.error = 'バックアップのチェックサムが一致しません。ファイルが途中で変更・破損している可能性があります。';
+        return result;
+      }
+    }
+
+    const progress = {};
+    let droppedJournal = 0;
+    if (raw.progress && typeof raw.progress === 'object' && !Array.isArray(raw.progress)) {
+      Object.entries(raw.progress).forEach(([id, item]) => {
+        if (!VALID_QUESTION_IDS.has(id) || !item || typeof item !== 'object' || Array.isArray(item)) { droppedJournal += 1; return; }
+        const interval = Number.isFinite(item.intervalDays) && item.intervalDays >= 0 ? Math.floor(item.intervalDays) : 0;
+        const repetitionCount = Number.isFinite(item.repetitionCount) && item.repetitionCount >= 0 ? Math.floor(item.repetitionCount) : 0;
+        const easeFactor = Number.isFinite(item.easeFactor) && item.easeFactor >= 1.3 && item.easeFactor <= 5.0 ? Number(item.easeFactor.toFixed(2)) : 2.50;
+        const nextReviewDate = typeof item.nextReviewDate === 'string' && !Number.isNaN(Date.parse(item.nextReviewDate)) ? item.nextReviewDate : new Date().toISOString();
+        const lastReviewed = typeof item.lastReviewed === 'string' && !Number.isNaN(Date.parse(item.lastReviewed)) ? item.lastReviewed : new Date().toISOString();
+        progress[id] = { intervalDays: interval, repetitionCount, easeFactor, nextReviewDate, lastReviewed };
+      });
+    }
+
+    const tableProgress = {};
+    let droppedTable = 0;
+    if (raw.tableProgress && typeof raw.tableProgress === 'object' && !Array.isArray(raw.tableProgress)) {
+      Object.entries(raw.tableProgress).forEach(([id, item]) => {
+        if (!VALID_TABLE_IDS.has(id) || !item || typeof item !== 'object' || Array.isArray(item)) { droppedTable += 1; return; }
+        const attempts = Number.isFinite(item.attempts) && item.attempts >= 0 ? Math.floor(item.attempts) : 0;
+        const correct = item.correct === true;
+        const lastAttempt = typeof item.lastAttempt === 'string' && !Number.isNaN(Date.parse(item.lastAttempt)) ? item.lastAttempt : null;
+        const hasSrs = Number.isFinite(item.intervalDays) && Number.isFinite(item.repetitionCount) && Number.isFinite(item.easeFactor)
+          && typeof item.nextReviewDate === 'string' && !Number.isNaN(Date.parse(item.nextReviewDate));
+        tableProgress[id] = {
+          attempts,
+          correct,
+          lastResultCorrect: item.lastResultCorrect === true,
+          intervalDays: hasSrs ? Math.max(0, Math.floor(item.intervalDays)) : (attempts > 0 ? 1 : 0),
+          repetitionCount: hasSrs ? Math.max(0, Math.floor(item.repetitionCount)) : (correct ? 1 : 0),
+          easeFactor: hasSrs && item.easeFactor >= 1.3 && item.easeFactor <= 5.0 ? Number(item.easeFactor.toFixed(2)) : 2.50,
+          nextReviewDate: hasSrs ? item.nextReviewDate : (attempts > 0 ? this.addDaysIso(lastAttempt, 1) : new Date().toISOString()),
+          lastAttempt,
+          lastReviewed: typeof item.lastReviewed === 'string' && !Number.isNaN(Date.parse(item.lastReviewed)) ? item.lastReviewed : lastAttempt
+        };
+      });
+    }
+
+    if (droppedJournal || droppedTable) {
+      result.warnings.push(`不正または未知の履歴 ${droppedJournal + droppedTable} 件は取り込み対象から除外しました。`);
+    }
+
+    result.state = {
+      schemaVersion: STORAGE_SCHEMA_VERSION,
+      appVersion: APP_VERSION,
+      journalBankVersion: JOURNAL_BANK_VERSION,
+      tableBankVersion: TABLE_BANK_VERSION,
+      progress,
+      tableProgress,
+      streak: Number.isFinite(raw.streak) && raw.streak >= 0 ? Math.floor(raw.streak) : 0,
+      lastStudyDate: typeof raw.lastStudyDate === 'string' && !Number.isNaN(Date.parse(raw.lastStudyDate)) ? raw.lastStudyDate : null,
+      todayCount: Number.isFinite(raw.todayCount) && raw.todayCount >= 0 ? Math.floor(raw.todayCount) : 0
+    };
+    result.summary = { journalRecords: Object.keys(progress).length, tableRecords: Object.keys(tableProgress).length };
+    result.ok = true;
+    return result;
   }
 
   static getDefaultState() {
@@ -10305,14 +10649,25 @@ class StorageManager {
   }
 }
 
-const Runtime = {
-  state: StorageManager.loadState(),
-  mode: 'journal',
-  journal: { currentQuestionIndex: -1, currentErrorType: 'NONE', isAnswered: false, isEvalCompleted: false, lastFocusedInput: null },
-  table: { currentIndex: -1, answered: false, lastFocusedInput: null, viewMode: 'full', viewPreference: 'auto', segmentIndex: 0, hintLevel: 0, draft: {} },
-  calculator: { current: '0', prev: null, op: null, resetOnNext: false, error: false },
-  ui: { quizCardTemplate: null, journalResizeTimer: null, tableMediaQuery: null, tableMediaHandler: null }
-};
+function createRuntime() {
+  // script type="module" のため window グローバルではない。
+  // 値は更新可能なまま、状態オブジェクトの形だけを固定してタイポによる未知プロパティ追加を防ぐ。
+  const runtime = {
+    state: StorageManager.loadState(),
+    mode: 'journal',
+    journal: { currentQuestionIndex: -1, currentErrorType: 'NONE', isAnswered: false, isEvalCompleted: false, lastFocusedInput: null },
+    table: { currentIndex: -1, answered: false, lastFocusedInput: null, viewMode: 'full', viewPreference: 'auto', segmentIndex: 0, hintLevel: 0, draft: {} },
+    calculator: { current: '0', prev: null, op: null, resetOnNext: false, error: false },
+    ui: { quizCardTemplate: null, journalResizeTimer: null, journalRefitRaf: null, tableMediaQuery: null, tableMediaHandler: null, resizeObserver: null }
+  };
+  Object.seal(runtime.journal);
+  Object.seal(runtime.table);
+  Object.seal(runtime.calculator);
+  Object.seal(runtime.ui);
+  return Object.seal(runtime);
+}
+
+const Runtime = createRuntime();
 
 function getTodayString() {
   const d = new Date();
@@ -10437,18 +10792,28 @@ function getNextQuestionIndex() {
   return -1;
 }
 
+function renderCompletionMessage(quizCard) {
+  if (!quizCard) return;
+  const wrapper = document.createElement('div');
+  wrapper.className = 'completion-message';
+  const heading = document.createElement('h2');
+  heading.textContent = '本日の学習・復習はすべて完了しました。';
+  const body = document.createElement('p');
+  body.textContent = '復習期限が到来している問題、および未学習の問題は現在ありません。';
+  const note = document.createElement('p');
+  note.textContent = '次回アクセス時、復習期日が到来した問題が自動出題されます。';
+  note.style.color = 'var(--text-muted)';
+  note.style.fontSize = '0.85rem';
+  wrapper.append(heading, body, note);
+  quizCard.replaceChildren(wrapper);
+}
+
 function loadQuestion(index) {
   const quizCard = document.getElementById('quiz-card');
 
   if (index === -1) {
     Runtime.journal.currentQuestionIndex = -1;
-    quizCard.innerHTML = `
-      <div class="completion-message">
-        <h2>本日の学習・復習はすべて完了しました。</h2>
-        <p>復習期限が到来している問題、および未学習の問題は現在ありません。</p>
-        <p style="color: var(--text-muted); font-size: 0.85rem;">次回アクセス時、復習期日が到来した問題が自動出題されます。</p>
-      </div>
-    `;
+    renderCompletionMessage(quizCard);
     return;
   }
 
@@ -10483,7 +10848,7 @@ function loadQuestion(index) {
 
   const tbody = document.getElementById('journal-rows');
   if (tbody) {
-    tbody.innerHTML = '';
+    tbody.replaceChildren();
     const initialRows = Math.max(q.debit.length, q.credit.length, 3);
     for (let i = 0; i < initialRows; i++) {
       addJournalRow();
@@ -10548,9 +10913,10 @@ function fitJournalAmountFont(input) {
   }
 
   // 実幅に収まる最大フォントサイズを二分探索する。
+  // 11～16pxの5px幅なら7回で0.1px未満まで絞れるため、過剰なCanvas計測を避ける。
   let low = MIN_SIZE;
   let high = MAX_SIZE;
-  for (let i = 0; i < 14; i++) {
+  for (let i = 0; i < 7; i++) {
     const mid = (low + high) / 2;
     if (measureAt(mid) <= availableWidth) low = mid;
     else high = mid;
@@ -10565,23 +10931,41 @@ function refitAllJournalAmountFonts() {
   document.querySelectorAll('.grid-table .debit-amount, .grid-table .credit-amount').forEach(fitJournalAmountFont);
 }
 
+function scheduleJournalAmountRefit() {
+  if (Runtime.ui.journalRefitRaf != null) return;
+  Runtime.ui.journalRefitRaf = requestAnimationFrame(() => {
+    Runtime.ui.journalRefitRaf = null;
+    refitAllJournalAmountFonts();
+  });
+}
+
+function normalizeAmountText(value) {
+  return String(value ?? '')
+    .replace(/[０-９]/g, ch => String.fromCharCode(ch.charCodeAt(0) - 0xFEE0))
+    .replace(/，/g, ',');
+}
+
+function extractAmountDigits(value) {
+  return normalizeAmountText(value).replace(/[^0-9]/g, '');
+}
+
 function formatJournalAmountValue(value) {
-  const digits = String(value ?? '').replace(/[^0-9]/g, '');
+  const digits = extractAmountDigits(value);
   return digits.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
 function parseFormattedAmount(value) {
-  const normalized = String(value ?? '').replace(/,/g, '').trim();
-  if (normalized === '') return NaN;
+  const normalized = normalizeAmountText(value).replace(/,/g, '').trim();
+  if (!/^\d+$/.test(normalized)) return NaN;
   return Number(normalized);
 }
 
 function formatJournalAmountInput(input) {
   if (!input) return;
-  const raw = String(input.value || '');
-  const caret = Number.isInteger(input.selectionStart) ? input.selectionStart : raw.length;
-  const digitsBeforeCaret = raw.slice(0, caret).replace(/[^0-9]/g, '').length;
-  const formatted = formatJournalAmountValue(raw);
+  const rawOriginal = String(input.value || '');
+  const caret = Number.isInteger(input.selectionStart) ? input.selectionStart : rawOriginal.length;
+  const digitsBeforeCaret = extractAmountDigits(rawOriginal.slice(0, caret)).length;
+  const formatted = formatJournalAmountValue(rawOriginal);
   input.value = formatted;
 
   if (document.activeElement !== input || typeof input.setSelectionRange !== 'function') return;
@@ -10592,6 +10976,49 @@ function formatJournalAmountInput(input) {
     nextCaret++;
   }
   input.setSelectionRange(nextCaret, nextCaret);
+}
+
+// IME変換中のinputイベントでは整形せず、確定後に1回だけ正規化・3桁区切りを行う。
+// compositionend直後にinputが続くブラウザでは、その1回だけ重複処理を抑止する。
+function bindFormattedAmountInput(input, afterFormat = null) {
+  if (!input) return;
+
+  const apply = () => {
+    formatJournalAmountInput(input);
+    if (typeof afterFormat === 'function') afterFormat(input);
+  };
+
+  input.addEventListener('compositionstart', () => {
+    input._amountIsComposing = true;
+  });
+
+  input.addEventListener('compositionend', () => {
+    input._amountIsComposing = false;
+    input._skipNextAmountInput = true;
+    apply();
+    setTimeout(() => { input._skipNextAmountInput = false; }, 0);
+  });
+
+  input.addEventListener('input', event => {
+    if (event.isComposing || input._amountIsComposing) return;
+    if (input._skipNextAmountInput) {
+      input._skipNextAmountInput = false;
+      return;
+    }
+    apply();
+  });
+}
+
+function validateNumericInputUtilities() {
+  const issues = [];
+  if (normalizeAmountText('１２３，４５６') !== '123,456') issues.push('全角数字・全角カンマの正規化に失敗');
+  if (formatJournalAmountValue('１２３４５６７') !== '1,234,567') issues.push('全角数字の3桁区切りに失敗');
+  if (formatJournalAmountValue('1234567') !== '1,234,567') issues.push('半角数字の3桁区切りに失敗');
+  if (parseFormattedAmount('１，２３４') !== 1234) issues.push('全角数字の数値化に失敗');
+  if (parseFormattedAmount('1,234') !== 1234) issues.push('カンマ付き数値の数値化に失敗');
+  if (!Number.isNaN(parseFormattedAmount('12A34'))) issues.push('数字以外を含む値の拒否に失敗');
+  if (!Number.isNaN(parseFormattedAmount(''))) issues.push('空欄の拒否に失敗');
+  return issues;
 }
 
 // iPhone-first 4列仕訳テーブル行の生成（借方科目・金額・貸方科目・金額）
@@ -10679,8 +11106,8 @@ function renderJournalDifficulty(q) {
   const el = document.getElementById('problem-difficulty');
   if (!el) return;
   const level = getJournalDifficulty(q);
-  el.textContent = `難易度 ${'★'.repeat(level)}${'☆'.repeat(5 - level)}`;
-  el.setAttribute('aria-label', `問題の難易度 5段階中${level}`);
+  el.textContent = `難易度 ${'★'.repeat(level)}${'☆'.repeat(5 - level)}（教材内目安）`;
+  el.setAttribute('aria-label', `教材内の相対難易度 5段階中${level}`);
   el.title = 'この教材内での相対的な難易度の目安です。';
 }
 
@@ -10731,7 +11158,7 @@ function addJournalRow() {
     const input = document.createElement('input');
     input.type = 'text';
     input.inputMode = 'numeric';
-    input.pattern = '[0-9,]*';
+    input.pattern = '[0-9０-９,，]*';
     input.autocomplete = 'off';
     input.className = className;
     input.setAttribute('aria-label', label);
@@ -10739,10 +11166,12 @@ function addJournalRow() {
       Runtime.journal.lastFocusedInput = input;
       input.style.fontSize = '16px';
     });
-    input.addEventListener('blur', () => fitJournalAmountFont(input));
-    input.addEventListener('input', () => {
-      formatJournalAmountInput(input);
+    bindFormattedAmountInput(input, () => {
       // フォーカス中は16pxを維持。blur後に必要な場合だけ縮小する。
+      fitJournalAmountFont(input);
+    });
+    input.addEventListener('blur', () => {
+      if (!input._amountIsComposing) formatJournalAmountInput(input);
       fitJournalAmountFont(input);
     });
     input.addEventListener('keydown', event => handleJournalFieldKeydown(event, input));
@@ -10787,12 +11216,6 @@ function handleJournalFieldKeydown(event, control) {
     event.preventDefault();
     focusRelativeJournalField(control, event.shiftKey ? -1 : 1);
   }
-}
-
-function escapeHtml(str) {
-  return str.replace(/[&<>"']/g, function(m) {
-    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
-  });
 }
 
 function toggleHint() {
@@ -10992,6 +11415,49 @@ function renderJournalDiagnostic(diagnostic) {
   box.classList.add('visible');
 }
 
+function renderCorrectJournal(host, q) {
+  if (!host || !q) return;
+  const table = document.createElement('table');
+  table.className = 'correct-journal-table';
+  const thead = document.createElement('thead');
+  const headRow = document.createElement('tr');
+  const debitHead = document.createElement('th');
+  debitHead.className = 'th-debit';
+  debitHead.style.width = '50%';
+  debitHead.textContent = '借方';
+  const creditHead = document.createElement('th');
+  creditHead.className = 'th-credit';
+  creditHead.style.width = '50%';
+  creditHead.textContent = '貸方';
+  headRow.append(debitHead, creditHead);
+  thead.appendChild(headRow);
+
+  const tbody = document.createElement('tbody');
+  const row = document.createElement('tr');
+  const buildSideCell = entries => {
+    const td = document.createElement('td');
+    (entries || []).forEach(entry => {
+      const line = document.createElement('div');
+      line.style.display = 'flex';
+      line.style.justifyContent = 'space-between';
+      line.style.marginBottom = '2px';
+      line.style.gap = '8px';
+      const account = document.createElement('span');
+      account.textContent = String(entry.account || '');
+      const amount = document.createElement('span');
+      amount.style.fontWeight = '600';
+      amount.textContent = `￥${Number(entry.amount).toLocaleString('ja-JP')}`;
+      line.append(account, amount);
+      td.appendChild(line);
+    });
+    return td;
+  };
+  row.append(buildSideCell(q.debit), buildSideCell(q.credit));
+  tbody.appendChild(row);
+  table.append(thead, tbody);
+  host.replaceChildren(table);
+}
+
 function checkAnswer() {
   if (Runtime.journal.currentQuestionIndex === -1 || Runtime.journal.isAnswered) return;
 
@@ -11007,7 +11473,7 @@ function checkAnswer() {
     const parts = [];
     if (debitRes.duplicateAccounts.length) parts.push(`借方：${debitRes.duplicateAccounts.join('、')}`);
     if (creditRes.duplicateAccounts.length) parts.push(`貸方：${creditRes.duplicateAccounts.join('、')}`);
-    alert(`【本試験仕様】同じ勘定科目は借方・貸方それぞれ1回だけ使用します。\n重複：${parts.join(' / ')}`);
+    alert(`【ネット試験の注意事項】同じ勘定科目は借方・貸方それぞれ1回までです。\n重複：${parts.join(' / ')}`);
     return;
   }
 
@@ -11041,28 +11507,8 @@ function checkAnswer() {
     renderJournalDiagnostic(diagnostic);
   }
 
-  // 正解仕訳の表描画（常に表示）
-  if (correctJournalContent) {
-    const debitHtml = q.debit.map(e => `<div style="display:flex; justify-content:space-between; margin-bottom:2px; gap:8px;"><span>${escapeHtml(e.account)}</span><span style="font-weight:600;">￥${e.amount.toLocaleString()}</span></div>`).join('');
-    const creditHtml = q.credit.map(e => `<div style="display:flex; justify-content:space-between; margin-bottom:2px; gap:8px;"><span>${escapeHtml(e.account)}</span><span style="font-weight:600;">￥${e.amount.toLocaleString()}</span></div>`).join('');
-    
-    correctJournalContent.innerHTML = `
-      <table class="correct-journal-table">
-        <thead>
-          <tr>
-            <th class="th-debit" style="width: 50%;">借方</th>
-            <th class="th-credit" style="width: 50%;">貸方</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>${debitHtml}</td>
-            <td>${creditHtml}</td>
-          </tr>
-        </tbody>
-      </table>
-    `;
-  }
+  // 正解仕訳はDOM APIで描画し、教材データをHTML文字列として解釈させない。
+  if (correctJournalContent) renderCorrectJournal(correctJournalContent, q);
 
   renderScenarioGuide(q);
 }
@@ -11081,7 +11527,7 @@ const ACCOUNT_CLASSIFICATIONS = Object.freeze({
   '電子記録債務':'負債','預り金':'負債',
   '利益準備金':'純資産','資本金':'純資産','繰越利益剰余金':'純資産',
   '償却債権取立益':'収益','受取利息':'収益','受取地代':'収益','受取家賃':'収益','受取手数料':'収益','固定資産売却益':'収益',
-  '売上':'収益','貸倒引当金戻入':'収益','雑収入':'収益',
+  '売上':'収益','貸倒引当金戻入':'収益','雑収入':'収益','雑益':'収益',
   '仕入':'費用','保管費':'費用','修繕費':'費用','固定資産売却損':'費用','広告宣伝費':'費用','支払保険料':'費用','支払利息':'費用',
   '支払地代':'費用','支払家賃':'費用','支払手数料':'費用','旅費交通費':'費用','水道光熱費':'費用','法人税、住民税及び事業税':'費用',
   '法定福利費':'費用','消耗品費':'費用','減価償却費':'費用','発送費':'費用','租税公課':'費用','給料':'費用','諸会費':'費用',
@@ -11121,7 +11567,7 @@ function parseExplanationSections(explanation) {
   return result;
 }
 
-// === v9.4 解説の安全化 ===
+// === v9.8 解説の安全化・外部参照方針・整合性監査 ===
 // 個別問題の場面説明は、QUESTION_DATABASE に問題ごとに登録済みの
 // 【考え方】と hint だけを使用する。問題文・カテゴリーのキーワードから
 // 場面を推測する処理は行わない。これにより、返金を売上処理と誤認する等の
@@ -11141,22 +11587,219 @@ function getAuditedCueNotes(q) {
   return hint ? [hint] : [];
 }
 
+// v9.8: 日本商工会議所の公開資料を出題範囲・勘定科目・ネット試験公開仕様の一次資料とする。
+// マネーフォワード クラウドとFunda簿記は、説明順序・取引パターン・混同しやすい科目の区別を補助的に照合する。
+// 外部記事の記述を無批判に正答へ採用せず、問題条件・正答仕訳・解説の整合性を個別に確認する。文章は転載しない。
+// 代表的な公開ページを論点横断で参照しているが、全240問が各ページと1対1で対応するという意味ではない。
+const CONTENT_REFERENCE_POLICY = Object.freeze({
+  verifiedAt: '2026-08-15',
+  text: '2026年度の出題範囲、主要な標準・許容勘定科目、ネット試験の公開仕様は、日本商工会議所の資料を一次資料として確認しています。\nマネーフォワード クラウドとFunda簿記は、初学者向けの説明順序、取引パターンの捉え方、似た勘定科目の区別を論点別に補助照合し、本教材用の文章へ独自に再構成しています。各記事の一文をそのまま正答根拠にはせず、問題条件・正答仕訳・解説の整合性と矛盾する記述は採用しません。\n外部記事の文章は転載していません。また、下記は代表的な参照ページであり、全240問が各外部ページと1対1で対応しているという意味ではありません。'
+});
+
+const CONTENT_REFERENCE_CATALOG = Object.freeze([
+  { id:'jcci-scope', publisher:'日本商工会議所', title:'簿記 出題区分表', role:'2026年度の出題範囲確認', url:'https://www.kentei.ne.jp/bookkeeping/exam-list' },
+  { id:'jcci-net', publisher:'日本商工会議所', title:'日商簿記検定試験（2級・3級等）ネット試験について', role:'ネット試験の公開仕様確認', url:'https://www.kentei.ne.jp/33013' },
+  { id:'jcci-accounts', publisher:'日本商工会議所', title:'商業簿記標準・許容勘定科目表（2022年度適用）', role:'3級の主要な標準・許容勘定科目の確認', url:'https://www.kentei.ne.jp/wp/wp-content/uploads/2021/12/2022_kamoku.pdf' },
+
+  { id:'mf-prepaid', publisher:'マネーフォワード クラウド', title:'前払金の仕訳例と前払費用との使い分け', role:'前払金・前払費用の区別', url:'https://biz.moneyforward.com/accounting/basic/47073/' },
+  { id:'mf-unpaid', publisher:'マネーフォワード クラウド', title:'未払金とは？未払費用や買掛金との違いや決算時に未払計上する仕訳例を解説', role:'未払金・未払費用・買掛金の区別', url:'https://biz.moneyforward.com/accounting/basic/48133/' },
+  { id:'mf-cash-short', publisher:'マネーフォワード クラウド', title:'現金過不足とは？勘定科目・仕訳と決算整理までわかりやすく解説', role:'現金過不足の処理', url:'https://biz.moneyforward.com/accounting/basic/24305/' },
+  { id:'mf-consumption-tax', publisher:'マネーフォワード クラウド', title:'仮払消費税と仮受消費税とは？消費税の仕訳の基本', role:'税抜方式の消費税処理', url:'https://biz.moneyforward.com/accounting/basic/40364/' },
+  { id:'mf-fixed-assets', publisher:'マネーフォワード クラウド', title:'固定資産売却益とは｜固定資産売却の際は減価償却費をどう処理すべき？', role:'固定資産売却・帳簿価額・売却損益', url:'https://biz.moneyforward.com/accounting/basic/60877/' },
+  { id:'mf-capital', publisher:'マネーフォワード クラウド', title:'資本金の仕訳や勘定科目は？ケース別の例でわかりやすく解説', role:'設立・増資の基本処理', url:'https://biz.moneyforward.com/accounting/basic/63707/' },
+  { id:'mf-dividend', publisher:'マネーフォワード クラウド', title:'未払配当金の仕訳・勘定科目を解説！', role:'配当決議・未払配当金・利益準備金', url:'https://biz.moneyforward.com/accounting/basic/58141/' },
+  { id:'mf-allowance', publisher:'マネーフォワード クラウド', title:'貸倒引当金とは？仕訳処理や計算方法をわかりやすく解説', role:'貸倒引当金・差額補充法・貸倒損失との区別', url:'https://biz.moneyforward.com/accounting/basic/44259/' },
+  { id:'mf-corporate-tax', publisher:'マネーフォワード クラウド', title:'仮払法人税等とは？計上の流れや仕訳まで解説', role:'法人税等の中間納付・確定時の仮払法人税等と未払法人税等', url:'https://biz.moneyforward.com/accounting/basic/66002/' },
+
+  { id:'funda-course', publisher:'Funda簿記', title:'簿記3級コース', role:'3級論点全体・決算整理・表問題の構成確認', url:'https://boki.funda.jp/course/plan-level3' },
+  { id:'funda-ar-ap', publisher:'Funda簿記', title:'未払金・未収入金とは？簿記の勘定科目を仕訳事例を用いて徹底解説', role:'買掛金・未払金、売掛金・未収入金の区別', url:'https://boki.funda.jp/blog/article/accounts-payable-accounts-receivable' },
+  { id:'funda-advance', publisher:'Funda簿記', title:'前払金とは？簿記の勘定科目を仕訳事例を用いてわかりやすく解説', role:'前払金・手付金の取引パターン', url:'https://boki.funda.jp/blog/article/advance-payment' },
+  { id:'funda-prepaid', publisher:'Funda簿記', title:'前払費用とは？決算整理仕訳で頻出の勘定科目をわかりやすく解説！', role:'経過勘定・決算整理・再振替', url:'https://boki.funda.jp/blog/article/prepaid-expenses' },
+  { id:'funda-allowance', publisher:'Funda簿記', title:'【簿記3級・第3問】貸倒引当金の決算整理仕訳をわかりやすく解説', role:'差額補充法・貸倒引当金', url:'https://boki.funda.jp/blog/article/allowance-for-doubtful-accounts-test-3' },
+  { id:'funda-cash-short', publisher:'Funda簿記', title:'【簿記3級】現金過不足の仕訳問題をわかりやすく解説', role:'問題文から論点・取引パターンを読む手順', url:'https://boki.funda.jp/blog/article/excess-or-deficiency-of-cash-test' },
+  { id:'funda-consumption-tax', publisher:'Funda簿記', title:'【簿記3級】消費税の仕訳問題をわかりやすく解説', role:'仮払消費税・仮受消費税・未払消費税', url:'https://boki.funda.jp/blog/article/consumption-tax-test' },
+  { id:'funda-depreciation', publisher:'Funda簿記', title:'【簿記3級・第3問】減価償却の決算整理仕訳をわかりやすく解説', role:'定額法・間接法・減価償却累計額', url:'https://boki.funda.jp/blog/article/depreciationt-test-3' },
+  { id:'funda-income-tax', publisher:'Funda簿記', title:'【簿記3級】法人税等の仕訳問題をわかりやすく解説', role:'中間納付・確定・納付の取引パターン', url:'https://boki.funda.jp/blog/article/income-tax-test' },
+  { id:'funda-capital', publisher:'Funda簿記', title:'【簿記3級】株式の発行の仕訳問題をわかりやすく解説', role:'設立・増資の仕訳', url:'https://boki.funda.jp/blog/article/issuance-of-shares-test' },
+  { id:'funda-dividend', publisher:'Funda簿記', title:'【簿記3級】剰余金の配当・処分の仕訳問題をわかりやすく解説', role:'配当決議・利益準備金・支払い', url:'https://boki.funda.jp/blog/article/dividend-of-surplus-test' }
+]);
+
+function validateContentReferenceCatalog() {
+  const issues = [];
+  const ids = new Set();
+  const urls = new Set();
+  const allowedHosts = new Set(['www.kentei.ne.jp', 'biz.moneyforward.com', 'boki.funda.jp']);
+  const publishers = new Set();
+  CONTENT_REFERENCE_CATALOG.forEach(source => {
+    if (!source || typeof source !== 'object') { issues.push('参照資料に不正な要素があります'); return; }
+    ['id','publisher','title','role','url'].forEach(key => {
+      if (typeof source[key] !== 'string' || !source[key].trim()) issues.push(`参照資料 ${source.id || '(idなし)'}: ${key} が空です`);
+    });
+    if (ids.has(source.id)) issues.push(`参照資料ID重複: ${source.id}`);
+    ids.add(source.id);
+    if (urls.has(source.url)) issues.push(`参照資料URL重複: ${source.url}`);
+    urls.add(source.url);
+    publishers.add(source.publisher);
+    try {
+      const url = new URL(source.url);
+      if (url.protocol !== 'https:') issues.push(`参照資料URLがHTTPSではありません: ${source.id}`);
+      if (!allowedHosts.has(url.hostname)) issues.push(`想定外ドメインの参照資料です: ${source.id} ${url.hostname}`);
+    } catch {
+      issues.push(`参照資料URLが不正です: ${source.id}`);
+    }
+  });
+  ['日本商工会議所','マネーフォワード クラウド','Funda簿記'].forEach(publisher => {
+    if (!publishers.has(publisher)) issues.push(`参照元が不足しています: ${publisher}`);
+  });
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(CONTENT_REFERENCE_POLICY.verifiedAt)) issues.push('参照資料確認日の形式が不正です');
+  if (!CONTENT_REFERENCE_POLICY.text.includes('1対1')) issues.push('外部資料との対応範囲に関する注意書きがありません');
+  if (!CONTENT_REFERENCE_POLICY.text.includes('転載していません')) issues.push('外部記事を転載しない方針が明記されていません');
+  if (!CONTENT_REFERENCE_POLICY.text.includes('一次資料')) issues.push('日本商工会議所を一次資料とする方針が明記されていません');
+  if (!CONTENT_REFERENCE_POLICY.text.includes('矛盾する記述は採用しません')) issues.push('補助参照資料を無批判に採用しない方針が明記されていません');
+  return issues;
+}
+
+function renderContentReferencePolicy() {
+  const policy = document.getElementById('explanation-reference-policy');
+  const host = document.getElementById('explanation-reference-list');
+  if (!policy || !host) return;
+  policy.textContent = `本版での公開情報確認日：${CONTENT_REFERENCE_POLICY.verifiedAt}\n${CONTENT_REFERENCE_POLICY.text}`;
+  host.replaceChildren();
+
+  const grouped = new Map();
+  CONTENT_REFERENCE_CATALOG.forEach(source => {
+    if (!grouped.has(source.publisher)) grouped.set(source.publisher, []);
+    grouped.get(source.publisher).push(source);
+  });
+
+  grouped.forEach((sources, publisher) => {
+    const section = document.createElement('section');
+    section.className = 'reference-source-group';
+    const title = document.createElement('div');
+    title.className = 'reference-source-group-title';
+    title.textContent = publisher;
+    const list = document.createElement('ul');
+    list.className = 'reference-source-list';
+    sources.forEach(source => {
+      const li = document.createElement('li');
+      const link = document.createElement('a');
+      link.href = source.url;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      link.textContent = source.title;
+      const role = document.createElement('span');
+      role.className = 'reference-source-role';
+      role.textContent = ` — ${source.role}`;
+      li.append(link, role);
+      list.appendChild(li);
+    });
+    section.append(title, list);
+    host.appendChild(section);
+  });
+}
+
+const CONFUSION_NOTE_BY_ACCOUNT = Object.freeze({
+  '売掛金': '売掛金は、商品を販売して代金を後で受け取るときの未回収額です。固定資産の売却など商品売買以外の未回収額は未収入金と区別します。',
+  '未収入金': '未収入金は、固定資産の売却など商品売買以外で生じた未回収額です。商品の掛売上なら売掛金、利息の期間経過による未収額なら未収利息などと区別します。',
+  '買掛金': '買掛金は、商品を仕入れて代金を後で支払うときの未払額です。固定資産など商品以外の購入代金なら未払金と区別します。',
+  '未払金': '未払金は、固定資産の購入など商品仕入以外で生じた未払額です。商品の掛仕入は買掛金、利息の期間経過による未払額なら未払利息などと区別します。',
+  '前払金': '前払金は、商品などを受け取る前に支払った内金・手付金です。保険料など継続的な役務の次期分を繰り延べる前払保険料等とは、発生場面が異なります。',
+  '前払保険料': '前払保険料は、支払済み保険料のうち次期分を資産へ繰り延べた金額です。商品などの内金・手付金を表す前払金とは区別します。',
+  '前受金': '前受金は、商品を引き渡す前に受け取った内金・手付金です。家賃など継続的な収益の次期分を繰り延べる前受家賃等とは区別します。',
+  '前受家賃': '前受家賃は、受取済み家賃のうち次期分を負債へ繰り延べた金額です。商品の手付金を表す前受金とは区別します。',
+  '未収利息': '未収利息は、期間の経過により当期に発生した利息のうち、まだ受け取っていない金額です。固定資産売却代金などの未回収額を表す未収入金とは区別します。',
+  '未払利息': '未払利息は、期間の経過により当期に発生した利息のうち、まだ支払っていない金額です。固定資産購入代金などの未払額を表す未払金とは区別します。',
+  '立替金': '立替金は、本来は相手が負担する金額を会社が一時的に支払ったときに使います。会社自身の費用や、用途未確定の仮払金とは分けます。',
+  '仮払金': '仮払金は、用途や最終金額がまだ確定していない概算払いを一時処理する科目です。相手負担分を代わりに払う立替金とは意味が異なります。',
+  '貸倒引当金繰入': '貸倒引当金繰入は、決算で将来の貸倒れを見積もって貸倒引当金を増やすときの費用です。債権が実際に回収不能となった時点で使う貸倒損失とは区別します。',
+  '貸倒引当金': '貸倒引当金は、売掛金などの債権に対して見積もった将来の回収不能額を表す資産の控除項目です。増加は貸方、取り崩しは借方で処理します。',
+  '貸倒引当金戻入': '差額補充法で必要額より既存の貸倒引当金残高が多い場合は、超過分を貸倒引当金戻入として処理します。貸倒引当金そのものは借方で減少します。',
+  '貸倒損失': '貸倒損失は、債権が実際に回収不能となったときに使う費用です。当期発生債権の貸倒れは原則として全額を貸倒損失とし、前期以前発生の債権では貸倒引当金を充当して不足する部分を貸倒損失とします。',
+  '現金過不足': '現金過不足は、帳簿上の現金残高と実際有高の原因不明の差額を一時的に記録する仮勘定です。決算まで原因不明なら、現金不足は雑損失、現金超過は雑収入へ振り替えます。',
+  '当座借越': '当座借越は、当座預金の残高を超えて支払った部分に生じる銀行への債務です。決算で当座預金勘定に貸方残高がある場合は、負債の当座借越へ振り替えます。',
+  '仮払消費税': '税抜方式では、仕入や経費に伴って支払った消費税を仮払消費税として資産計上します。決算では仮受消費税と相殺して納付額を求めます。',
+  '仮受消費税': '税抜方式では、売上などで受け取った消費税を仮受消費税として負債計上します。決算では仮払消費税と相殺して納付額を求めます。',
+  '未払消費税': '税抜方式の決算で、仮受消費税が仮払消費税を上回る場合、その差額は将来納付する負債として未払消費税に計上します。',
+  '仮払法人税等': '法人税等の中間納付額は、決算で確定税額と精算するまで仮払法人税等という資産として処理します。',
+  '未払法人税等': '決算で法人税等の確定額から中間納付額を差し引き、まだ納付していない残額は未払法人税等という負債として処理します。',
+  '減価償却費': '減価償却費は、固定資産の取得原価を使用期間にわたって費用配分するための費用です。間接法では固定資産を直接減らさず、減価償却累計額を貸方に計上します。'
+
+});
+
 function buildConfusionNote(q) {
-  const accounts = new Set([...(q?.debit || []), ...(q?.credit || [])].map(e => e.account));
-  const notes = [];
-  if (accounts.has('売掛金')) notes.push('売掛金は、商品を販売して代金を後で受け取るときの未回収額です。固定資産の売却など商品売買以外の未回収額は未収入金と区別します。');
-  if (accounts.has('未収入金')) notes.push('未収入金は、固定資産の売却など商品売買以外で生じた未回収額です。商品の掛売上なら売掛金、継続的なサービスの期間対応なら未収収益と区別します。');
-  if (accounts.has('買掛金')) notes.push('買掛金は、商品を仕入れて代金を後で支払うときの未払額です。固定資産など商品以外の購入代金なら未払金と区別します。');
-  if (accounts.has('未払金')) notes.push('未払金は、固定資産の購入など商品仕入以外で生じた未払額です。商品の掛仕入は買掛金、継続的なサービスの当期未払分は未払費用と区別します。');
-  if (accounts.has('前払金')) notes.push('前払金は、商品などを受け取る前に支払った内金・手付金です。時間の経過に応じて費用になるサービスの次期分を繰り延べる前払費用とは、発生場面が異なります。');
-  if (accounts.has('前払費用')) notes.push('前払費用は、支払済みの継続的なサービス費用のうち次期分を資産へ繰り延べる決算整理です。商品などの内金を表す前払金とは区別します。');
-  if (accounts.has('前受金')) notes.push('前受金は、商品を引き渡す前に受け取った内金・手付金です。継続的なサービス収益の次期分を繰り延べる前受収益とは区別します。');
-  if (accounts.has('前受収益')) notes.push('前受収益は、受取済みの継続的なサービス収益のうち次期分を負債へ繰り延べる決算整理です。商品の手付金を表す前受金とは区別します。');
-  if (accounts.has('立替金')) notes.push('立替金は、本来は相手が負担する金額を会社が一時的に支払ったときに使います。会社自身の費用や、用途未確定の仮払金とは分けます。');
-  if (accounts.has('仮払金')) notes.push('仮払金は、用途や最終金額がまだ確定していない概算払いを一時処理する科目です。相手負担分を代わりに払う立替金とは意味が異なります。');
-  if (accounts.has('貸倒引当金繰入')) notes.push('貸倒引当金繰入は、決算で将来の貸倒れを見積もるための費用です。債権が実際に回収不能になった時点で使う貸倒損失とは区別します。');
-  if (accounts.has('貸倒損失')) notes.push('貸倒損失は、債権が実際に回収不能になったときの損失です。決算で将来の回収不能を見積もる貸倒引当金繰入とは区別します。');
-  return notes.join('\n');
+  const accounts = [...new Set([...(q?.debit || []), ...(q?.credit || [])].map(entry => entry.account))];
+  return accounts.map(account => CONFUSION_NOTE_BY_ACCOUNT[account]).filter(Boolean).join('\n');
+}
+
+function validateConfusionNoteCatalog() {
+  const issues = [];
+  Object.entries(CONFUSION_NOTE_BY_ACCOUNT).forEach(([account, note]) => {
+    if (!JOURNAL_ACCOUNT_MASTER.includes(account)) issues.push(`未使用の勘定科目に混同防止ノートがあります: ${account}`);
+    if (typeof note !== 'string' || !note.trim()) issues.push(`混同防止ノートが空です: ${account}`);
+  });
+  return issues;
+}
+
+// 公開資料と照合した高リスク論点について、正答の基本形が将来の編集で崩れていないか確認する。
+const SOURCE_AUDITED_CORE_CASES = Object.freeze([
+  { id:'Q002', topic:'前払金・買掛金・立替金', debit:[['仕入',300000],['立替金',3000]], credit:[['前払金',50000],['買掛金',250000],['現金',3000]] },
+  { id:'Q006', topic:'前受金', debit:[['現金',60000]], credit:[['前受金',60000]] },
+  { id:'Q034', topic:'当座借越の決算振替', debit:[['当座預金',40000]], credit:[['当座借越',40000]] },
+  { id:'Q062', topic:'固定資産売却・未収入金', debit:[['未収入金',350000],['備品減価償却累計額',600000],['固定資産売却損',50000]], credit:[['備品',1000000]] },
+  { id:'Q081', topic:'貸倒引当金・差額補充法', debit:[['貸倒引当金繰入',25000]], credit:[['貸倒引当金',25000]] },
+  { id:'Q083', topic:'前期発生債権の貸倒れ', debit:[['貸倒引当金',30000],['貸倒損失',20000]], credit:[['売掛金',50000]] },
+  { id:'Q084', topic:'当期発生債権の貸倒れ', debit:[['貸倒損失',40000]], credit:[['売掛金',40000]] },
+  { id:'Q085', topic:'前期以前に貸倒処理した債権の回収', debit:[['現金',20000]], credit:[['償却債権取立益',20000]] },
+  { id:'Q090', topic:'前払費用の決算整理', debit:[['前払保険料',80000]], credit:[['支払保険料',80000]] },
+  { id:'Q091', topic:'前払費用の再振替', debit:[['支払保険料',80000]], credit:[['前払保険料',80000]] },
+  { id:'Q096', topic:'未収収益の再振替', debit:[['受取利息',15000]], credit:[['未収利息',15000]] },
+  { id:'Q104', topic:'消費税・税抜方式の決算', debit:[['仮受消費税',350000]], credit:[['仮払消費税',280000],['未払消費税',70000]] },
+  { id:'Q106', topic:'法人税等の確定・中間納付なし', debit:[['法人税、住民税及び事業税',150000]], credit:[['未払法人税等',150000]] },
+  { id:'Q107', topic:'法人税等の中間納付', debit:[['仮払法人税等',60000]], credit:[['普通預金',60000]] },
+  { id:'Q108', topic:'法人税等の確定・中間納付あり', debit:[['法人税、住民税及び事業税',150000]], credit:[['仮払法人税等',60000],['未払法人税等',90000]] },
+  { id:'Q112', topic:'株式会社の設立・資本金', debit:[['当座預金',5000000]], credit:[['資本金',5000000]] },
+  { id:'Q113', topic:'剰余金の配当・利益準備金', debit:[['繰越利益剰余金',220000]], credit:[['未払配当金',200000],['利益準備金',20000]] },
+  { id:'Q150', topic:'当座借越の期末振替', debit:[['当座預金',70000]], credit:[['当座借越',70000]] },
+  { id:'Q162', topic:'複数口座の当座借越振替', debit:[['当座預金',100000]], credit:[['当座借越',100000]] }
+]);
+
+function validateSourceAuditedCoreCases() {
+  const issues = [];
+  const normalize = entries => (entries || []).map(entry => [entry.account, Number(entry.amount)]).sort((a,b) => a[0].localeCompare(b[0], 'ja') || a[1]-b[1]);
+  const expectedNormalize = entries => (entries || []).map(([account, amount]) => [account, Number(amount)]).sort((a,b) => a[0].localeCompare(b[0], 'ja') || a[1]-b[1]);
+  const same = (a,b) => JSON.stringify(a) === JSON.stringify(b);
+  SOURCE_AUDITED_CORE_CASES.forEach(test => {
+    const q = QUESTION_DATABASE.find(item => item.id === test.id);
+    if (!q) { issues.push(`${test.id}: 重点監査対象の問題がありません`); return; }
+    if (!same(normalize(q.debit), expectedNormalize(test.debit))) issues.push(`${test.id}: ${test.topic} の借方が監査済み基本形と一致しません`);
+    if (!same(normalize(q.credit), expectedNormalize(test.credit))) issues.push(`${test.id}: ${test.topic} の貸方が監査済み基本形と一致しません`);
+  });
+  return issues;
+}
+
+// 以前に誤解が生じやすかった論点は、正答だけでなく説明文の要点も回帰検査する。
+const SOURCE_AUDITED_TEXT_EXPECTATIONS = Object.freeze([
+  { id:'Q034', mustInclude:['貸方残高','負債である当座借越'], mustNotInclude:['当座預金」40,000円（資産の増加）'] },
+  { id:'Q096', mustInclude:['期首に再振替','前期末の決算整理を取り消します'], mustNotInclude:['前期末の逆仕訳'] },
+  { id:'Q106', mustInclude:['確定額','中間納付はない'], mustNotInclude:['見積もられた'] },
+  { id:'Q150', mustInclude:['貸方残高','当座借越へ振り替え'], mustNotInclude:['当座預金」70,000円（資産の増加）'] },
+  { id:'Q162', mustInclude:['貸方残高だけ','当座借越へ振り替え'], mustNotInclude:['当座預金」100,000円（資産の増加）'] }
+]);
+
+function validateSourceAuditedTextExpectations() {
+  const issues = [];
+  SOURCE_AUDITED_TEXT_EXPECTATIONS.forEach(test => {
+    const q = QUESTION_DATABASE.find(item => item.id === test.id);
+    if (!q) { issues.push(`${test.id}: 説明文監査対象の問題がありません`); return; }
+    const text = `${q.category || ''}\n${q.statement || ''}\n${q.hint || ''}\n${q.explanation || ''}`;
+    (test.mustInclude || []).forEach(token => {
+      if (!text.includes(token)) issues.push(`${test.id}: 説明文に監査済み要点がありません「${token}」`);
+    });
+    (test.mustNotInclude || []).forEach(token => {
+      if (text.includes(token)) issues.push(`${test.id}: 誤解を招く旧表現が再混入しています「${token}」`);
+    });
+  });
+  return issues;
 }
 
 function validateLearningSupport() {
@@ -11237,11 +11880,53 @@ function validateExplanationStructure() {
   return issues;
 }
 
+function validateExplanationAnswerAlignment() {
+  const issues = [];
+  const knownAccounts = new Set(JOURNAL_ACCOUNT_MASTER);
+
+  QUESTION_DATABASE.forEach(q => {
+    const sections = parseExplanationSections(q.explanation);
+    const reason = String(sections.reason || '');
+    const creditMarker = reason.indexOf('貸方は');
+    if (creditMarker < 0) {
+      issues.push(`${q.id}: 【仕訳の理由】に貸方区分がありません`);
+      return;
+    }
+
+    const debitPart = reason.slice(0, creditMarker);
+    const creditPart = reason.slice(creditMarker);
+    const answerAccounts = new Set([...(q.debit || []), ...(q.credit || [])].map(entry => entry.account));
+
+    const verifySide = (entries, part, label) => {
+      entries.forEach(entry => {
+        const amountText = Number(entry.amount).toLocaleString('ja-JP');
+        const token = `「${entry.account}」${amountText}円`;
+        if (!part.includes(token)) {
+          issues.push(`${q.id}: ${label}の解説と正答が一致しません ${entry.account} ${amountText}円`);
+        }
+      });
+    };
+
+    verifySide(q.debit || [], debitPart, '借方');
+    verifySide(q.credit || [], creditPart, '貸方');
+
+    const quotedAccounts = [...reason.matchAll(/「([^」]+)」/g)].map(match => match[1]);
+    quotedAccounts.forEach(account => {
+      if (knownAccounts.has(account) && !answerAccounts.has(account)) {
+        issues.push(`${q.id}: 【仕訳の理由】に正答外の勘定科目があります ${account}`);
+      }
+    });
+  });
+
+  return issues;
+}
+
 function validateAccountClassifications() {
+  // 正答科目だけでなく、学習時に表示され得る全候補科目を検査する。
   const missing = new Set();
-  QUESTION_DATABASE.forEach(q => [...q.debit, ...q.credit].forEach(entry => {
-    if (!ACCOUNT_CLASSIFICATIONS[entry.account]) missing.add(entry.account);
-  }));
+  JOURNAL_ACCOUNT_MASTER.forEach(account => {
+    if (!ACCOUNT_CLASSIFICATIONS[account]) missing.add(account);
+  });
   return [...missing].sort();
 }
 
@@ -11421,7 +12106,7 @@ function renderTableQuestionTable(q) {
       const cell = (row.cells || {})[column.key] || { given: '—' };
       if (Object.prototype.hasOwnProperty.call(cell, 'answer')) {
         const input = document.createElement('input');
-        input.type = 'text'; input.inputMode = 'numeric'; input.pattern = '[0-9,]*'; input.autocomplete = 'off';
+        input.type = 'text'; input.inputMode = 'numeric'; input.pattern = '[0-9０-９,，]*'; input.autocomplete = 'off';
         input.className = 'table-answer-input'; input.dataset.row = String(rowIndex); input.dataset.key = column.key; input.dataset.answer = String(cell.answer);
         const key = tableDraftKey(rowIndex, column.key); input.value = formatJournalAmountValue(Runtime.table.draft[key] ?? '');
         input.disabled = Runtime.table.answered;
@@ -11430,8 +12115,11 @@ function renderTableQuestionTable(q) {
           input.classList.add(ok ? 'cell-correct' : 'cell-wrong');
         }
         input.addEventListener('focus', () => { Runtime.table.lastFocusedInput = input; });
-        input.addEventListener('input', () => {
-          formatJournalAmountInput(input);
+        bindFormattedAmountInput(input, () => {
+          Runtime.table.draft[key] = input.value;
+        });
+        input.addEventListener('blur', () => {
+          if (!input._amountIsComposing) formatJournalAmountInput(input);
           Runtime.table.draft[key] = input.value;
         });
         input.addEventListener('keydown', event => handleTableInputKeydown(event, input));
@@ -11773,11 +12461,113 @@ function applyCalcToJournal(side) {
   }
 }
 
+function setBackupStatus(message, type = '') {
+  const status = document.getElementById('backup-status');
+  if (!status) return;
+  status.textContent = String(message || '');
+  status.className = `backup-status${type ? ` ${type}` : ''}`;
+}
+
+function backupFilename(now = new Date()) {
+  const pad = n => String(n).padStart(2, '0');
+  return `boki3-progress-${APP_VERSION}-${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}.json`;
+}
+
+function exportProgressBackup() {
+  try {
+    const payload = StorageManager.createBackupPayload(Runtime.state);
+    const text = JSON.stringify(payload, null, 2);
+    const blob = new Blob([text], { type: 'application/json;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = backupFilename();
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    const journalRecords = Object.keys(Runtime.state.progress || {}).length;
+    const tableRecords = Object.keys(Runtime.state.tableProgress || {}).length;
+    setBackupStatus(`バックアップを作成しました（仕訳履歴 ${journalRecords}件・表履歴 ${tableRecords}件）。`, 'success');
+  } catch (error) {
+    console.error('Backup export failed.', error);
+    setBackupStatus('バックアップファイルを作成できませんでした。', 'error');
+  }
+}
+
+function chooseProgressRestoreFile() {
+  const input = document.getElementById('progress-import-input');
+  if (!input) return;
+  input.value = '';
+  input.click();
+}
+
+function readTextFile(file) {
+  if (file && typeof file.text === 'function') return file.text();
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result || ''));
+    reader.onerror = () => reject(reader.error || new Error('File read failed'));
+    reader.readAsText(file, 'utf-8');
+  });
+}
+
+async function handleProgressRestoreFile(event) {
+  const input = event.currentTarget;
+  const file = input?.files?.[0];
+  if (!file) return;
+  if (file.size > MAX_BACKUP_FILE_BYTES) {
+    setBackupStatus(`ファイルが大きすぎます。${Math.floor(MAX_BACKUP_FILE_BYTES / 1024 / 1024)}MB以下のJSONを選択してください。`, 'error');
+    input.value = '';
+    return;
+  }
+
+  try {
+    const text = await readTextFile(file);
+    const payload = JSON.parse(text);
+    const checked = StorageManager.sanitizeBackupState(payload);
+    if (!checked.ok) {
+      setBackupStatus(`復元できません：${checked.error}`, 'error');
+      input.value = '';
+      return;
+    }
+
+    const summary = checked.summary || { journalRecords: 0, tableRecords: 0 };
+    const warningText = checked.warnings.length ? `\n${checked.warnings.join('\n')}` : '';
+    const confirmed = window.confirm(
+      `現在の学習履歴を、このバックアップで置き換えます。\n\n` +
+      `仕訳履歴: ${summary.journalRecords}件\n表履歴: ${summary.tableRecords}件${warningText}\n\n復元しますか？`
+    );
+    if (!confirmed) {
+      setBackupStatus('復元をキャンセルしました。');
+      input.value = '';
+      return;
+    }
+
+    const restoredState = checked.state;
+    if (!StorageManager.saveState(restoredState)) {
+      setBackupStatus('ブラウザへ学習履歴を保存できなかったため、復元を完了できませんでした。', 'error');
+      input.value = '';
+      return;
+    }
+    Runtime.state = restoredState;
+
+    setBackupStatus('学習履歴を復元しました。画面を更新します。', 'success');
+    input.value = '';
+    setTimeout(() => window.location.reload(), 350);
+  } catch (error) {
+    console.error('Backup import failed.', error);
+    setBackupStatus('JSONを読み込めませんでした。バックアップファイルの内容を確認してください。', 'error');
+    if (input) input.value = '';
+  }
+}
+
 window.addEventListener('resize', () => {
   clearTimeout(Runtime.ui.journalResizeTimer);
-  Runtime.ui.journalResizeTimer = setTimeout(refitAllJournalAmountFonts, 80);
+  Runtime.ui.journalResizeTimer = setTimeout(scheduleJournalAmountRefit, 80);
 });
-window.addEventListener('orientationchange', () => setTimeout(refitAllJournalAmountFonts, 180));
+window.addEventListener('orientationchange', () => setTimeout(scheduleJournalAmountRefit, 180));
 
 function handleDelegatedAction(event) {
   const trigger = event.target.closest('[data-action]');
@@ -11802,6 +12592,8 @@ function handleDelegatedAction(event) {
     case 'calc-key': calcAction(trigger.dataset.value); break;
     case 'goto-journal-question': goToQuestion(trigger.dataset.questionId); break;
     case 'goto-table-question': goToTableQuestion(trigger.dataset.tableQuestionId); break;
+    case 'export-progress-backup': exportProgressBackup(); break;
+    case 'choose-progress-restore': chooseProgressRestoreFile(); break;
     default: break;
   }
 }
@@ -11810,12 +12602,15 @@ document.addEventListener('click', handleDelegatedAction);
 
 function initializeApp() {
   runIntegrityCheck();
+  const importInput = document.getElementById('progress-import-input');
+  if (importInput) importInput.addEventListener('change', handleProgressRestoreFile);
   const quizCard = document.getElementById('quiz-card');
   Runtime.ui.quizCardTemplate = quizCard ? quizCard.cloneNode(true) : null;
+  renderContentReferencePolicy();
   renderTableOfContents();
   updateDashboard();
   nextQuestion();
-  requestAnimationFrame(refitAllJournalAmountFonts);
+  scheduleJournalAmountRefit();
   updateTableDashboard();
   renderTableToc();
   loadTableQuestion(getNextTableQuestionIndex());
@@ -11833,7 +12628,7 @@ function initializeApp() {
 
   const wrapper = document.querySelector('.grid-table-wrapper');
   if (wrapper && typeof ResizeObserver !== 'undefined') {
-    const observer = new ResizeObserver(() => refitAllJournalAmountFonts());
+    const observer = new ResizeObserver(() => scheduleJournalAmountRefit());
     observer.observe(wrapper);
     Runtime.ui.resizeObserver = observer;
   }
