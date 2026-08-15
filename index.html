@@ -1382,7 +1382,7 @@
     }
     .journal-account-wrap:focus-within .journal-account-display { background: #f0fdf4; }
 
-    /* v10.2: Windows High Contrast / forced-colors ではOSのシステム色でフォーカスを明示する。
+    /* v10.3: Windows High Contrast / forced-colors ではOSのシステム色でフォーカスを明示する。
        ネイティブselect自体はDOM・アクセシビリティツリーに残し、表示用spanはaria-hiddenのまま使用する。 */
     @media (forced-colors: active) {
       .journal-account-wrap:focus-within {
@@ -1444,7 +1444,7 @@
 
   
 
-    /* ===== v10.2 表問題の問題文: 指示 → 与件 → 入力表の順に読む ===== */
+    /* ===== v10.3 表問題の問題文: 指示 → 与件 → 入力表の順に読む ===== */
     .table-problem-brief {
       margin: 12px 0 9px;
       display: grid;
@@ -1917,7 +1917,7 @@
 <div class="container">
   <header>
     <h1>日商簿記3級 総合演習システム（仕訳200問＋表問題40問）</h1>
-    <p>2026年度出題区分対応 × 仕訳200問 × 表・決算演習40問 × 解説 × 教材版 v10.2</p>
+    <p>2026年度出題区分対応 × 仕訳200問 × 表・決算演習40問 × 解説 × 教材版 v10.3</p>
   </header>
   <div id="data-integrity-banner" class="data-integrity-banner" role="alert" aria-live="polite"></div>
 
@@ -1968,7 +1968,7 @@
         <span class="backup-summary-sub">端末変更・ブラウザデータ削除に備える</span>
       </summary>
       <div class="backup-body">
-        <p class="backup-help">仕訳・表問題の学習履歴、SRS、教材内レベル用EXPはこのブラウザ内に保存されます。必要に応じてJSONファイルへ保存し、同じ教材へ復元できます。復元時はファイル形式と教材データの互換性を確認します。チェックサムは破損・意図しない変更の検出用で、暗号学的な署名ではありません。</p>
+        <p class="backup-help">仕訳・表問題の学習履歴、SRS、教材内レベル用EXPはこのブラウザ内に保存されます。必要に応じてJSONファイルへ保存し、同じ教材へ復元できます。ブラウザ保存に失敗した場合は、この欄を自動的に開いて原因区分とJSONバックアップ手順を案内します。復元時はファイル形式と教材データの互換性を確認します。チェックサムは破損・意図しない変更の検出用で、暗号学的な署名ではありません。</p>
         <div class="backup-actions">
           <button type="button" class="backup-btn primary" data-action="export-progress-backup">JSONバックアップを保存</button>
           <button type="button" class="backup-btn" data-action="choose-progress-restore">JSONから復元</button>
@@ -2261,7 +2261,7 @@
 <script type="module">
 
 /*
- * ===== v10.2 内部アーキテクチャ方針 =====
+ * ===== v10.3 内部アーキテクチャ方針 =====
  * 配布物はGitHub Pagesへそのまま置ける単一HTMLを維持する。
  * 物理ファイルは分割せず、以下の責務を論理的に分離して扱う。
  *   1) Domain Data      : 仕訳200問・表40問・目次・勘定科目
@@ -2272,10 +2272,37 @@
  *
  * 起動時検査は二段階。データ破損時に危険な検査だけを同期実行し、
  * 詳細な意味論・ユーティリティ自己テストは初期画面を描画した後に実行する。
+ * クリック系コマンドはdocumentへのイベント委譲へ集約し、focus / blur / change / keydownなど
+ * 入力要素固有のイベントは対象コントロールへ直接登録する。
+ * 配布物はVanilla JSのまま維持し、JSDoc型定義で主要データ形状を明文化する。
  */
 
-// ===== Domain Data: 仕訳問題バンク =====
 'use strict';
+
+/** @typedef {{account:string, amount:number}} JournalEntry */
+/**
+ * @typedef {Object} JournalQuestion
+ * @property {string} id
+ * @property {string} category
+ * @property {string} statement
+ * @property {string} hint
+ * @property {string[]} options
+ * @property {JournalEntry[]} debit
+ * @property {JournalEntry[]} credit
+ * @property {string} explanation
+ */
+/**
+ * @typedef {Object} SrsProgress
+ * @property {number} intervalDays
+ * @property {number} repetitionCount
+ * @property {number} easeFactor
+ * @property {string} nextReviewDate
+ * @property {string|null} [lastReviewed]
+ * @property {0|2|3|null} [lastQuality]
+ */
+/** @typedef {{ok:boolean, value?:number, error?:string}} CalculatorResult */
+
+// ===== Domain Data: 仕訳問題バンク =====
 
 // 仕訳200問データベース（2026年度適用 出題区分対応・解説監査 v9.9）
 const QUESTION_DATABASE = [
@@ -11229,6 +11256,10 @@ const DISALLOWED_VISIBLE_PRODUCT_CLAIMS = Object.freeze([
   'TAC監修',
   'TAC公式',
   'ハルシネーションゼロ',
+  'バグゼロ',
+  '完全アクセシビリティ対応',
+  'iPhone実機確認済み',
+  'ブラウザE2E確認済み',
   '全240問を外部サイトと1対1で個別照合済み',
   '全200問をマネーフォワードと個別照合済み',
   '全200問をFunda簿記と個別照合済み'
@@ -11258,6 +11289,7 @@ function validateUiStructure() {
   const sampleJournalSelect = document.querySelector('#journal-rows select');
   if (sampleJournalSelect && sampleJournalSelect.getAttribute('aria-describedby') !== 'journal-account-selection-help') issues.push('仕訳勘定科目selectに読み上げ補助説明が関連付けられていません');
   if (!document.getElementById('table-workspace-guide')) issues.push('表問題の見方ガイドがありません');
+  if (typeof reportStorageSaveFailure !== 'function' || typeof reportStorageLoadFailure !== 'function' || typeof isQuotaExceededError !== 'function') issues.push('ブラウザ保存・読込失敗の診断／バックアップ誘導機構がありません');
   if (!document.getElementById('table-problem-instruction') || !document.getElementById('table-problem-givens') || !document.getElementById('table-problem-targets')) {
     issues.push('表問題の「指示・与件・入力対象」構造がありません');
   }
@@ -11285,6 +11317,17 @@ function validateTablePresentationUtilities() {
 
     if (!getTableTargetLabels(q).length) issues.push(`${q.id}: 入力対象行を特定できません`);
   });
+  return issues;
+}
+
+function validateStoragePersistenceUtilities() {
+  const issues = [];
+  if (!isQuotaExceededError({ name: 'QuotaExceededError' })) issues.push('QuotaExceededErrorの識別に失敗');
+  if (!isQuotaExceededError({ name: 'NS_ERROR_DOM_QUOTA_REACHED' })) issues.push('Firefox系quota例外の識別に失敗');
+  if (isQuotaExceededError({ name: 'SecurityError', code: 18 })) issues.push('quota以外の保存例外を誤判定しています');
+  const asciiBytes = utf8ByteLength('abc');
+  const japaneseBytes = utf8ByteLength('簿記');
+  if (!(asciiBytes >= 3 && japaneseBytes >= 2)) issues.push('保存データのバイト数計測ユーティリティ異常');
   return issues;
 }
 
@@ -11394,6 +11437,7 @@ function runDetailedIntegrityCheck() {
   const learningSupportIssues = validateLearningSupport();
   const numericInputIssues = validateNumericInputUtilities();
   const backupIssues = validateBackupUtilities();
+  const storagePersistenceIssues = validateStoragePersistenceUtilities();
   const confusionNoteIssues = validateConfusionNoteCatalog();
   const referenceCatalogIssues = validateContentReferenceCatalog();
   const sourceAuditedCaseIssues = validateSourceAuditedCoreCases();
@@ -11404,7 +11448,7 @@ function runDetailedIntegrityCheck() {
   const learningLevelIssues = validateLearningLevelSystem();
   Object.assign(result, {
     diagnosticIssues, classificationIssues, explanationIssues, explanationAlignmentIssues,
-    learningSupportIssues, numericInputIssues, backupIssues, confusionNoteIssues,
+    learningSupportIssues, numericInputIssues, backupIssues, storagePersistenceIssues, confusionNoteIssues,
     referenceCatalogIssues, sourceAuditedCaseIssues, sourceAuditedTextIssues,
     visibleClaimIssues, tablePresentationIssues, calculatorIssues, learningLevelIssues
   });
@@ -11415,6 +11459,7 @@ function runDetailedIntegrityCheck() {
   result.issues.push(...learningSupportIssues.map(issue => `学習支援: ${issue}`));
   result.issues.push(...numericInputIssues.map(issue => `金額入力: ${issue}`));
   result.issues.push(...backupIssues.map(issue => `バックアップ: ${issue}`));
+  result.issues.push(...storagePersistenceIssues.map(issue => `ブラウザ保存: ${issue}`));
   result.issues.push(...confusionNoteIssues.map(issue => `混同防止解説: ${issue}`));
   result.issues.push(...referenceCatalogIssues.map(issue => `参照資料: ${issue}`));
   result.issues.push(...sourceAuditedCaseIssues.map(issue => `重点論点監査: ${issue}`));
@@ -11465,7 +11510,7 @@ function runIntegrityCheck() {
 deepFreeze(QUESTION_DATABASE);
 deepFreeze(TABLE_DATABASE);
 
-const APP_VERSION = 'v10.2';
+const APP_VERSION = 'v10.3';
 const STORAGE_SCHEMA_VERSION = 3;
 const COMPATIBLE_STORAGE_SCHEMA_VERSIONS = new Set([2, 3]);
 const JOURNAL_BANK_VERSION = 'v7.2';
@@ -11479,6 +11524,7 @@ const TABLE_BANK_VERSION = 'v8.4';
  * 3) 問題条件・正答・意味が変わり旧学習履歴をそのまま使えないIDは、互換移行時のpurge setへ追加する。
  * 4) runIntegrityCheck() と外部QAを再実行し、問題数・ID・貸借・正答候補・解説整合・バックアップ移行を確認する。
  * 5) stableBankHashは破損・意図しない変更を検知するための32bitチェックサムであり、暗号学的署名ではない。
+ * 6) STORAGE_SCHEMA_VERSION（保存データ構造）とJOURNAL/TABLE_BANK_VERSION（問題バンク版）は別物として管理する。
  */
 const EXPECTED_QUESTION_BANK_HASH = '7eec5e67';
 const EXPECTED_TABLE_BANK_HASH = 'eb9a19c3';
@@ -11486,6 +11532,57 @@ const BACKUP_PRODUCT_ID = 'boki3-comprehensive';
 const BACKUP_FORMAT_VERSION = 2;
 const COMPATIBLE_BACKUP_FORMAT_VERSIONS = new Set([1, 2]);
 const MAX_BACKUP_FILE_BYTES = 2 * 1024 * 1024;
+const STORAGE_FAILURE_ALERT_COOLDOWN_MS = 15000;
+let lastStorageFailureAlertAt = 0;
+
+function isQuotaExceededError(error) {
+  if (!error || typeof error !== 'object') return false;
+  const name = String(error.name || '');
+  const code = Number(error.code);
+  return name === 'QuotaExceededError'
+    || name === 'NS_ERROR_DOM_QUOTA_REACHED'
+    || code === 22
+    || code === 1014;
+}
+
+function utf8ByteLength(value) {
+  const text = String(value ?? '');
+  if (typeof TextEncoder === 'function') return new TextEncoder().encode(text).length;
+  if (typeof Blob === 'function') return new Blob([text]).size;
+  // 最終フォールバック。UTF-8の厳密値ではなく安全側の概算。
+  return text.length * 3;
+}
+
+function showStoragePersistenceFailure(message, title = '保存エラー') {
+  if (typeof setBackupStatus === 'function') setBackupStatus(message, 'error');
+  const details = document.getElementById('backup-details');
+  if (details) details.open = true;
+
+  const now = Date.now();
+  if (now - lastStorageFailureAlertAt >= STORAGE_FAILURE_ALERT_COOLDOWN_MS) {
+    lastStorageFailureAlertAt = now;
+    alert(`【${title}】${message}`);
+  }
+}
+
+function reportStorageSaveFailure(error, serializedState = '') {
+  const quota = isQuotaExceededError(error);
+  const sizeKb = serializedState ? Math.max(1, Math.ceil(utf8ByteLength(serializedState) / 1024)) : null;
+  const sizeText = sizeKb ? `（現在の保存データ約${sizeKb.toLocaleString('ja-JP')}KB）` : '';
+  const message = quota
+    ? `ブラウザの保存領域へ学習履歴を保存できませんでした${sizeText}。容量上限に達した可能性があります。JSONバックアップを保存して学習履歴を保護してください。`
+    : `ブラウザへ学習履歴を保存できませんでした${sizeText}。ブラウザ設定・保存領域・プライベート閲覧等により保存が拒否される場合があります。JSONバックアップを保存して学習履歴を保護してください。`;
+  showStoragePersistenceFailure(message, '保存エラー');
+}
+
+function reportStorageLoadFailure(error) {
+  const quota = isQuotaExceededError(error);
+  const detail = quota
+    ? '保存領域へのアクセス時にquota系エラーが返されました。'
+    : 'ブラウザから保存領域へのアクセスが拒否または失敗しました。';
+  const message = `以前の学習履歴をブラウザから読み込めなかったため、初期状態で開始します。${detail} JSONバックアップがある場合は「JSONから復元」を使用してください。`;
+  showStoragePersistenceFailure(message, '履歴読込エラー');
+}
 
 class StorageManager {
   static KEY = 'boki3_system_state_v6_200';
@@ -11576,11 +11673,13 @@ class StorageManager {
       };
     } catch (error) {
       console.error('LocalStorage load failed; using default state.', error);
+      reportStorageLoadFailure(error);
       return defaultState;
     }
   }
 
   static saveState(appState) {
+    let serialized = '';
     try {
       appState.schemaVersion = STORAGE_SCHEMA_VERSION;
       appState.appVersion = APP_VERSION;
@@ -11594,11 +11693,12 @@ class StorageManager {
         appState.lastStudyDate,
         appState.streak
       );
-      localStorage.setItem(this.KEY, JSON.stringify(appState));
+      serialized = JSON.stringify(appState);
+      localStorage.setItem(this.KEY, serialized);
       return true;
     } catch (error) {
       console.error('Failed to save state to LocalStorage.', error);
-      alert('【警告】ブラウザの保存領域（LocalStorage）に空きがないため、学習履歴が更新できません。');
+      reportStorageSaveFailure(error, serialized);
       return false;
     }
   }
@@ -13257,6 +13357,13 @@ function validateAccountClassifications() {
 }
 
 // SM-2 inspired: 簿記学習向けに3段階自己評価とエラー種別補正を組み合わせた独自間隔反復。
+/**
+ * @param {Partial<SrsProgress>|null|undefined} previous
+ * @param {0|2|3} quality
+ * @param {'NONE'|'ACCOUNT_ITEM'|'CONCEPT'|'CALCULATION'|string} [errorType]
+ * @param {Date} [now]
+ * @returns {SrsProgress}
+ */
 function computeSrsProgress(previous, quality, errorType = 'NONE', now = new Date()) {
   const prior = previous || {};
   let intervalDays = Number.isFinite(prior.intervalDays) ? Math.max(0, Math.floor(prior.intervalDays)) : 0;
@@ -13638,6 +13745,9 @@ function renderTableViewControls(q) {
     : `${q.group}の見方`;
   help.textContent = tableWorkspaceHelp(q);
 
+  // セグメントボタン自身の操作で再描画された場合、同じ論理位置へフォーカスを戻す。
+  const focusedSegment = document.activeElement?.closest?.('#table-segment-nav .table-segment-btn');
+  const focusedSegmentIndex = focusedSegment ? Number(focusedSegment.dataset.segment) : null;
   segmentNav.replaceChildren();
   if (compact && segments.length > 1) {
     segmentNav.hidden = false;
@@ -13654,6 +13764,12 @@ function renderTableViewControls(q) {
       btn.textContent = segment.label;
       segmentNav.appendChild(btn);
     });
+    if (Number.isInteger(focusedSegmentIndex)) {
+      requestAnimationFrame(() => {
+        const restored = segmentNav.querySelector(`.table-segment-btn[data-segment="${focusedSegmentIndex}"]`);
+        restored?.focus({ preventScroll: true });
+      });
+    }
   } else {
     segmentNav.hidden = true;
   }
@@ -14123,6 +14239,12 @@ function calculatePercentValue(value) {
   return roundCalculatorValue(num / 100);
 }
 
+/**
+ * @param {number} left
+ * @param {'+'|'-'|'*'|'/'} op
+ * @param {number} right
+ * @returns {CalculatorResult}
+ */
 function calculateBinaryOperation(left, op, right) {
   let result;
   if (op === '+') result = left + right;
