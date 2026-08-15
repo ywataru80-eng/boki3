@@ -933,25 +933,6 @@
 
   
 
-    .journal-option-mode {
-      display: grid;
-      grid-template-columns: auto 1fr 1fr;
-      gap: 7px;
-      align-items: center;
-      margin: 2px 0 5px;
-    }
-    .journal-option-mode-label { font-size: .78rem; font-weight: 800; color: #475569; }
-    .journal-option-mode-btn {
-      min-height: 44px;
-      border: 1px solid var(--border-color);
-      border-radius: 7px;
-      background: #fff;
-      color: #334155;
-      font-weight: 800;
-      touch-action: manipulation;
-    }
-    .journal-option-mode-btn.active { background: #334155; color: #fff; border-color: #334155; }
-    .journal-option-mode-note { margin: 0 0 8px; font-size: .73rem; line-height: 1.45; color: var(--text-muted); }
     .scenario-reading-section { background: #f8fafc; border-radius: 7px; padding: 9px 10px; }
     .scenario-correct-box { margin: 10px 0; }
     #scenario-confusion-section { border-left: 3px solid #f59e0b; padding-left: 10px; }
@@ -1259,13 +1240,6 @@
       </button>
     </div>
     <div class="hint-box" id="hint-box"></div>
-
-    <div class="journal-option-mode" aria-label="勘定科目の選択モード">
-      <span class="journal-option-mode-label">科目選択</span>
-      <button type="button" class="journal-option-mode-btn active" data-action="set-journal-option-mode" data-option-mode="guided">学習</button>
-      <button type="button" class="journal-option-mode-btn" data-action="set-journal-option-mode" data-option-mode="broad">実戦</button>
-    </div>
-    <div class="journal-option-mode-note" id="journal-option-mode-note">学習：この問題に必要な候補から選びます。</div>
 
     <!-- マス目型仕訳入力グリッド -->
     <div class="grid-table-wrapper">
@@ -10238,7 +10212,7 @@ class StorageManager {
 const Runtime = {
   state: StorageManager.loadState(),
   mode: 'journal',
-  journal: { currentQuestionIndex: -1, currentErrorType: 'NONE', isAnswered: false, isEvalCompleted: false, lastFocusedInput: null, optionMode: 'guided' },
+  journal: { currentQuestionIndex: -1, currentErrorType: 'NONE', isAnswered: false, isEvalCompleted: false, lastFocusedInput: null },
   table: { currentIndex: -1, answered: false, lastFocusedInput: null, viewMode: 'full', viewPreference: 'auto', segmentIndex: 0, hintLevel: 0, draft: {} },
   calculator: { current: '0', prev: null, op: null, resetOnNext: false, error: false },
   ui: { quizCardTemplate: null, journalResizeTimer: null, tableMediaQuery: null, tableMediaHandler: null }
@@ -10298,14 +10272,11 @@ function setInputFieldsDisabled(disabled) {
   const addBtn = document.getElementById('add-row-btn');
   const removeBtn = document.getElementById('remove-row-btn');
   const submitBtn = document.getElementById('submit-btn');
-  const optionModeBtns = document.querySelectorAll('.journal-option-mode-btn');
-
   selects.forEach(s => s.disabled = disabled);
   inputs.forEach(i => i.disabled = disabled);
   if (addBtn) addBtn.disabled = disabled;
   if (removeBtn) removeBtn.disabled = disabled;
   if (submitBtn) submitBtn.disabled = disabled;
-  optionModeBtns.forEach(btn => { btn.disabled = disabled; });
 }
 
 function updateDashboard() {
@@ -10393,7 +10364,6 @@ function loadQuestion(index) {
   setEvalButtonsDisabled(true);
 
   const q = QUESTION_DATABASE[index];
-  updateJournalOptionModeUi();
   updateTocActive(q.id);
 
   document.getElementById('problem-category').innerText = q.category;
@@ -10501,56 +10471,48 @@ const JOURNAL_ACCOUNT_MASTER = Object.freeze(
     .sort((a, b) => a.localeCompare(b, 'ja'))
 );
 
+// 正答を必ず残しつつ、初学者が混同しやすい近接科目を優先して約5科目に絞る。
+const CONFUSABLE_ACCOUNT_GROUPS = Object.freeze([
+  ['売掛金', '未収入金', '受取手形', '電子記録債権', 'クレジット売掛金'],
+  ['買掛金', '未払金', '支払手形', '電子記録債務', '未払費用'],
+  ['前払金', '前払費用', '立替金', '仮払金', '差入保証金'],
+  ['前受金', '前受収益', '預り金', '仮受金', '未払金'],
+  ['現金', '普通預金', '当座預金', '定期預金', '小口現金'],
+  ['仕入', '売上', '繰越商品', '発送費', '保管費'],
+  ['貸倒損失', '貸倒引当金繰入', '貸倒引当金', '貸倒引当金戻入', '償却債権取立益'],
+  ['備品', '建物', '車両運搬具', '土地', '減価償却費'],
+  ['受取利息', '支払利息', '未収利息', '未払利息', '前受収益'],
+  ['受取家賃', '支払家賃', '前受家賃', '未払家賃', '前払費用'],
+  ['資本金', '繰越利益剰余金', '利益準備金', '未払配当金', '損益']
+]);
+
 function getJournalAccountOptions(q) {
-  if (Runtime.journal.optionMode === 'broad') return JOURNAL_ACCOUNT_MASTER;
-  return Array.isArray(q?.options) ? q.options : [];
-}
+  const selected = [...new Set(Array.isArray(q?.options) ? q.options : [])];
+  const answerAccounts = new Set([...(q?.debit || []), ...(q?.credit || [])].map(entry => entry.account));
 
-function updateJournalOptionModeUi() {
-  document.querySelectorAll('.journal-option-mode-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.dataset.optionMode === Runtime.journal.optionMode);
+  CONFUSABLE_ACCOUNT_GROUPS.forEach(group => {
+    if (selected.length >= 5 || !group.some(account => answerAccounts.has(account))) return;
+    group.forEach(account => {
+      if (selected.length < 5 && JOURNAL_ACCOUNT_MASTER.includes(account) && !selected.includes(account)) selected.push(account);
+    });
   });
-  const note = document.getElementById('journal-option-mode-note');
-  if (note) {
-    note.textContent = Runtime.journal.optionMode === 'broad'
-      ? `実戦：この教材で扱う${JOURNAL_ACCOUNT_MASTER.length}科目の候補から選びます。`
-      : '学習：この問題に必要な候補から選びます。';
-  }
-}
 
-function refillJournalAccountSelect(select, options) {
-  if (!select) return;
-  const current = select.value;
-  const fragment = document.createDocumentFragment();
-  const blank = document.createElement('option');
-  blank.value = '';
-  blank.textContent = '(選択)';
-  fragment.appendChild(blank);
-  options.forEach(opt => {
-    const option = document.createElement('option');
-    option.value = opt;
-    option.textContent = opt;
-    fragment.appendChild(option);
+  // 専用グループがない論点は、同じ5大要素の科目を誤答候補として補う。
+  const answerTypes = new Set([...answerAccounts].map(account => ACCOUNT_CLASSIFICATIONS[account]).filter(Boolean));
+  JOURNAL_ACCOUNT_MASTER.forEach(account => {
+    if (selected.length < 5 && answerTypes.has(ACCOUNT_CLASSIFICATIONS[account]) && !selected.includes(account)) selected.push(account);
   });
-  select.replaceChildren(fragment);
-  if (current && options.includes(current)) select.value = current;
-}
-
-function setJournalOptionMode(mode) {
-  if (!['guided', 'broad'].includes(mode) || Runtime.journal.isAnswered) return;
-  Runtime.journal.optionMode = mode;
-  const q = QUESTION_DATABASE[Runtime.journal.currentQuestionIndex];
-  if (!q) return;
-  const options = getJournalAccountOptions(q);
-  document.querySelectorAll('#journal-rows .debit-account, #journal-rows .credit-account')
-    .forEach(select => refillJournalAccountSelect(select, options));
-  updateJournalOptionModeUi();
+  // 純資産など同分類の科目自体が少ない論点でも、操作量が極端に軽くならないよう5科目を確保する。
+  JOURNAL_ACCOUNT_MASTER.forEach(account => {
+    if (selected.length < 5 && !selected.includes(account)) selected.push(account);
+  });
+  return selected;
 }
 
 function addJournalRow() {
   const tbody = document.getElementById('journal-rows');
   if (!tbody || Runtime.journal.currentQuestionIndex === -1 || Runtime.journal.isAnswered) return;
-  const q = QUESTION_DATABASE[Runtime.journal.currentQuestionIndex];
+  const accountOptions = getJournalAccountOptions(QUESTION_DATABASE[Runtime.journal.currentQuestionIndex]);
   const tr = document.createElement('tr');
 
   const createAccountCell = (className, label) => {
@@ -10562,7 +10524,7 @@ function addJournalRow() {
     blank.value = '';
     blank.textContent = '(選択)';
     select.appendChild(blank);
-    getJournalAccountOptions(q).forEach(opt => {
+    accountOptions.forEach(opt => {
       const option = document.createElement('option');
       option.value = opt;
       option.textContent = opt;
@@ -11130,8 +11092,11 @@ function validateLearningSupport() {
   QUESTION_DATABASE.forEach(q => {
     const lead = buildSituationLead(q);
     if (typeof lead !== 'string' || !lead.trim()) issues.push(`${q.id}: 場面解説が空です`);
+    const accountOptions = getJournalAccountOptions(q);
+    if (accountOptions.length < 5 || accountOptions.length > 6) issues.push(`${q.id}: 科目候補数が範囲外です ${accountOptions.length}`);
     [...q.debit, ...q.credit].forEach(entry => {
       if (!JOURNAL_ACCOUNT_MASTER.includes(entry.account)) issues.push(`${q.id}: 実戦科目候補に正答科目がありません ${entry.account}`);
+      if (!accountOptions.includes(entry.account)) issues.push(`${q.id}: 絞り込み候補に正答科目がありません ${entry.account}`);
     });
   });
   return issues;
@@ -11739,7 +11704,6 @@ function handleDelegatedAction(event) {
   switch (action) {
     case 'switch-mode': switchMode(trigger.dataset.mode); break;
     case 'toggle-hint': toggleHint(); break;
-    case 'set-journal-option-mode': setJournalOptionMode(trigger.dataset.optionMode); break;
     case 'toggle-calculator': toggleCalculator(); break;
     case 'add-journal-row': addJournalRow(); break;
     case 'remove-last-journal-row': removeLastJournalRow(); break;
