@@ -10465,6 +10465,29 @@ function refitAllJournalAmountFonts() {
   document.querySelectorAll('.grid-table .debit-amount, .grid-table .credit-amount').forEach(fitJournalAmountFont);
 }
 
+function formatJournalAmountValue(value) {
+  const digits = String(value ?? '').replace(/[^0-9]/g, '');
+  return digits.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+function formatJournalAmountInput(input) {
+  if (!input) return;
+  const raw = String(input.value || '');
+  const caret = Number.isInteger(input.selectionStart) ? input.selectionStart : raw.length;
+  const digitsBeforeCaret = raw.slice(0, caret).replace(/[^0-9]/g, '').length;
+  const formatted = formatJournalAmountValue(raw);
+  input.value = formatted;
+
+  if (document.activeElement !== input || typeof input.setSelectionRange !== 'function') return;
+  let nextCaret = 0;
+  let seenDigits = 0;
+  while (nextCaret < formatted.length && seenDigits < digitsBeforeCaret) {
+    if (/\d/.test(formatted[nextCaret])) seenDigits++;
+    nextCaret++;
+  }
+  input.setSelectionRange(nextCaret, nextCaret);
+}
+
 // iPhone-first 4列仕訳テーブル行の生成（借方科目・金額・貸方科目・金額）
 const JOURNAL_ACCOUNT_MASTER = Object.freeze(
   [...new Set(QUESTION_DATABASE.flatMap(q => Array.isArray(q.options) ? q.options : []))]
@@ -10539,7 +10562,7 @@ function addJournalRow() {
     const input = document.createElement('input');
     input.type = 'text';
     input.inputMode = 'numeric';
-    input.pattern = '[0-9]*';
+    input.pattern = '[0-9,]*';
     input.autocomplete = 'off';
     input.className = className;
     input.setAttribute('aria-label', label);
@@ -10549,8 +10572,7 @@ function addJournalRow() {
     });
     input.addEventListener('blur', () => fitJournalAmountFont(input));
     input.addEventListener('input', () => {
-      const sanitized = String(input.value || '').replace(/[^0-9]/g, '');
-      if (input.value !== sanitized) input.value = sanitized;
+      formatJournalAmountInput(input);
       // フォーカス中は16pxを維持。blur後に必要な場合だけ縮小する。
       fitJournalAmountFont(input);
     });
@@ -10620,7 +10642,8 @@ function getEntries(side) {
   for (let i = 0; i < accounts.length; i++) {
     const acc = accounts[i].value;
     const rawAmt = amounts[i].value;
-    const numAmt = Number(rawAmt);
+    const normalizedAmt = rawAmt.replace(/,/g, '');
+    const numAmt = Number(normalizedAmt);
     const isValidInteger = rawAmt !== "" && Number.isInteger(numAmt) && numAmt > 0;
 
     if (acc && !isValidInteger) hasIncomplete = true;
@@ -11681,7 +11704,7 @@ function applyCalcToJournal(side) {
   }
 
   if (targetInput) {
-    targetInput.value = num;
+    targetInput.value = formatJournalAmountValue(num);
     fitJournalAmountFont(targetInput);
     targetInput.style.backgroundColor = '#fef08a';
     setTimeout(() => {
