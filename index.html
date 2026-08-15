@@ -1932,6 +1932,69 @@
       .learning-quick-item { padding: 6px 5px; }
     }
 
+
+    /* ===== v10.8 問題演習と学習状況を明確に分離 ===== */
+    .practice-area { margin-top: 10px; }
+    .practice-section-heading {
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+      margin: 0 0 8px; padding: 8px 10px; border-left: 4px solid var(--primary);
+      background: #eff6ff; border-radius: 6px; color: #0f172a; font-weight: 900; font-size: .9rem;
+    }
+    .practice-mode-chip {
+      padding: 3px 8px; border-radius: 999px; background: #dbeafe; color: #1d4ed8;
+      font-size: .68rem; font-weight: 800;
+    }
+    .practice-mode-chip.table { background: #ede9fe; color: #6d28d9; }
+    .study-status-area, .learning-support-area { margin-top: 12px; }
+    .study-status-details, .learning-support-details {
+      border: 1px solid var(--border-color); border-radius: 8px; background: #fff; overflow: hidden;
+    }
+    .study-status-details > summary, .learning-support-details > summary {
+      min-height: 48px; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between;
+      gap: 10px; cursor: pointer; list-style: none; background: #f8fafc; color: #0f172a;
+      font-size: .86rem; font-weight: 900; user-select: none;
+    }
+    .study-status-details > summary::-webkit-details-marker,
+    .learning-support-details > summary::-webkit-details-marker { display: none; }
+    .study-status-details > summary::before, .learning-support-details > summary::before { content: '＋'; color: var(--primary); margin-right: 2px; }
+    .study-status-details[open] > summary::before, .learning-support-details[open] > summary::before { content: '－'; }
+    .study-status-details[open] > summary, .learning-support-details[open] > summary { border-bottom: 1px solid var(--border-color); }
+    .study-status-summary, .learning-support-summary { color: #64748b; font-size: .67rem; font-weight: 700; text-align: right; }
+    .study-status-body, .learning-support-body { padding: 10px; }
+    .study-status-body .learning-growth-card { margin: 0 0 10px; }
+    .mode-status-panel .dashboard { margin-top: 0; }
+    .mode-status-panel[hidden] { display: none !important; }
+    .learning-support-body .next-stage-card { margin: 0 0 10px; }
+    .learning-support-body .backup-card { margin: 0; }
+    @media (max-width: 520px) {
+      .study-status-details > summary, .learning-support-details > summary { align-items: flex-start; }
+      .study-status-summary, .learning-support-summary { max-width: 56%; }
+    }
+
+    /* ===== v10.8 電卓は計算操作を最優先し、説明は折りたたむ ===== */
+    .calc-apply-section { border-top: 1px solid var(--border-color); background: #f8fafc; padding: 5px 6px 6px; }
+    .calc-apply-label { margin: 0 0 4px; color: #64748b; font-size: .64rem; font-weight: 800; }
+    .calc-apply-bar { padding: 0; background: transparent; border-bottom: 0; }
+    .calc-apply-bar.table-mode { grid-template-columns: 1fr; }
+    .calc-apply-btn { min-height: 34px; padding: 5px 4px; font-size: .72rem; }
+    .calc-apply-btn[hidden] { display: none !important; }
+    .calc-header-actions { display: flex; align-items: center; gap: 2px; }
+    .calc-help-btn {
+      width: 30px; min-height: 30px; border: 0; border-radius: 50%; background: transparent; color: #cbd5e1;
+      font-size: .84rem; font-weight: 900; cursor: pointer;
+    }
+    .calc-help-btn:hover { background: rgba(255,255,255,.12); color: #fff; }
+    .calc-help-btn:focus-visible { background: rgba(255,255,255,.12); color: #fff; outline: 2px solid #fff; outline-offset: 1px; }
+    .calc-learning-note { padding: 7px 9px 8px; border-top: 1px solid var(--border-color); background: #fff; color: #64748b; font-size: .68rem; line-height: 1.45; }
+    .calc-learning-note[hidden] { display: none !important; }
+
+    .current-topic-status {
+      display: flex; justify-content: space-between; align-items: center; gap: 8px;
+      margin: 0 0 8px; padding: 7px 9px; border: 1px solid #e2e8f0; border-radius: 6px;
+      background: #f8fafc; color: #64748b; font-size: .7rem; font-weight: 700;
+    }
+    .current-topic-status .problem-topic-level { color: #5b21b6; font-size: .74rem; font-weight: 900; }
+
 </style>
 </head>
 <body>
@@ -1939,7 +2002,7 @@
 <div class="container">
   <header>
     <h1>日商簿記3級 総合演習システム（仕訳200問＋表問題40問）</h1>
-    <p>2026年度出題区分対応 × 仕訳200問 × 表・決算演習40問 × 解説 × 教材版 v10.5</p>
+    <p>2026年度出題区分対応 × 仕訳200問 × 表・決算演習40問 × 解説 × 教材版 v10.8</p>
   </header>
   <div id="data-integrity-banner" class="data-integrity-banner" role="alert" aria-live="polite"></div>
 
@@ -1949,90 +2012,14 @@
   </div>
 
 
-  <section class="learning-growth-card" id="learning-growth-card" aria-label="学習の進み具合">
-    <div class="learning-growth-head">
-      <div>
-        <div class="learning-growth-kicker">学習の進み具合</div>
-        <div class="learning-overall-line">
-          <strong class="learning-overall-level" id="learning-overall-level">Lv.1</strong>
-          <span class="learning-overall-title" id="learning-overall-title">簿記見習い</span>
-        </div>
-      </div>
-      <div class="learning-today-summary" id="learning-today-summary">今日 0 / 10問</div>
-    </div>
-    <div class="learning-exp-track" aria-hidden="true"><div class="learning-exp-fill" id="learning-overall-bar"></div></div>
-    <div class="learning-exp-text" id="learning-overall-progress-text">次のLvまでの進み具合を計算しています。</div>
-    <p class="learning-disclaimer">※レベルは教材内の学習指標で、検定の得点・合格判定ではありません。</p>
-    <div class="learning-quick-grid learning-quick-grid-primary">
-      <div class="learning-quick-item"><span>学習済み</span><strong id="learning-studied-count">0 / 240問</strong></div>
-      <div class="learning-quick-item"><span>次におすすめ</span><strong id="learning-weakest-topic">—</strong></div>
-    </div>
-    <div class="learning-next-goal" id="learning-next-goal">今日の目標を確認しています。</div>
-    <details class="learning-topics-details" id="learning-topics-details">
-      <summary>項目別レベル・実績を見る</summary>
-      <div class="learning-details-summary">実績 <strong id="learning-achievement-count">0個</strong></div>
-      <div class="learning-topic-list" id="learning-topic-list"></div>
-    </details>
-    <div class="next-stage-card preview" id="learning-next-stage-card">
-      <div class="next-stage-kicker" id="learning-next-stage-kicker">この先の学習</div>
-      <div class="next-stage-title" id="learning-next-stage-title">3級を一巡すると、2級への学習ガイドが開きます。</div>
-      <div class="next-stage-status" id="learning-next-stage-status" hidden></div>
-      <div class="next-stage-body" id="learning-next-stage-body" hidden></div>
-      <a class="next-stage-link" id="learning-next-stage-link" href="https://www.kentei.ne.jp/bookkeeping/class2" target="_blank" rel="noopener noreferrer" hidden>日本商工会議所「簿記2級」の公式情報を確認</a>
-    </div>
-  </section>
-  <div class="learning-toast" id="learning-toast" role="status" aria-live="polite" hidden></div>
 
-  <section class="backup-card" aria-label="学習履歴のバックアップ">
-    <details class="backup-details" id="backup-details">
-      <summary>
-        <span>💾 学習履歴のバックアップ</span>
-        <span class="backup-summary-sub">端末変更・ブラウザデータ削除に備える</span>
-      </summary>
-      <div class="backup-body">
-        <p class="backup-help">学習履歴・復習予定・教材内レベルはこのブラウザに保存されます。端末変更やデータ消失に備えて、必要に応じてバックアップファイルを保存できます。保存に失敗した場合は、この欄を自動で開いて対処方法を案内します。復元時はファイルの互換性と破損を確認します。</p>
-        <div class="backup-actions">
-          <button type="button" class="backup-btn primary" data-action="export-progress-backup">バックアップを保存</button>
-          <button type="button" class="backup-btn" data-action="choose-progress-restore">バックアップから復元</button>
-        </div>
-        <input id="progress-import-input" type="file" accept="application/json,.json" hidden>
-        <div class="backup-status" id="backup-status" role="status" aria-live="polite"></div>
-      </div>
-    </details>
-  </section>
 
+  <main class="practice-area" id="practice-area" aria-label="問題演習">
   <section id="journal-mode-section" class="mode-section">
-
-  <!-- ダッシュボード -->
-  <div class="dashboard">
-    <div class="dash-card">
-      <div class="title">総問題数</div>
-      <div class="value" id="stat-total">200</div>
+    <div class="practice-section-heading">
+      <span>問題演習</span>
+      <span class="practice-mode-chip">仕訳</span>
     </div>
-    <div class="dash-card">
-      <div class="title">復習待ち</div>
-      <div class="value" id="stat-due">0</div>
-    </div>
-    <div class="dash-card">
-      <div class="title">未学習</div>
-      <div class="value" id="stat-unstudied">200</div>
-    </div>
-    <div class="dash-card">
-      <div class="title">連続学習</div>
-      <div class="value streak" id="stat-streak">0 日</div>
-    </div>
-  </div>
-
-  <!-- 進捗メーター -->
-  <div class="progress-container">
-    <div class="progress-header">
-      <span>本日の目標進捗</span>
-      <span id="progress-text">0 / 10 問完了</span>
-    </div>
-    <div class="progress-bar-bg">
-      <div class="progress-bar-fill" id="progress-bar"></div>
-    </div>
-  </div>
 
   <!-- 項目別目次 -->
   <section class="toc-card" id="toc-card" aria-label="項目別目次">
@@ -2056,7 +2043,6 @@
     </div>
 
     <div class="problem-difficulty-row">
-      <span class="problem-topic-level" id="problem-topic-level">項目 Lv.1</span>
       <span class="problem-difficulty" id="problem-difficulty" aria-label="問題の難易度">難易度 ★☆☆☆☆（教材内目安）</span>
     </div>
 
@@ -2088,8 +2074,7 @@
       </table>
     </div>
     <p id="journal-account-selection-help" class="visually-hidden">勘定科目欄を選択して借方・貸方の科目を指定します。選択した科目名は画面上で折り返して表示されます。</p>
-    <div class="journal-cbt-note">同じ勘定科目は、借方・貸方それぞれで1回までです。本教材では数字を3桁区切りで表示します（ネット試験ではカンマ入力は不要です）。</div>
-    <div class="journal-design-note">勘定科目候補は各問題5～6科目に整理しています。本試験の候補数や画面配置を再現するものではありません。</div>
+    <div class="journal-cbt-note">同じ勘定科目は、借方・貸方それぞれで1回までです。</div>
 
     <div class="journal-row-controls">
       <button type="button" class="row-control-btn" id="add-row-btn" data-action="add-journal-row">＋ 行を追加</button>
@@ -2159,13 +2144,11 @@
   </section>
 
   <section id="table-mode-section" class="mode-section" hidden>
-    <div class="dashboard table-dashboard">
-      <div class="dash-card"><div class="title">表問題数</div><div class="value" id="table-stat-total">40</div></div>
-      <div class="dash-card"><div class="title">正解済み</div><div class="value" id="table-stat-solved">0</div></div>
-      <div class="dash-card"><div class="title">未正解</div><div class="value" id="table-stat-remaining">40</div></div>
-      <div class="dash-card"><div class="title">挑戦済み</div><div class="value" id="table-stat-attempted">0</div></div>
-      <div class="dash-card"><div class="title">復習期限</div><div class="value" id="table-stat-due">0</div></div>
+    <div class="practice-section-heading">
+      <span>問題演習</span>
+      <span class="practice-mode-chip table">表・決算</span>
     </div>
+
 
     <section class="toc-card" id="table-toc-card" aria-label="表問題目次">
       <details class="toc-main-details" id="table-toc-details">
@@ -2181,9 +2164,6 @@
       <div class="problem-header">
         <span class="category-badge" id="table-problem-category">表問題</span>
         <span id="table-problem-id-text" style="color: var(--text-muted); font-size:0.75rem;">T001</span>
-      </div>
-      <div class="problem-difficulty-row">
-        <span class="problem-topic-level" id="table-problem-topic-level">項目 Lv.1</span>
       </div>
       <div class="table-problem-brief" id="table-problem-statement" aria-label="問題文">
         <section class="table-problem-block" aria-labelledby="table-problem-instruction-title">
@@ -2222,6 +2202,123 @@
       </div>
     </div>
   </section>
+  </main>
+
+  <section class="study-status-area" aria-label="現在の学習状況">
+    <details class="study-status-details" id="study-status-details">
+      <summary>
+        <span>現在の学習状況</span>
+        <span class="study-status-summary" id="study-status-summary">学習済み 0 / 240問・今日 0 / 10問</span>
+      </summary>
+      <div class="study-status-body">
+  <section class="learning-growth-card" id="learning-growth-card" aria-label="学習の進み具合">
+    <div class="learning-growth-head">
+      <div>
+        <div class="learning-growth-kicker">学習の進み具合</div>
+        <div class="learning-overall-line">
+          <strong class="learning-overall-level" id="learning-overall-level">Lv.1</strong>
+          <span class="learning-overall-title" id="learning-overall-title">簿記見習い</span>
+        </div>
+      </div>
+      <div class="learning-today-summary" id="learning-today-summary">今日 0 / 10問</div>
+    </div>
+    <div class="learning-exp-track" aria-hidden="true"><div class="learning-exp-fill" id="learning-overall-bar"></div></div>
+    <div class="learning-exp-text" id="learning-overall-progress-text">次のLvまでの進み具合を計算しています。</div>
+    <p class="learning-disclaimer">※レベルは教材内の学習指標で、検定の得点・合格判定ではありません。</p>
+    <div class="learning-quick-grid learning-quick-grid-primary">
+      <div class="learning-quick-item"><span>学習済み</span><strong id="learning-studied-count">0 / 240問</strong></div>
+      <div class="learning-quick-item"><span>次におすすめ</span><strong id="learning-weakest-topic">—</strong></div>
+    </div>
+    <div class="learning-next-goal" id="learning-next-goal">今日の目標を確認しています。</div>
+    <details class="learning-topics-details" id="learning-topics-details">
+      <summary>項目別レベル・実績を見る</summary>
+      <div class="learning-details-summary">実績 <strong id="learning-achievement-count">0個</strong></div>
+      <div class="learning-topic-list" id="learning-topic-list"></div>
+    </details>
+    
+  </section>
+        <div class="mode-status-panel" id="journal-status-panel">
+          <div class="current-topic-status"><span>現在の項目</span><strong class="problem-topic-level" id="problem-topic-level">項目 Lv.1</strong></div>
+  <!-- ダッシュボード -->
+  <div class="dashboard">
+    <div class="dash-card">
+      <div class="title">総問題数</div>
+      <div class="value" id="stat-total">200</div>
+    </div>
+    <div class="dash-card">
+      <div class="title">復習待ち</div>
+      <div class="value" id="stat-due">0</div>
+    </div>
+    <div class="dash-card">
+      <div class="title">未学習</div>
+      <div class="value" id="stat-unstudied">200</div>
+    </div>
+    <div class="dash-card">
+      <div class="title">連続学習</div>
+      <div class="value streak" id="stat-streak">0 日</div>
+    </div>
+  </div>
+
+  <!-- 進捗メーター -->
+  <div class="progress-container">
+    <div class="progress-header">
+      <span>本日の目標進捗</span>
+      <span id="progress-text">0 / 10 問完了</span>
+    </div>
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill" id="progress-bar"></div>
+    </div>
+  </div>
+        </div>
+        <div class="mode-status-panel" id="table-status-panel" hidden>
+          <div class="current-topic-status"><span>現在の項目</span><strong class="problem-topic-level" id="table-problem-topic-level">項目 Lv.1</strong></div>
+    <div class="dashboard table-dashboard">
+      <div class="dash-card"><div class="title">表問題数</div><div class="value" id="table-stat-total">40</div></div>
+      <div class="dash-card"><div class="title">正解済み</div><div class="value" id="table-stat-solved">0</div></div>
+      <div class="dash-card"><div class="title">未正解</div><div class="value" id="table-stat-remaining">40</div></div>
+      <div class="dash-card"><div class="title">挑戦済み</div><div class="value" id="table-stat-attempted">0</div></div>
+      <div class="dash-card"><div class="title">復習期限</div><div class="value" id="table-stat-due">0</div></div>
+    </div>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <section class="learning-support-area" aria-label="学習設定とバックアップ">
+    <details class="learning-support-details" id="learning-support-details">
+      <summary>
+        <span>学習設定・バックアップ</span>
+        <span class="learning-support-summary">必要なときだけ開く</span>
+      </summary>
+      <div class="learning-support-body">
+<div class="next-stage-card preview" id="learning-next-stage-card">
+      <div class="next-stage-kicker" id="learning-next-stage-kicker">この先の学習</div>
+      <div class="next-stage-title" id="learning-next-stage-title">3級を一巡すると、2級への学習ガイドが開きます。</div>
+      <div class="next-stage-status" id="learning-next-stage-status" hidden></div>
+      <div class="next-stage-body" id="learning-next-stage-body" hidden></div>
+      <a class="next-stage-link" id="learning-next-stage-link" href="https://www.kentei.ne.jp/bookkeeping/class2" target="_blank" rel="noopener noreferrer" hidden>日本商工会議所「簿記2級」の公式情報を確認</a>
+    </div>
+  <section class="backup-card" aria-label="学習履歴のバックアップ">
+    <details class="backup-details" id="backup-details">
+      <summary>
+        <span>💾 学習履歴のバックアップ</span>
+        <span class="backup-summary-sub">端末変更・ブラウザデータ削除に備える</span>
+      </summary>
+      <div class="backup-body">
+        <p class="backup-help">学習履歴・復習予定・教材内レベルはこのブラウザに保存されます。端末変更やデータ消失に備えて、必要に応じてバックアップファイルを保存できます。保存に失敗した場合は、この欄を自動で開いて対処方法を案内します。復元時はファイルの互換性と破損を確認します。</p>
+        <div class="backup-actions">
+          <button type="button" class="backup-btn primary" data-action="export-progress-backup">バックアップを保存</button>
+          <button type="button" class="backup-btn" data-action="choose-progress-restore">バックアップから復元</button>
+        </div>
+        <input id="progress-import-input" type="file" accept="application/json,.json" hidden>
+        <div class="backup-status" id="backup-status" role="status" aria-live="polite"></div>
+      </div>
+    </details>
+  </section>
+      </div>
+    </details>
+  </section>
+  <div class="learning-toast" id="learning-toast" role="status" aria-live="polite" hidden></div>
 </div>
 
 <!-- フローティング目次ボタン -->
@@ -2236,18 +2333,13 @@
 <div class="calculator-modal" id="calculator-modal">
   <div class="calc-header">
     <span>電卓</span>
-    <button type="button" class="calc-close-btn" data-action="toggle-calculator">✕</button>
+    <div class="calc-header-actions">
+      <button type="button" class="calc-help-btn" id="calc-help-btn" data-action="toggle-calc-help" aria-expanded="false" aria-controls="calc-learning-note" aria-label="電卓の操作説明を表示">?</button>
+      <button type="button" class="calc-close-btn" data-action="toggle-calculator" aria-label="電卓を閉じる">✕</button>
+    </div>
   </div>
   <div class="calc-expression" id="calc-expression" aria-live="polite"></div>
   <div class="calc-display" id="calc-display" aria-live="polite">0</div>
-  <div class="calc-learning-note" id="calc-learning-note">この電卓はスマホ学習用の補助機能です。試験会場の画面仕様を再現するものではありません。ACは計算全体を消去し、Cは現在入力中の数値だけを消去します。％キーは表示中の値を100で割る単項処理です（50 → ％ → 0.5、100 ＋ 10 → ％ → ＝ → 100.1）。</div>
-  
-  <div class="calc-apply-bar">
-    <button type="button" class="calc-apply-btn debit" data-action="apply-calc-journal" data-side="debit">📥 借方に反映</button>
-    <button type="button" class="calc-apply-btn credit" data-action="apply-calc-journal" data-side="credit">📥 貸方に反映</button>
-    <button type="button" class="calc-apply-btn" data-action="apply-calc-table">📥 表に反映</button>
-  </div>
-
   <div class="calc-grid">
     <button type="button" class="calc-btn clear" data-action="calc-key" data-value="AC" aria-label="AC。計算全体を消去">AC</button>
     <button type="button" class="calc-btn clear" data-action="calc-key" data-value="C" aria-label="C。現在入力中の数値だけを消去">C</button>
@@ -2274,25 +2366,38 @@
     <button type="button" class="calc-btn op" data-action="calc-key" data-value="%" aria-label="パーセント。表示中の値を100で割る">%</button>
     <button type="button" class="calc-btn eq" data-action="calc-key" data-value="=">＝</button>
   </div>
+
+  <div class="calc-apply-section">
+    <div class="calc-apply-label">計算結果を入力</div>
+    <div class="calc-apply-bar" id="calc-apply-bar">
+      <button type="button" class="calc-apply-btn debit" id="calc-apply-debit" data-action="apply-calc-journal" data-side="debit">借方へ</button>
+      <button type="button" class="calc-apply-btn credit" id="calc-apply-credit" data-action="apply-calc-journal" data-side="credit">貸方へ</button>
+      <button type="button" class="calc-apply-btn" id="calc-apply-table" data-action="apply-calc-table" hidden>表へ</button>
+    </div>
+  </div>
+
+  <div class="calc-learning-note" id="calc-learning-note" hidden>ACは計算全体、Cは現在入力中の数値を消去します。％は表示中の値を100で割ります。</div>
 </div>
 
 <script type="module">
 
 /*
- * ===== v10.5 内部アーキテクチャ方針 =====
+ * ===== v10.8 内部アーキテクチャ方針 =====
  * 配布物はGitHub Pagesへそのまま置ける単一HTMLを維持する。
  * 物理ファイルは分割せず、以下の責務を論理的に分離して扱う。
  *   1) Domain Data      : 仕訳200問・表40問・目次・勘定科目
  *   2) Domain Logic     : 採点・SRS・学習EXP/Level・誤答診断
  *   3) Infrastructure  : LocalStorage・JSONバックアップ・整合性Hash
- *   4) Presentation    : 仕訳UI・表UI・解説・電卓・学習ダッシュボード
- *   5) Integrity / QA  : 起動時の必須検査と、初期描画後の詳細自己監査
+ *   4) Presentation    : 問題演習UI・現在ステータス・固定小数点電卓・学習補助を視覚的に分離
+ *   5) Runtime         : 問題ロード／採点／自己評価の主要状態遷移をReducer＋Dispatcherで一元化
+ *   6) Integrity / QA  : 起動時の必須検査と、初期描画後の詳細自己監査
  *
  * 起動時検査は二段階。データ破損時に危険な検査だけを同期実行し、
- * 詳細な意味論・ユーティリティ自己テストは初期画面を描画した後に実行する。
+ * 詳細検査は「DOM非依存ロジック」と「DOM／Runtime依存」に分けて初期描画後に実行する。
  * クリック系コマンドはdocumentへのイベント委譲へ集約し、focus / blur / change / keydownなど
  * 入力要素固有のイベントは対象コントロールへ直接登録する。
- * 配布物はVanilla JSのまま維持し、JSDoc型定義で主要データ形状を明文化する。
+ * 配布物はVanilla JSの単一HTMLを維持する一方、JSDoc型・純粋関数・責務境界を保ち、
+ * 将来TypeScript＋CI＋モジュール開発へ移しても配布物を1枚のHTMLに戻せる構成を意識する。
  */
 
 'use strict';
@@ -2318,7 +2423,7 @@
  * @property {string|null} [lastReviewed]
  * @property {0|2|3|null} [lastQuality]
  */
-/** @typedef {{ok:boolean, value?:number, error?:string}} CalculatorResult */
+/** @typedef {{ok:boolean, value?:number, text?:string, error?:string}} CalculatorResult */
 
 // ===== Domain Data: 仕訳問題バンク =====
 
@@ -10861,6 +10966,11 @@ function switchMode(mode, shouldScroll=true) {
   const tb = document.getElementById('mode-table-btn');
   if (jb) jb.classList.toggle('active', Runtime.mode==='journal');
   if (tb) tb.classList.toggle('active', Runtime.mode==='table');
+  const journalStatus = document.getElementById('journal-status-panel');
+  const tableStatus = document.getElementById('table-status-panel');
+  if (journalStatus) journalStatus.hidden = Runtime.mode !== 'journal';
+  if (tableStatus) tableStatus.hidden = Runtime.mode !== 'table';
+  syncCalculatorContext();
   if (Runtime.mode === 'table') {
     updateTableDashboard();
     renderTableToc();
@@ -11290,7 +11400,7 @@ function validateVisibleProductClaims() {
     .map(claim => `根拠を限定していない表示があります: ${claim}`);
 }
 
-const REQUIRED_DOM_IDS = Object.freeze(['account-effect-list', 'account-nature-details', 'add-row-btn', 'backup-status', 'calc-display', 'calc-expression', 'calc-learning-note', 'calculator-modal', 'correct-journal-content', 'data-integrity-banner', 'diagnostic-box', 'diagnostic-list', 'diagnostic-summary', 'eval-btn-0', 'eval-btn-2', 'eval-btn-3', 'eval-instruction', 'explanation-reference-list', 'explanation-reference-policy', 'hint-box', 'journal-mode-section', 'journal-rows', 'journal-account-selection-help', 'learning-achievement-count', 'learning-growth-card', 'learning-next-goal', 'learning-next-stage-body', 'learning-next-stage-card', 'learning-next-stage-kicker', 'learning-next-stage-link', 'learning-next-stage-status', 'learning-next-stage-title', 'learning-overall-bar', 'learning-overall-level', 'learning-overall-progress-text', 'learning-overall-title', 'learning-studied-count', 'learning-today-summary', 'learning-toast', 'learning-topic-list', 'learning-weakest-topic', 'mode-journal-btn', 'mode-table-btn', 'problem-category', 'problem-difficulty', 'problem-id-text', 'problem-statement', 'problem-topic-level', 'progress-bar', 'progress-import-input', 'progress-text', 'quiz-card', 'remove-row-btn', 'result-box', 'result-detail', 'result-title', 'scenario-amount-section', 'scenario-amount-text', 'scenario-confusion-section', 'scenario-confusion-text', 'scenario-cue-list', 'scenario-guide-box', 'scenario-reading-text', 'scenario-reason-text', 'stat-due', 'stat-streak', 'stat-total', 'stat-unstudied', 'submit-btn', 'table-exercise-host', 'table-exercise-wrapper', 'table-explanation-box', 'table-hint-box', 'table-mode-section', 'table-problem-category', 'table-problem-givens', 'table-problem-givens-block', 'table-problem-id-text', 'table-problem-instruction', 'table-problem-statement', 'table-problem-targets', 'table-problem-targets-block', 'table-problem-topic-level', 'table-quiz-card', 'table-result-box', 'table-result-detail', 'table-result-title', 'table-segment-nav', 'table-submit-btn', 'table-toc-card', 'table-toc-details', 'table-toc-groups', 'table-workspace-help', 'table-workspace-title', 'toc-card', 'toc-details', 'toc-groups']);
+const REQUIRED_DOM_IDS = Object.freeze(['account-effect-list', 'account-nature-details', 'add-row-btn', 'backup-status', 'calc-apply-bar', 'calc-apply-debit', 'calc-apply-table', 'calc-apply-credit', 'calc-help-btn', 'calc-display', 'calc-expression', 'calc-learning-note', 'calculator-modal', 'correct-journal-content', 'data-integrity-banner', 'diagnostic-box', 'diagnostic-list', 'diagnostic-summary', 'eval-btn-0', 'eval-btn-2', 'eval-btn-3', 'eval-instruction', 'explanation-reference-list', 'explanation-reference-policy', 'hint-box', 'journal-mode-section', 'journal-rows', 'journal-account-selection-help', 'learning-achievement-count', 'learning-growth-card', 'learning-next-goal', 'learning-next-stage-body', 'learning-next-stage-card', 'learning-next-stage-kicker', 'learning-next-stage-link', 'learning-next-stage-status', 'learning-next-stage-title', 'learning-overall-bar', 'learning-overall-level', 'learning-overall-progress-text', 'learning-overall-title', 'learning-studied-count', 'learning-today-summary', 'learning-toast', 'learning-topic-list', 'learning-support-details', 'study-status-details', 'study-status-summary', 'journal-status-panel', 'table-status-panel', 'learning-weakest-topic', 'mode-journal-btn', 'mode-table-btn', 'problem-category', 'problem-difficulty', 'problem-id-text', 'problem-statement', 'problem-topic-level', 'progress-bar', 'progress-import-input', 'progress-text', 'quiz-card', 'remove-row-btn', 'result-box', 'result-detail', 'result-title', 'scenario-amount-section', 'scenario-amount-text', 'scenario-confusion-section', 'scenario-confusion-text', 'scenario-cue-list', 'scenario-guide-box', 'scenario-reading-text', 'scenario-reason-text', 'stat-due', 'stat-streak', 'stat-total', 'stat-unstudied', 'submit-btn', 'table-exercise-host', 'table-exercise-wrapper', 'table-explanation-box', 'table-hint-box', 'table-mode-section', 'table-problem-category', 'table-problem-givens', 'table-problem-givens-block', 'table-problem-id-text', 'table-problem-instruction', 'table-problem-statement', 'table-problem-targets', 'table-problem-targets-block', 'table-problem-topic-level', 'table-quiz-card', 'table-result-box', 'table-result-detail', 'table-result-title', 'table-segment-nav', 'table-submit-btn', 'table-toc-card', 'table-toc-details', 'table-toc-groups', 'table-workspace-help', 'table-workspace-title', 'toc-card', 'toc-details', 'toc-groups']);
 
 function validateUiStructure() {
   const issues = [];
@@ -11320,6 +11430,13 @@ function validateUiStructure() {
   if (stageLink && !stageLink.hidden && Number(Object.keys(Runtime.state.progress || {}).length + Object.keys(Runtime.state.tableProgress || {}).length) < 240) {
     issues.push('3級一巡前に2級公式リンクが常時表示されています');
   }
+  const practiceArea = document.getElementById('practice-area');
+  const statusDetails = document.getElementById('study-status-details');
+  if (!practiceArea || !statusDetails) issues.push('問題演習と現在ステータスの分離構造がありません');
+  if (practiceArea?.contains(document.getElementById('learning-growth-card'))) issues.push('学習ステータスが問題演習領域内に混在しています');
+  const calcHelp = document.getElementById('calc-learning-note');
+  if (calcHelp && !calcHelp.hidden) issues.push('電卓の操作説明が初期状態で表示されています');
+  if (typeof syncCalculatorContext !== 'function') issues.push('電卓のモード別反映ボタン制御がありません');
   return issues;
 }
 
@@ -11411,7 +11528,11 @@ function validateCalculatorUtilities() {
   if (!keys.includes('AC') || !keys.includes('C')) issues.push('電卓のAC/Cキーが不足しています');
   if (!document.getElementById('calc-expression')) issues.push('電卓の演算子・式表示欄がありません');
   const calcNote = String(document.getElementById('calc-learning-note')?.textContent || '');
-  if (!calcNote.includes('100で割る')) issues.push('電卓の％キー仕様が利用者向けに明示されていません');
+  const percentButtonLabel = String(document.querySelector('.calc-grid [data-value="%"]')?.getAttribute('aria-label') || '');
+  // 操作説明は通常時は隠してよい。ヘルプ本文または％キーのaria-labelのどちらかで仕様を確認できればよい。
+  if (!calcNote.includes('100で割る') && !percentButtonLabel.includes('100で割る')) {
+    issues.push('電卓の％キー仕様をヘルプまたはaria-labelから確認できません');
+  }
   const percent50 = calculatePercentValue(50);
   if (!Number.isFinite(percent50) || percent50 !== 0.5) issues.push('電卓の％単項処理（50→0.5）異常');
 
@@ -11438,6 +11559,13 @@ function validateCalculatorUtilities() {
   if (!multiply.ok || multiply.value !== 36) issues.push('電卓の乗算ユーティリティ異常');
   if (!divide.ok || divide.value !== 4) issues.push('電卓の除算ユーティリティ異常');
   if (calculateBinaryOperation(1, '/', 0).ok) issues.push('電卓の0除算拒否に失敗');
+  const exactAdd = calculateBinaryOperation('0.1', '+', '0.2');
+  if (!exactAdd.ok || exactAdd.text !== '0.3') issues.push('固定小数点加算異常（0.1＋0.2）');
+  const oneThird = calculateBinaryOperation('1', '/', '3');
+  if (!oneThird.ok || oneThird.text !== '0.3333333333') issues.push('固定小数点除算の10桁丸め異常（1÷3）');
+  const twoThirds = calculateBinaryOperation('2', '/', '3');
+  if (!twoThirds.ok || twoThirds.text !== '0.6666666667') issues.push('固定小数点除算の四捨五入異常（2÷3）');
+  if (calculatePercentText('10') !== '0.1') issues.push('固定小数点％処理異常（10％→0.1）');
   return issues;
 }
 
@@ -11448,107 +11576,202 @@ function validateRuntimeShape() {
     if (!Object.isSealed(Runtime[key])) issues.push(`Runtime.${key}がsealされていません`);
   });
   if (!Object.isSealed(PerformanceDiagnostics)) issues.push('PerformanceDiagnosticsがsealされていません');
+  if (!Object.isFrozen(RUNTIME_ACTION)) issues.push('RUNTIME_ACTIONがfreezeされていません');
+  if (typeof dispatchRuntimeLifecycle !== 'function' || typeof reduceRuntimeLifecycle !== 'function') issues.push('Runtime主要状態遷移の一元化関数がありません');
   return issues;
 }
 
 // ===== Integrity / QA: 二段階起動時自己検査 =====
-// critical: 問題バンク・Hash・必須DOM・Runtime形状。描画前に同期実行する。
-// detailed: 解説整合、入力・バックアップ・電卓・学習レベル等。初期描画後に実行する。
+// ユーザー向け赤警告は「学習結果へ直接影響する重大異常」だけに限定する。
+// UI補助・性能診断・バックアップ自己テスト等は開発者向けadvisoryとしてconsoleへ残す。
 const IntegrityRuntime = { critical: null, detailed: null, detailedScheduled: false };
 
 function integrityNowMs() {
   return (typeof performance !== 'undefined' && typeof performance.now === 'function') ? performance.now() : Date.now();
 }
 
-function collectIntegrityIssues() {
+function validateEssentialUiStructure() {
+  const issues = [];
+  const essentialIds = [
+    'mode-journal-btn', 'mode-table-btn', 'journal-mode-section', 'table-mode-section',
+    'quiz-card', 'journal-rows', 'submit-btn', 'result-box',
+    'table-quiz-card', 'table-exercise-host', 'table-submit-btn', 'table-result-box'
+  ];
+  essentialIds.forEach(id => {
+    if (!document.getElementById(id)) issues.push(`必須UI要素がありません: ${id}`);
+  });
+  const seen = new Set();
+  document.querySelectorAll('[id]').forEach(el => {
+    if (seen.has(el.id)) issues.push(`HTML id重複: ${el.id}`);
+    seen.add(el.id);
+  });
+  return issues;
+}
+
+function collectIntegrityBlockingIssues() {
   return [
-    ...(IntegrityRuntime.critical?.issues || []),
-    ...(IntegrityRuntime.detailed?.issues || [])
+    ...(IntegrityRuntime.critical?.blockingIssues || []),
+    ...(IntegrityRuntime.detailed?.blockingIssues || [])
   ];
 }
 
+function collectIntegrityAdvisories() {
+  return [
+    ...(IntegrityRuntime.critical?.advisoryIssues || []),
+    ...(IntegrityRuntime.detailed?.advisoryIssues || [])
+  ];
+}
+
+// 互換用。QAコードからは全問題をまとめて参照できる。
+function collectIntegrityIssues() {
+  return [...collectIntegrityBlockingIssues(), ...collectIntegrityAdvisories()];
+}
+
 function renderIntegrityStatus() {
-  const issues = collectIntegrityIssues();
+  const blockingIssues = collectIntegrityBlockingIssues();
   const banner = document.getElementById('data-integrity-banner');
-  if (issues.length) {
+  if (blockingIssues.length) {
     if (banner) {
-      banner.textContent = `教材データまたは採点診断の整合性エラーを検出しました。\n${issues.join('\n')}`;
+      banner.textContent = `教材データまたは採点機能に重大な整合性エラーを検出しました。\n${blockingIssues.join('\n')}`;
       banner.classList.add('visible');
     }
   } else if (banner) {
     banner.textContent = '';
     banner.classList.remove('visible');
   }
-  return issues;
+  return blockingIssues;
 }
 
 function runCriticalIntegrityCheck() {
   const startedAt = integrityNowMs();
-  const result = validateQuestionBanks();
-  const runtimeShapeIssues = validateRuntimeShape();
-  const uiStructureIssues = validateUiStructure();
-  result.runtimeShapeIssues = runtimeShapeIssues;
-  result.uiStructureIssues = uiStructureIssues;
-  result.issues.push(...runtimeShapeIssues.map(issue => `実行時状態: ${issue}`));
-  result.issues.push(...uiStructureIssues.map(issue => `UI: ${issue}`));
-  result.durationMs = Math.max(0, integrityNowMs() - startedAt);
+  const questionResult = validateQuestionBanks();
+  const essentialUiIssues = validateEssentialUiStructure();
+  const blockingIssues = [
+    ...questionResult.issues.map(issue => `教材データ: ${issue}`),
+    ...essentialUiIssues.map(issue => `必須UI: ${issue}`)
+  ];
+  const result = {
+    ...questionResult,
+    essentialUiIssues,
+    blockingIssues,
+    advisoryIssues: [],
+    issues: [...blockingIssues],
+    durationMs: Math.max(0, integrityNowMs() - startedAt)
+  };
   IntegrityRuntime.critical = result;
-  const issues = renderIntegrityStatus();
-  if (issues.length) console.error('起動時必須整合性チェックエラー', result);
+  renderIntegrityStatus();
+  if (blockingIssues.length) console.error('起動時必須整合性チェックエラー', result);
   else console.info(`起動時必須整合性チェック OK (${result.durationMs.toFixed(1)}ms)`, result);
   return result;
 }
 
+function runDetailedNonDomIntegritySuite() {
+  return {
+    diagnosticIssues: validateDiagnosticEngine(),
+    classificationIssues: validateAccountClassifications(),
+    explanationIssues: validateExplanationStructure(),
+    explanationAlignmentIssues: validateExplanationAnswerAlignment(),
+    learningSupportIssues: validateLearningSupport(),
+    numericInputIssues: validateNumericInputUtilities(),
+    backupIssues: validateBackupUtilities(),
+    storagePersistenceIssues: validateStoragePersistenceUtilities(),
+    confusionNoteIssues: validateConfusionNoteCatalog(),
+    referenceCatalogIssues: validateContentReferenceCatalog(),
+    sourceAuditedCaseIssues: validateSourceAuditedCoreCases(),
+    sourceAuditedTextIssues: validateSourceAuditedTextExpectations(),
+    tablePresentationIssues: validateTablePresentationUtilities(),
+    learningLevelIssues: validateLearningLevelSystem(),
+    runtimeLifecycleIssues: validateRuntimeLifecycleTransitions()
+  };
+}
+
+function runDetailedDomRuntimeIntegritySuite() {
+  return {
+    storageFootprintIssues: validateStorageFootprintAndRuntimeBoundary(),
+    performanceDiagnosticsIssues: validatePerformanceDiagnosticsUtilities(),
+    visibleClaimIssues: validateVisibleProductClaims(),
+    uiStructureIssues: validateUiStructure(),
+    runtimeShapeIssues: validateRuntimeShape(),
+    calculatorIssues: validateCalculatorUtilities()
+  };
+}
+
+function buildDetailedIntegritySeverity(all = {}) {
+  const values = key => Array.isArray(all[key]) ? all[key] : [];
+  // 重大: 採点、問題解釈、金額入力、主要状態遷移に直接影響するもの。
+  const blockingIssues = [
+    ...values('diagnosticIssues').map(issue => `採点診断: ${issue}`),
+    ...values('explanationAlignmentIssues').map(issue => `解説・正答整合: ${issue}`),
+    ...values('numericInputIssues').map(issue => `金額入力: ${issue}`),
+    ...values('runtimeLifecycleIssues').map(issue => `状態遷移: ${issue}`)
+  ];
+
+  // 軽微/開発者向け: 教材補助、UI品質、性能、バックアップ自己テスト等。
+  const advisoryIssues = [
+    ...values('classificationIssues').map(account => `勘定科目分類未登録: ${account}`),
+    ...values('explanationIssues').map(issue => `解説構造: ${issue}`),
+    ...values('learningSupportIssues').map(issue => `学習支援: ${issue}`),
+    ...values('backupIssues').map(issue => `バックアップ: ${issue}`),
+    ...values('storagePersistenceIssues').map(issue => `ブラウザ保存: ${issue}`),
+    ...values('storageFootprintIssues').map(issue => `保存容量境界: ${issue}`),
+    ...values('performanceDiagnosticsIssues').map(issue => `性能診断: ${issue}`),
+    ...values('confusionNoteIssues').map(issue => `混同防止解説: ${issue}`),
+    ...values('referenceCatalogIssues').map(issue => `参照資料: ${issue}`),
+    ...values('sourceAuditedCaseIssues').map(issue => `重点論点監査: ${issue}`),
+    ...values('sourceAuditedTextIssues').map(issue => `重点説明監査: ${issue}`),
+    ...values('visibleClaimIssues').map(issue => `表示表現: ${issue}`),
+    ...values('tablePresentationIssues').map(issue => `表問題表示: ${issue}`),
+    ...values('uiStructureIssues').map(issue => `UI品質: ${issue}`),
+    ...values('runtimeShapeIssues').map(issue => `実装構造: ${issue}`),
+    ...values('calculatorIssues').map(issue => `電卓QA: ${issue}`),
+    ...values('learningLevelIssues').map(issue => `学習レベル: ${issue}`)
+  ];
+  return { blockingIssues, advisoryIssues };
+}
+
+function validateIntegritySeverityRouting() {
+  const issues = [];
+  const calcOnly = buildDetailedIntegritySeverity({ calculatorIssues: ['％キー説明'] });
+  if (calcOnly.blockingIssues.length !== 0 || !calcOnly.advisoryIssues.some(x => x.includes('電卓QA'))) {
+    issues.push('電卓・UI補助QAがユーザー向け重大警告へ誤分類されています');
+  }
+  const uiOnly = buildDetailedIntegritySeverity({ uiStructureIssues: ['補助表示'] });
+  if (uiOnly.blockingIssues.length !== 0 || !uiOnly.advisoryIssues.some(x => x.includes('UI品質'))) {
+    issues.push('UI品質QAがユーザー向け重大警告へ誤分類されています');
+  }
+  const scoring = buildDetailedIntegritySeverity({ numericInputIssues: ['数値入力異常'] });
+  if (!scoring.blockingIssues.some(x => x.includes('金額入力'))) {
+    issues.push('採点に影響する数値入力異常が重大警告へ分類されていません');
+  }
+  return issues;
+}
+
 function runDetailedIntegrityCheck() {
   const startedAt = integrityNowMs();
-  const result = { issues: [] };
-  const diagnosticIssues = validateDiagnosticEngine();
-  const classificationIssues = validateAccountClassifications();
-  const explanationIssues = validateExplanationStructure();
-  const explanationAlignmentIssues = validateExplanationAnswerAlignment();
-  const learningSupportIssues = validateLearningSupport();
-  const numericInputIssues = validateNumericInputUtilities();
-  const backupIssues = validateBackupUtilities();
-  const storagePersistenceIssues = validateStoragePersistenceUtilities();
-  const storageFootprintIssues = validateStorageFootprintAndRuntimeBoundary();
-  const performanceDiagnosticsIssues = validatePerformanceDiagnosticsUtilities();
-  const confusionNoteIssues = validateConfusionNoteCatalog();
-  const referenceCatalogIssues = validateContentReferenceCatalog();
-  const sourceAuditedCaseIssues = validateSourceAuditedCoreCases();
-  const sourceAuditedTextIssues = validateSourceAuditedTextExpectations();
-  const visibleClaimIssues = validateVisibleProductClaims();
-  const tablePresentationIssues = validateTablePresentationUtilities();
-  const calculatorIssues = validateCalculatorUtilities();
-  const learningLevelIssues = validateLearningLevelSystem();
-  Object.assign(result, {
-    diagnosticIssues, classificationIssues, explanationIssues, explanationAlignmentIssues,
-    learningSupportIssues, numericInputIssues, backupIssues, storagePersistenceIssues, storageFootprintIssues, performanceDiagnosticsIssues, confusionNoteIssues,
-    referenceCatalogIssues, sourceAuditedCaseIssues, sourceAuditedTextIssues,
-    visibleClaimIssues, tablePresentationIssues, calculatorIssues, learningLevelIssues
-  });
-  result.issues.push(...diagnosticIssues.map(issue => `誤答診断: ${issue}`));
-  result.issues.push(...classificationIssues.map(account => `勘定科目分類未登録: ${account}`));
-  result.issues.push(...explanationIssues.map(issue => `解説構造: ${issue}`));
-  result.issues.push(...explanationAlignmentIssues.map(issue => `解説・正答整合: ${issue}`));
-  result.issues.push(...learningSupportIssues.map(issue => `学習支援: ${issue}`));
-  result.issues.push(...numericInputIssues.map(issue => `金額入力: ${issue}`));
-  result.issues.push(...backupIssues.map(issue => `バックアップ: ${issue}`));
-  result.issues.push(...storagePersistenceIssues.map(issue => `ブラウザ保存: ${issue}`));
-  result.issues.push(...storageFootprintIssues.map(issue => `保存容量境界: ${issue}`));
-  result.issues.push(...performanceDiagnosticsIssues.map(issue => `性能診断: ${issue}`));
-  result.issues.push(...confusionNoteIssues.map(issue => `混同防止解説: ${issue}`));
-  result.issues.push(...referenceCatalogIssues.map(issue => `参照資料: ${issue}`));
-  result.issues.push(...sourceAuditedCaseIssues.map(issue => `重点論点監査: ${issue}`));
-  result.issues.push(...sourceAuditedTextIssues.map(issue => `重点説明監査: ${issue}`));
-  result.issues.push(...visibleClaimIssues.map(issue => `表示表現: ${issue}`));
-  result.issues.push(...tablePresentationIssues.map(issue => `表問題表示: ${issue}`));
-  result.issues.push(...calculatorIssues.map(issue => `電卓: ${issue}`));
-  result.issues.push(...learningLevelIssues.map(issue => `学習レベル: ${issue}`));
-  result.durationMs = Math.max(0, integrityNowMs() - startedAt);
+  const nonDom = runDetailedNonDomIntegritySuite();
+  const domRuntime = runDetailedDomRuntimeIntegritySuite();
+  const all = { ...nonDom, ...domRuntime };
+  const severity = buildDetailedIntegritySeverity(all);
+  const blockingIssues = severity.blockingIssues;
+  const advisoryIssues = severity.advisoryIssues;
+  const severityRoutingIssues = validateIntegritySeverityRouting();
+  advisoryIssues.push(...severityRoutingIssues.map(issue => `警告分類: ${issue}`));
+
+  const result = {
+    ...all,
+    blockingIssues,
+    advisoryIssues,
+    issues: [...blockingIssues, ...advisoryIssues],
+    durationMs: Math.max(0, integrityNowMs() - startedAt)
+  };
   IntegrityRuntime.detailed = result;
   renderIntegrityStatus();
-  if (result.issues.length) console.error('起動時詳細整合性チェックエラー', result);
-  else console.info(`起動時詳細整合性チェック OK (${result.durationMs.toFixed(1)}ms)`, result);
+
+  if (blockingIssues.length) console.error('起動時詳細整合性チェック重大エラー', result);
+  if (advisoryIssues.length) console.warn('起動時詳細QA advisory', { advisoryIssues, durationMs: result.durationMs });
+  if (!blockingIssues.length && !advisoryIssues.length) {
+    console.info(`起動時詳細整合性チェック OK (${result.durationMs.toFixed(1)}ms)`, result);
+  }
   return result;
 }
 
@@ -11561,7 +11784,13 @@ function scheduleDetailedIntegrityCheck() {
       runDetailedIntegrityCheck();
     } catch (error) {
       console.error('起動時詳細整合性チェックの実行に失敗しました。', error);
-      IntegrityRuntime.detailed = { issues: [`詳細自己検査の実行に失敗: ${error instanceof Error ? error.message : String(error)}`] };
+      const message = `詳細自己検査の実行に失敗: ${error instanceof Error ? error.message : String(error)}`;
+      // 詳細QA自体の失敗は、教材・採点の破損を意味しないためユーザー向け赤警告にはしない。
+      IntegrityRuntime.detailed = {
+        blockingIssues: [],
+        advisoryIssues: [message],
+        issues: [message]
+      };
       renderIntegrityStatus();
     }
   };
@@ -11580,13 +11809,19 @@ function scheduleDetailedIntegrityCheck() {
 function runIntegrityCheck() {
   const critical = runCriticalIntegrityCheck();
   const detailed = runDetailedIntegrityCheck();
-  return { critical, detailed, issues: collectIntegrityIssues() };
+  return {
+    critical,
+    detailed,
+    blockingIssues: collectIntegrityBlockingIssues(),
+    advisoryIssues: collectIntegrityAdvisories(),
+    issues: collectIntegrityIssues()
+  };
 }
 
 deepFreeze(QUESTION_DATABASE);
 deepFreeze(TABLE_DATABASE);
 
-const APP_VERSION = 'v10.5';
+const APP_VERSION = 'v10.8';
 const STORAGE_SCHEMA_VERSION = 3;
 const COMPATIBLE_STORAGE_SCHEMA_VERSIONS = new Set([2, 3]);
 const JOURNAL_BANK_VERSION = 'v7.2';
@@ -11667,6 +11902,8 @@ function utf8ByteLength(value) {
 
 function showStoragePersistenceFailure(message, title = '保存エラー') {
   if (typeof setBackupStatus === 'function') setBackupStatus(message, 'error');
+  const support = document.getElementById('learning-support-details');
+  if (support) support.open = true;
   const details = document.getElementById('backup-details');
   if (details) details.open = true;
 
@@ -12001,6 +12238,89 @@ function createRuntime() {
 
 const Runtime = createRuntime();
 
+const RUNTIME_ACTION = Object.freeze({
+  JOURNAL_LOAD: 'JOURNAL_LOAD',
+  JOURNAL_ANSWERED: 'JOURNAL_ANSWERED',
+  JOURNAL_EVALUATED: 'JOURNAL_EVALUATED',
+  TABLE_LOAD: 'TABLE_LOAD',
+  TABLE_ANSWERED: 'TABLE_ANSWERED'
+});
+
+/**
+ * 主要な問題ライフサイクルだけを純粋関数で遷移させる。
+ * DOM表示用の一時状態すべてをReducerへ押し込まず、「問題を開く・採点する・自己評価を終える」
+ * という将来も壊したくない境界だけを一元化する。
+ */
+function reduceRuntimeLifecycle(snapshot, action) {
+  const next = {
+    journal: { ...(snapshot?.journal || {}) },
+    table: { ...(snapshot?.table || {}) }
+  };
+  switch (action?.type) {
+    case RUNTIME_ACTION.JOURNAL_LOAD:
+      next.journal.currentQuestionIndex = Number.isInteger(action.index) ? action.index : -1;
+      next.journal.isAnswered = false;
+      next.journal.isEvalCompleted = false;
+      next.journal.currentErrorType = 'NONE';
+      next.journal.lastFocusedInput = null;
+      break;
+    case RUNTIME_ACTION.JOURNAL_ANSWERED:
+      next.journal.isAnswered = true;
+      next.journal.currentErrorType = typeof action.errorType === 'string' ? action.errorType : 'NONE';
+      break;
+    case RUNTIME_ACTION.JOURNAL_EVALUATED:
+      next.journal.isEvalCompleted = true;
+      break;
+    case RUNTIME_ACTION.TABLE_LOAD:
+      next.table.currentIndex = Number.isInteger(action.index) ? action.index : -1;
+      next.table.answered = false;
+      next.table.lastFocusedInput = null;
+      next.table.viewPreference = 'auto';
+      next.table.segmentIndex = 0;
+      next.table.hintLevel = 0;
+      next.table.draft = {};
+      next.table.viewMode = action.viewMode === 'compact' ? 'compact' : 'full';
+      break;
+    case RUNTIME_ACTION.TABLE_ANSWERED:
+      next.table.answered = true;
+      break;
+    default:
+      break;
+  }
+  return next;
+}
+
+function dispatchRuntimeLifecycle(action) {
+  const next = reduceRuntimeLifecycle({ journal: Runtime.journal, table: Runtime.table }, action);
+  Object.assign(Runtime.journal, next.journal);
+  Object.assign(Runtime.table, next.table);
+  return next;
+}
+
+function validateRuntimeLifecycleTransitions() {
+  const issues = [];
+  const sample = {
+    journal: { currentQuestionIndex: 5, isAnswered: true, isEvalCompleted: true, currentErrorType: 'CONCEPT', lastFocusedInput: {} },
+    table: { currentIndex: 3, answered: true, lastFocusedInput: {}, viewMode: 'compact', viewPreference: 'manual', segmentIndex: 2, hintLevel: 2, draft: { a: '1' } }
+  };
+  const loadedJournal = reduceRuntimeLifecycle(sample, { type: RUNTIME_ACTION.JOURNAL_LOAD, index: 10 });
+  if (loadedJournal.journal.currentQuestionIndex !== 10 || loadedJournal.journal.isAnswered || loadedJournal.journal.isEvalCompleted || loadedJournal.journal.currentErrorType !== 'NONE' || loadedJournal.journal.lastFocusedInput !== null) {
+    issues.push('仕訳問題ロード時の状態遷移が不正です');
+  }
+  const answeredJournal = reduceRuntimeLifecycle(loadedJournal, { type: RUNTIME_ACTION.JOURNAL_ANSWERED, errorType: 'CALCULATION' });
+  if (!answeredJournal.journal.isAnswered || answeredJournal.journal.currentErrorType !== 'CALCULATION') issues.push('仕訳採点時の状態遷移が不正です');
+  const evaluatedJournal = reduceRuntimeLifecycle(answeredJournal, { type: RUNTIME_ACTION.JOURNAL_EVALUATED });
+  if (!evaluatedJournal.journal.isEvalCompleted) issues.push('仕訳自己評価完了時の状態遷移が不正です');
+
+  const loadedTable = reduceRuntimeLifecycle(sample, { type: RUNTIME_ACTION.TABLE_LOAD, index: 7, viewMode: 'full' });
+  if (loadedTable.table.currentIndex !== 7 || loadedTable.table.answered || loadedTable.table.lastFocusedInput !== null || loadedTable.table.viewPreference !== 'auto' || loadedTable.table.segmentIndex !== 0 || loadedTable.table.hintLevel !== 0 || Object.keys(loadedTable.table.draft || {}).length !== 0 || loadedTable.table.viewMode !== 'full') {
+    issues.push('表問題ロード時の状態遷移が不正です');
+  }
+  const answeredTable = reduceRuntimeLifecycle(loadedTable, { type: RUNTIME_ACTION.TABLE_ANSWERED });
+  if (!answeredTable.table.answered) issues.push('表問題採点時の状態遷移が不正です');
+  return issues;
+}
+
 function getTodayString() {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -12135,6 +12455,7 @@ function renderLearningDashboard() {
   setText('learning-overall-level', `Lv.${snapshot.overall.level}`);
   setText('learning-overall-title', snapshot.overall.title);
   setText('learning-today-summary', `今日 ${Runtime.state.todayCount || 0} / ${DAILY_STUDY_TARGET}問`);
+  setText('study-status-summary', `学習済み ${snapshot.totalStudied} / 240問・今日 ${Runtime.state.todayCount || 0} / ${DAILY_STUDY_TARGET}問`);
   const overallBar = document.getElementById('learning-overall-bar');
   if (overallBar) overallBar.style.width = `${Math.round(snapshot.overall.levelProgress * 100)}%`;
   setText('learning-overall-progress-text', snapshot.overall.level >= OVERALL_LEVEL_MAX
@@ -12361,7 +12682,7 @@ function loadQuestion(index) {
   const quizCard = document.getElementById('quiz-card');
 
   if (index === -1) {
-    Runtime.journal.currentQuestionIndex = -1;
+    dispatchRuntimeLifecycle({ type: RUNTIME_ACTION.JOURNAL_LOAD, index: -1 });
     renderCompletionMessage(quizCard);
     return;
   }
@@ -12369,10 +12690,7 @@ function loadQuestion(index) {
   ensureQuizCardShell();
 
   if (index < 0 || index >= QUESTION_DATABASE.length) index = 0;
-  Runtime.journal.currentQuestionIndex = index;
-  Runtime.journal.isAnswered = false;
-  Runtime.journal.isEvalCompleted = false;
-  Runtime.journal.lastFocusedInput = null;
+  dispatchRuntimeLifecycle({ type: RUNTIME_ACTION.JOURNAL_LOAD, index });
 
   setEvalButtonsDisabled(true);
 
@@ -13064,8 +13382,12 @@ function checkAnswer() {
   const resultDetail = document.getElementById('result-detail');
   const correctJournalContent = document.getElementById('correct-journal-content');
 
+  const diagnostic = isAllCorrect ? null : diagnoseJournalAnswer(debitRes.entries, creditRes.entries, q.debit, q.credit);
+  dispatchRuntimeLifecycle({
+    type: RUNTIME_ACTION.JOURNAL_ANSWERED,
+    errorType: diagnostic?.errorType || 'NONE'
+  });
   resultBox.style.display = 'block';
-  Runtime.journal.isAnswered = true;
 
   setInputFieldsDisabled(true);
   setEvalButtonsDisabled(false, isAllCorrect);
@@ -13074,13 +13396,10 @@ function checkAnswer() {
     resultBox.className = 'result-box correct';
     resultTitle.innerText = '正解';
     resultDetail.innerText = '借方・貸方の勘定科目および金額が完全に一致しています。';
-    Runtime.journal.currentErrorType = 'NONE';
     renderJournalDiagnostic(null);
   } else {
     resultBox.className = 'result-box incorrect';
     resultTitle.innerText = '不正解';
-    const diagnostic = diagnoseJournalAnswer(debitRes.entries, creditRes.entries, q.debit, q.credit);
-    Runtime.journal.currentErrorType = diagnostic.errorType;
     resultDetail.innerText = diagnostic.summary;
     renderJournalDiagnostic(diagnostic);
   }
@@ -13566,7 +13885,7 @@ function applySelfEval(quality) {
   const after = buildLearningSnapshot(Runtime.state);
   const achievements = markNewAchievements(after);
 
-  Runtime.journal.isEvalCompleted = true;
+  dispatchRuntimeLifecycle({ type: RUNTIME_ACTION.JOURNAL_EVALUATED });
   StorageManager.saveState(Runtime.state);
   updateDashboard();
   announceLearningGrowth({
@@ -14109,10 +14428,9 @@ function setTableSegment(index) {
 
 function loadTableQuestion(index) {
   if (index < 0 || index >= TABLE_DATABASE.length) index = 0;
-  Runtime.table.currentIndex = index; Runtime.table.answered = false; Runtime.table.lastFocusedInput = null;
-  Runtime.table.viewPreference = 'auto'; Runtime.table.segmentIndex = 0; Runtime.table.hintLevel = 0; Runtime.table.draft = {};
+  const initialViewMode = getResponsiveTableView();
+  dispatchRuntimeLifecycle({ type: RUNTIME_ACTION.TABLE_LOAD, index, viewMode: initialViewMode });
   const q = TABLE_DATABASE[index];
-  Runtime.table.viewMode = getResponsiveTableView();
   renderCurrentTopicLevel('table', q.id, 'table-problem-topic-level');
   document.getElementById('table-problem-category').innerText = q.category;
   document.getElementById('table-problem-id-text').innerText = `ID: ${q.id} (${index + 1} / ${TABLE_DATABASE.length})`;
@@ -14200,7 +14518,7 @@ function checkTableAnswer() {
     }
   });
 
-  Runtime.table.answered = true;
+  dispatchRuntimeLifecycle({ type: RUNTIME_ACTION.TABLE_ANSWERED });
   document.getElementById('table-submit-btn').disabled = true;
   renderTableQuestionTable(q);
 
@@ -14307,10 +14625,38 @@ function applyCalcToTable() {
 
 // === 内蔵電卓（計算機）ロジック ===
 
+function toggleCalculatorHelp() {
+  const note = document.getElementById('calc-learning-note');
+  const button = document.getElementById('calc-help-btn');
+  if (!note) return;
+  note.hidden = !note.hidden;
+  if (button) button.setAttribute('aria-expanded', String(!note.hidden));
+}
+
+function syncCalculatorContext() {
+  const isTable = Runtime.mode === 'table';
+  const debit = document.getElementById('calc-apply-debit');
+  const credit = document.getElementById('calc-apply-credit');
+  const table = document.getElementById('calc-apply-table');
+  const bar = document.getElementById('calc-apply-bar');
+  if (debit) debit.hidden = isTable;
+  if (credit) credit.hidden = isTable;
+  if (table) table.hidden = !isTable;
+  if (bar) bar.classList.toggle('table-mode', isTable);
+}
+
 function toggleCalculator() {
   const modal = document.getElementById('calculator-modal');
   if (!modal) return;
-  modal.style.display = (modal.style.display === 'block') ? 'none' : 'block';
+  syncCalculatorContext();
+  const opening = modal.style.display !== 'block';
+  if (opening) {
+    const note = document.getElementById('calc-learning-note');
+    const helpButton = document.getElementById('calc-help-btn');
+    if (note) note.hidden = true;
+    if (helpButton) helpButton.setAttribute('aria-expanded', 'false');
+  }
+  modal.style.display = opening ? 'block' : 'none';
 }
 
 function calculatorOperatorSymbol(op) {
@@ -14379,48 +14725,146 @@ function setCalculatorError(message) {
   calc.lastOp = null;
 }
 
-function roundCalculatorValue(value) {
-  if (!Number.isFinite(value)) return value;
-  return Math.round((value + Number.EPSILON) * 1e10) / 1e10;
+const CALCULATOR_DECIMAL_SCALE = 10;
+
+function decimalPow10(exp) {
+  return 10n ** BigInt(Math.max(0, Number(exp) || 0));
 }
 
-// ％キーは一般電卓の機種依存な演算子連動％ではなく、表示値÷100の単項処理とする。
-// 教材UIにも同じ仕様を明記し、calculateBinaryOperationとは独立させる。
+function decimalInputToPlainText(value) {
+  if (typeof value === 'bigint') return value.toString();
+  if (typeof value === 'number') {
+    if (!Number.isFinite(value)) return '';
+    return value.toFixed(CALCULATOR_DECIMAL_SCALE).replace(/\.?0+$/, '') || '0';
+  }
+  return String(value ?? '').trim();
+}
+
+function parseFixedDecimal(value) {
+  const text = decimalInputToPlainText(value);
+  const match = text.match(/^([+-]?)(\d+)(?:\.(\d+))?$/);
+  if (!match) return null;
+  const negative = match[1] === '-';
+  const fraction = match[3] || '';
+  const digits = `${match[2]}${fraction}`.replace(/^0+(?=\d)/, '') || '0';
+  let units = BigInt(digits);
+  if (negative && units !== 0n) units = -units;
+  return normalizeFixedDecimal({ units, scale: fraction.length });
+}
+
+function normalizeFixedDecimal(decimal) {
+  let units = BigInt(decimal?.units ?? 0);
+  let scale = Math.max(0, Math.floor(Number(decimal?.scale) || 0));
+  while (scale > 0 && units % 10n === 0n) {
+    units /= 10n;
+    scale -= 1;
+  }
+  if (units === 0n) scale = 0;
+  return { units, scale };
+}
+
+function roundFixedDecimalScale(decimal, maxScale = CALCULATOR_DECIMAL_SCALE) {
+  const normalized = normalizeFixedDecimal(decimal);
+  if (normalized.scale <= maxScale) return normalized;
+  const drop = normalized.scale - maxScale;
+  const divisor = decimalPow10(drop);
+  const sign = normalized.units < 0n ? -1n : 1n;
+  const absUnits = normalized.units < 0n ? -normalized.units : normalized.units;
+  let quotient = absUnits / divisor;
+  const remainder = absUnits % divisor;
+  if (remainder * 2n >= divisor) quotient += 1n;
+  return normalizeFixedDecimal({ units: quotient * sign, scale: maxScale });
+}
+
+function fixedDecimalToText(decimal) {
+  const normalized = normalizeFixedDecimal(decimal);
+  const negative = normalized.units < 0n;
+  const absUnits = negative ? -normalized.units : normalized.units;
+  const raw = absUnits.toString();
+  if (normalized.scale === 0) return `${negative ? '-' : ''}${raw}`;
+  const padded = raw.padStart(normalized.scale + 1, '0');
+  const integerPart = padded.slice(0, -normalized.scale) || '0';
+  const fractionPart = padded.slice(-normalized.scale);
+  return `${negative ? '-' : ''}${integerPart}.${fractionPart}`.replace(/\.?0+$/, '');
+}
+
+function alignFixedDecimals(left, right) {
+  const scale = Math.max(left.scale, right.scale);
+  return {
+    leftUnits: left.units * decimalPow10(scale - left.scale),
+    rightUnits: right.units * decimalPow10(scale - right.scale),
+    scale
+  };
+}
+
+function calculateFixedDecimal(leftValue, op, rightValue) {
+  const left = parseFixedDecimal(leftValue);
+  const right = parseFixedDecimal(rightValue);
+  if (!left || !right) return { ok: false, error: 'Error' };
+
+  let result;
+  if (op === '+' || op === '-') {
+    const aligned = alignFixedDecimals(left, right);
+    result = {
+      units: op === '+' ? aligned.leftUnits + aligned.rightUnits : aligned.leftUnits - aligned.rightUnits,
+      scale: aligned.scale
+    };
+  } else if (op === '*') {
+    result = { units: left.units * right.units, scale: left.scale + right.scale };
+  } else if (op === '/') {
+    if (right.units === 0n) return { ok: false, error: '0除算不可' };
+    const sign = (left.units < 0n) !== (right.units < 0n) ? -1n : 1n;
+    const leftAbs = left.units < 0n ? -left.units : left.units;
+    const rightAbs = right.units < 0n ? -right.units : right.units;
+    const numerator = leftAbs * decimalPow10(right.scale + CALCULATOR_DECIMAL_SCALE);
+    const denominator = rightAbs * decimalPow10(left.scale);
+    let quotient = numerator / denominator;
+    const remainder = numerator % denominator;
+    if (remainder * 2n >= denominator) quotient += 1n;
+    result = { units: quotient * sign, scale: CALCULATOR_DECIMAL_SCALE };
+  } else {
+    return { ok: false, error: 'Error' };
+  }
+
+  const rounded = roundFixedDecimalScale(result);
+  const resultText = fixedDecimalToText(rounded);
+  const numericValue = Number(resultText);
+  return Number.isFinite(numericValue)
+    ? { ok: true, text: resultText, value: numericValue }
+    : { ok: false, error: 'Error' };
+}
+
+
+function calculatePercentText(value) {
+  const result = calculateFixedDecimal(value, '/', '100');
+  return result.ok ? result.text : null;
+}
+
 function calculatePercentValue(value) {
-  const num = Number(value);
-  if (!Number.isFinite(num)) return NaN;
-  return roundCalculatorValue(num / 100);
+  const text = calculatePercentText(value);
+  return text == null ? NaN : Number(text);
 }
 
 /**
- * @param {number} left
+ * @param {number|string} left
  * @param {'+'|'-'|'*'|'/'} op
- * @param {number} right
+ * @param {number|string} right
  * @returns {CalculatorResult}
  */
 function calculateBinaryOperation(left, op, right) {
-  let result;
-  if (op === '+') result = left + right;
-  else if (op === '-') result = left - right;
-  else if (op === '*') result = left * right;
-  else if (op === '/') {
-    if (right === 0) return { ok: false, error: '0除算不可' };
-    result = left / right;
-  } else return { ok: false, error: 'Error' };
-  result = roundCalculatorValue(result);
-  return Number.isFinite(result) ? { ok: true, value: result } : { ok: false, error: 'Error' };
+  return calculateFixedDecimal(left, op, right);
 }
 
 function evaluatePendingCalculatorOperation({ rememberForRepeat = false } = {}) {
   const calc = Runtime.calculator;
   if (!calc.op || calc.prev === null) return true;
-  const current = Number(calc.current);
-  if (!Number.isFinite(current)) { setCalculatorError('Error'); return false; }
+  const current = String(calc.current);
+  if (!parseFixedDecimal(current)) { setCalculatorError('Error'); return false; }
   const pendingOp = calc.op;
-  const pendingLeft = calc.prev;
+  const pendingLeft = String(calc.prev);
   const evaluated = calculateBinaryOperation(pendingLeft, pendingOp, current);
   if (!evaluated.ok) { setCalculatorError(evaluated.error); return false; }
-  calc.current = String(evaluated.value);
+  calc.current = evaluated.text;
   if (rememberForRepeat) {
     calc.lastOp = pendingOp;
     calc.lastOperand = current;
@@ -14452,29 +14896,28 @@ function calcAction(val) {
     if (calc.op && calc.prev !== null && !calc.resetOnNext) {
       if (!evaluatePendingCalculatorOperation()) return updateCalcDisplay();
     }
-    calc.prev = Number(calc.current);
+    if (!parseFixedDecimal(calc.current)) { setCalculatorError('Error'); return updateCalcDisplay(); }
+    calc.prev = String(calc.current);
     calc.op = val;
     calc.resetOnNext = true;
     calc.lastOperand = null;
     calc.lastOp = null;
   } else if (val === '%') {
     if (calc.error) return updateCalcDisplay();
-    const percentValue = calculatePercentValue(calc.current);
-    if (Number.isFinite(percentValue)) calc.current = String(percentValue);
-    // ％は「表示値÷100」で得た値そのものを右辺として使用できる単項処理。
+    const percentText = calculatePercentText(calc.current);
+    if (percentText == null) { setCalculatorError('Error'); return updateCalcDisplay(); }
+    calc.current = percentText;
     calc.resetOnNext = false;
   } else if (val === '=') {
     if (calc.error) return updateCalcDisplay();
     if (calc.op && calc.prev !== null) {
-      // 演算子直後に＝を押した場合は、表示中の左辺を右辺にも使う。
       if (calc.resetOnNext) calc.current = String(calc.prev);
       if (evaluatePendingCalculatorOperation({ rememberForRepeat: true })) calc.resetOnNext = true;
     } else if (calc.lastOp && calc.lastOperand !== null) {
-      const left = Number(calc.current);
-      const evaluated = calculateBinaryOperation(left, calc.lastOp, calc.lastOperand);
+      const evaluated = calculateBinaryOperation(String(calc.current), calc.lastOp, String(calc.lastOperand));
       if (!evaluated.ok) setCalculatorError(evaluated.error);
       else {
-        calc.current = String(evaluated.value);
+        calc.current = evaluated.text;
         calc.resetOnNext = true;
       }
     }
@@ -14487,7 +14930,7 @@ function calcAction(val) {
       calc.lastOp = null;
     } else if (calc.current === '0') {
       calc.current = val === '00' ? '0' : val;
-    } else if (calc.current.replace('-', '').length + val.length <= 12) {
+    } else if (calc.current.replace(/[-.]/g, '').length + val.length <= 12) {
       calc.current += val;
     }
   }
@@ -14649,6 +15092,7 @@ function handleDelegatedAction(event) {
     case 'switch-mode': switchMode(trigger.dataset.mode); break;
     case 'toggle-hint': toggleHint(); break;
     case 'toggle-calculator': toggleCalculator(); break;
+    case 'toggle-calc-help': toggleCalculatorHelp(); break;
     case 'add-journal-row': addJournalRow(); break;
     case 'remove-last-journal-row': removeLastJournalRow(); break;
     case 'check-journal': checkAnswer(); break;
