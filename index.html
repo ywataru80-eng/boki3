@@ -916,7 +916,14 @@
     .table-answer-input.cell-correct { border-color: #16a34a; background: #f0fdf4; }
     .table-answer-input.cell-wrong { border-color: #dc2626; background: #fef2f2; }
     .table-given { font-variant-numeric: tabular-nums; font-weight: 600; }
-
+    .table-static-number {
+      display: block;
+      width: 100%;
+      min-width: 0;
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+      text-align: inherit;
+    }
     /* v10.14: 表問題では電卓を問題カード内に配置し、問題文・入力表へ重ねない。 */
     .calculator-floating-home { min-height: 0; }
     .table-calculator-slot:empty { display: none; }
@@ -942,7 +949,7 @@
     .table-correct-answer-note { margin: 0 0 8px; color: #475569; font-size: .76rem; line-height: 1.5; }
     .table-correct-answer-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
     .table-correct-answer-table td.corrected-answer-cell { background: #fff7ed; box-shadow: inset 0 0 0 2px #fb923c; }
-    .table-correct-value { display: inline-block; min-width: 0; font-variant-numeric: tabular-nums; font-weight: 700; white-space: nowrap; }
+    .table-correct-value { font-variant-numeric: tabular-nums; font-weight: 700; }
     .table-eval-instruction { margin-top: 12px; font-weight: 700; font-size: .75rem; }
     .table-primary-btn:disabled { opacity: .5; cursor: not-allowed; }
     .table-result-box {
@@ -2352,7 +2359,7 @@
 <script type="module">
 
 /*
- * ===== v10.14 内部アーキテクチャ方針 =====
+ * ===== v10.15 内部アーキテクチャ方針 =====
  * 配布物はGitHub Pagesへそのまま置ける単一HTMLを維持する。
  * 物理ファイルは分割せず、以下の責務を論理的に分離して扱う。
  *   1) Domain Data      : 仕訳200問・表40問・目次・勘定科目
@@ -11366,6 +11373,15 @@ const DISALLOWED_VISIBLE_PRODUCT_CLAIMS = Object.freeze([
   '最高峰の仕上がり',
   'Production Ready',
   '安心して公開',
+  '完全合格',
+  '最高水準',
+  '本試験そのまま',
+  '第3問で満点',
+  '満点を狙える',
+  '復習時間が半減',
+  '文字見切れが物理的に発生しない',
+  '非の打ち所がありません',
+  '文句なしに完成',
   '確実に合格できます',
   '一発合格できます',
   '合格に必要な実力の8〜9割',
@@ -11380,6 +11396,18 @@ function validateVisibleProductClaims() {
   return DISALLOWED_VISIBLE_PRODUCT_CLAIMS
     .filter(claim => visibleText.includes(claim))
     .map(claim => `根拠を限定していない表示があります: ${claim}`);
+}
+
+function validateRenderedAmountFitState() {
+  const issues = [];
+  document.querySelectorAll('[data-fit-overflow="true"]').forEach(element => {
+    const label = element.getAttribute('aria-label')
+      || element.closest('td')?.parentElement?.firstElementChild?.textContent
+      || element.className
+      || element.tagName;
+    issues.push(`表示幅に収まらない金額があります: ${String(label).trim()}`);
+  });
+  return issues;
 }
 
 function validateDomIdReferences() {
@@ -11462,7 +11490,9 @@ function validateUiStructure() {
   const calcHelp = document.getElementById('calc-learning-note');
   if (calcHelp && !calcHelp.hidden) issues.push('電卓の操作説明が初期状態で表示されています');
   if (typeof syncCalculatorContext !== 'function' || typeof syncCalculatorPlacement !== 'function') issues.push('電卓のモード別配置・反映制御がありません');
-  if (typeof fitTableAmountFont !== 'function') issues.push('表問題の金額欄に表示幅フィット処理がありません');
+  if (typeof fitTableAmountFont !== 'function' || typeof fitTableStaticNumberText !== 'function') {
+    issues.push('表問題の入力金額・固定金額に表示幅フィット処理がありません');
+  }
   if (typeof renderTableCorrectAnswer !== 'function') issues.push('表問題の不正解時に正しい完成表を表示する機構がありません');
   if (typeof applyTableSelfEval !== 'function') issues.push('表問題の復習用自己評価機構がありません');
   return issues;
@@ -11743,6 +11773,7 @@ function runDetailedDomRuntimeIntegritySuite() {
     storageFootprintIssues: validateStorageFootprintAndRuntimeBoundary(),
     performanceDiagnosticsIssues: validatePerformanceDiagnosticsUtilities(),
     visibleClaimIssues: validateVisibleProductClaims(),
+    amountFitIssues: validateRenderedAmountFitState(),
     uiStructureIssues: validateUiStructure(),
     runtimeShapeIssues: validateRuntimeShape(),
     calculatorIssues: validateCalculatorUtilities()
@@ -11773,6 +11804,7 @@ function buildDetailedIntegritySeverity(all = {}) {
     ...values('sourceAuditedCaseIssues').map(issue => `重点論点監査: ${issue}`),
     ...values('sourceAuditedTextIssues').map(issue => `重点説明監査: ${issue}`),
     ...values('visibleClaimIssues').map(issue => `表示表現: ${issue}`),
+    ...values('amountFitIssues').map(issue => `金額表示: ${issue}`),
     ...values('tablePresentationIssues').map(issue => `表問題表示: ${issue}`),
     ...values('uiStructureIssues').map(issue => `UI品質: ${issue}`),
     ...values('runtimeShapeIssues').map(issue => `実装構造: ${issue}`),
@@ -11874,7 +11906,7 @@ function runIntegrityCheck() {
 deepFreeze(QUESTION_DATABASE);
 deepFreeze(TABLE_DATABASE);
 
-const APP_VERSION = 'v10.14';
+const APP_VERSION = 'v10.15';
 const STORAGE_SCHEMA_VERSION = 3;
 const COMPATIBLE_STORAGE_SCHEMA_VERSIONS = new Set([2, 3]);
 const JOURNAL_BANK_VERSION = 'v7.2';
@@ -12898,15 +12930,87 @@ function cachedJournalTextWidth(ctx, value, size, fontStyle, fontWeight, fontFam
   return width;
 }
 
+function setAmountFitOverflowState(element, overflow, context = '金額表示') {
+  if (!element) return;
+  if (overflow) {
+    element.dataset.fitOverflow = 'true';
+    if (element.dataset.fitOverflowLogged !== 'true') {
+      element.dataset.fitOverflowLogged = 'true';
+      console.warn(`${context}が最小フォントでも表示幅を超えています。`, {
+        value: element.value ?? element.textContent ?? '',
+        clientWidth: element.clientWidth,
+        scrollWidth: element.scrollWidth
+      });
+    }
+  } else {
+    delete element.dataset.fitOverflow;
+    delete element.dataset.fitOverflowLogged;
+  }
+}
+
 function applyVerifiedInputFontSize(input, targetSize, minSize) {
   let size = Math.max(minSize, Number(targetSize) || minSize);
   input.style.fontSize = `${size}px`;
-  if (!(input.clientWidth > 0)) return size;
+  if (!(input.clientWidth > 0)) {
+    setAmountFitOverflowState(input, false);
+    return size;
+  }
   for (let i = 0; i < 12 && input.scrollWidth > input.clientWidth + 1 && size > minSize; i++) {
     size = Math.max(minSize, Math.floor((size - 0.5) * 10) / 10);
     input.style.fontSize = `${size}px`;
   }
+  setAmountFitOverflowState(input, input.scrollWidth > input.clientWidth + 1, '入力金額');
   return size;
+}
+
+function fitTableStaticNumberText(element) {
+  if (!element) return;
+  const text = String(element.textContent ?? '').trim();
+  if (!text || text === '—') {
+    element.style.removeProperty('font-size');
+    setAmountFitOverflowState(element, false);
+    return;
+  }
+  const parent = element.parentElement;
+  const width = Math.max(0, Number(parent?.clientWidth) || Number(element.clientWidth) || 0);
+  if (!(width > 0)) {
+    setAmountFitOverflowState(element, false);
+    return;
+  }
+  const style = window.getComputedStyle(element);
+  const parentStyle = parent ? window.getComputedStyle(parent) : null;
+  const padLeft = parseFloat(parentStyle?.paddingLeft || '0') || 0;
+  const padRight = parseFloat(parentStyle?.paddingRight || '0') || 0;
+  const availableWidth = Math.max(1, width - padLeft - padRight - 2);
+  const maxSize = Math.max(TABLE_STATIC_NUMBER_FONT_MIN, parseFloat(style.fontSize) || TABLE_STATIC_NUMBER_FONT_MAX);
+  let size = Math.min(TABLE_STATIC_NUMBER_FONT_MAX, maxSize);
+  element.style.fontSize = `${size}px`;
+
+  if (!journalAmountMeasureCanvas) journalAmountMeasureCanvas = document.createElement('canvas');
+  const ctx = journalAmountMeasureCanvas.getContext('2d');
+  if (ctx) {
+    const fontFamily = style.fontFamily || 'sans-serif';
+    const fontWeight = style.fontWeight || '400';
+    const fontStyle = style.fontStyle || 'normal';
+    const measureAt = candidate => cachedJournalTextWidth(ctx, text, candidate, fontStyle, fontWeight, fontFamily);
+    if (measureAt(size) > availableWidth) {
+      let low = TABLE_STATIC_NUMBER_FONT_MIN;
+      let high = size;
+      for (let i = 0; i < 7; i++) {
+        const mid = (low + high) / 2;
+        if (measureAt(mid) <= availableWidth) low = mid;
+        else high = mid;
+      }
+      size = Math.max(TABLE_STATIC_NUMBER_FONT_MIN, Math.floor(low * 10) / 10);
+      element.style.fontSize = `${size}px`;
+    }
+  }
+
+  for (let i = 0; i < 12 && element.scrollWidth > element.clientWidth + 1 && size > TABLE_STATIC_NUMBER_FONT_MIN; i++) {
+    size = Math.max(TABLE_STATIC_NUMBER_FONT_MIN, Math.floor((size - 0.5) * 10) / 10);
+    element.style.fontSize = `${size}px`;
+  }
+  setAmountFitOverflowState(element, element.scrollWidth > element.clientWidth + 1, '表の固定金額');
 }
 
 // 仕訳金額欄の「実際の表示幅」に合わせて文字サイズを自動調整する。
@@ -12998,6 +13102,8 @@ function scheduleJournalAmountRefit() {
 // ===== Presentation Utility: 表問題金額の表示幅調整 =====
 const TABLE_AMOUNT_FONT_MAX = 16;
 const TABLE_AMOUNT_FONT_MIN = 10;
+const TABLE_STATIC_NUMBER_FONT_MAX = 16;
+const TABLE_STATIC_NUMBER_FONT_MIN = 10;
 const tableAmountFitSignature = new WeakMap();
 
 function fitTableAmountFont(input, allowFocusedShrink = false) {
@@ -13050,15 +13156,19 @@ function fitTableAmountFont(input, allowFocusedShrink = false) {
 
 function refitAllTableAmountFonts() {
   const inputs = [...document.querySelectorAll('#table-exercise-host .table-answer-input')];
+  const staticNumbers = [...document.querySelectorAll(
+    '#table-exercise-host .table-static-number, #table-correct-answer-host .table-static-number, #table-problem-givens .table-static-number'
+  )];
   const startedAt = integrityNowMs();
   inputs.forEach(fitTableAmountFont);
+  staticNumbers.forEach(fitTableStaticNumberText);
   const durationMs = Math.max(0, integrityNowMs() - startedAt);
   PerformanceDiagnostics.tableRefitCount += 1;
-  PerformanceDiagnostics.tableRefitLastElements = inputs.length;
+  PerformanceDiagnostics.tableRefitLastElements = inputs.length + staticNumbers.length;
   PerformanceDiagnostics.tableRefitLastMs = durationMs;
   PerformanceDiagnostics.tableRefitMaxMs = Math.max(PerformanceDiagnostics.tableRefitMaxMs, durationMs);
   if (durationMs >= CANVAS_REFIT_DIAGNOSTIC_WARN_MS) {
-    console.warn('表問題金額欄の再フィットが性能しきい値を超えました。実測値を確認してください。', { elements: inputs.length, durationMs });
+    console.warn('表問題金額欄の再フィットが性能しきい値を超えました。実測値を確認してください。', { elements: inputs.length + staticNumbers.length, durationMs });
   }
 }
 
@@ -14069,7 +14179,7 @@ function validateAccountClassifications() {
   return [...missing].sort();
 }
 
-// SM-2 inspired: 簿記学習向けに3段階自己評価とエラー種別補正を組み合わせた独自間隔反復。
+// SM-2を参考にした独自SRS: 簿記学習向けに3段階自己評価とエラー種別補正を組み合わせた間隔反復。
 /**
  * @param {Partial<SrsProgress>|null|undefined} previous
  * @param {0|2|3} quality
@@ -14327,12 +14437,16 @@ function renderTableGivenSummary(q, givensText) {
         const name = document.createElement('td');
         const amount = document.createElement('td');
         name.textContent = item.account;
-        amount.textContent = `${item.amount}円`;
+        const amountSpan = document.createElement('span');
+        amountSpan.className = 'table-static-number';
+        amountSpan.textContent = `${item.amount}円`;
+        amount.appendChild(amountSpan);
         tr.append(name, amount);
         tbody.appendChild(tr);
       });
       table.append(thead, tbody);
       host.appendChild(table);
+      scheduleTableAmountRefit();
       return;
     }
   }
@@ -14352,8 +14466,17 @@ function renderTableGivenSummary(q, givensText) {
       const tbody = document.createElement('tbody');
       items.forEach(item => {
         const tr = document.createElement('tr');
-        [item.account, `${item.debit}円`, `${item.credit}円`].forEach(value => {
-          const td = document.createElement('td'); td.textContent = value; tr.appendChild(td);
+        [item.account, `${item.debit}円`, `${item.credit}円`].forEach((value, index) => {
+          const td = document.createElement('td');
+          if (index === 0) {
+            td.textContent = value;
+          } else {
+            const amountSpan = document.createElement('span');
+            amountSpan.className = 'table-static-number';
+            amountSpan.textContent = value;
+            td.appendChild(amountSpan);
+          }
+          tr.appendChild(td);
         });
         tbody.appendChild(tr);
       });
@@ -14626,7 +14749,7 @@ function renderTableQuestionTable(q) {
         td.appendChild(input);
       } else {
         td.classList.add('table-given-cell');
-        const span = document.createElement('span'); span.className = 'table-given'; span.textContent = formatTableValue(cell.given); td.appendChild(span);
+        const span = document.createElement('span'); span.className = 'table-given table-static-number'; span.textContent = formatTableValue(cell.given); td.appendChild(span);
       }
       tr.appendChild(td);
     });
@@ -14675,7 +14798,7 @@ function renderTableCorrectAnswer(q) {
       const key = tableDraftKey(rowIndex, column.key);
       if (wrongKeys.has(key)) td.classList.add('corrected-answer-cell');
       const span = document.createElement('span');
-      span.className = 'table-correct-value';
+      span.className = 'table-correct-value table-static-number';
       if (Object.prototype.hasOwnProperty.call(cell, 'answer')) span.textContent = formatTableValue(cell.answer);
       else if (Object.prototype.hasOwnProperty.call(cell, 'given')) span.textContent = formatTableValue(cell.given);
       else span.textContent = '—';
@@ -14687,6 +14810,7 @@ function renderTableCorrectAnswer(q) {
   table.append(thead, tbody);
   host.replaceChildren(table);
   box.hidden = false;
+  scheduleTableAmountRefit();
 }
 
 function setTableEvalButtonsDisabled(disabled, isCorrect = false) {
