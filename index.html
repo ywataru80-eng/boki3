@@ -96,36 +96,6 @@
     }
 
     /* 進捗メーター */
-    .progress-container {
-      background: var(--card-bg);
-      border: 1px solid var(--border-color);
-      border-radius: 6px;
-      padding: 8px 10px;
-      margin-bottom: 10px;
-    }
-
-    .progress-header {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.75rem;
-      font-weight: bold;
-      margin-bottom: 4px;
-    }
-
-    .progress-bar-bg {
-      background-color: #e2e8f0;
-      height: 6px;
-      border-radius: 3px;
-      overflow: hidden;
-    }
-
-    .progress-bar-fill {
-      background-color: var(--primary);
-      height: 100%;
-      width: 0%;
-      transition: width 0.3s ease;
-    }
-
     /* 学習履歴バックアップ */
     .backup-card {
       background: var(--card-bg);
@@ -211,22 +181,9 @@
       border-bottom-color: var(--border-color);
     }
 
-    .toc-summary-sub {
-      font-size: 0.72rem;
-      color: var(--text-muted);
-      font-weight: 600;
-      white-space: nowrap;
-    }
-
     .toc-body {
       padding: 10px;
       background: #f8fafc;
-    }
-
-    .toc-help {
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      margin: 0 2px 8px;
     }
 
     .toc-group {
@@ -1095,29 +1052,7 @@
       font-size: .70rem;
       line-height: 1.45;
       text-align: left;
-    }
-    .problem-difficulty-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 6px;
-      margin: -3px 0 7px;
-    }
-    .problem-difficulty {
-      display: inline-flex;
-      align-items: center;
-      min-height: 28px;
-      padding: 4px 8px;
-      border: 1px solid #fde68a;
-      border-radius: 999px;
-      background: #fffbeb;
-      color: #92400e;
-      font-size: .78rem;
-      font-weight: 800;
-      letter-spacing: .02em;
-      white-space: nowrap;
-    }
-    .journal-row-controls {
+    }    .journal-row-controls {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 8px;
@@ -1270,7 +1205,8 @@
       border-top: 1px dashed #93c5fd;
       padding-top: 8px;
     }
-    .reference-policy-details summary {
+    .reference-policy-details > summary,
+    .reference-catalog-details > summary {
       min-height: 44px;
       display: flex;
       align-items: center;
@@ -1280,9 +1216,22 @@
       font-weight: 800;
       touch-action: manipulation;
     }
-    .reference-policy-details summary::-webkit-details-marker { display: none; }
-    .reference-policy-details summary::before { content: '＋'; margin-right: 6px; }
-    .reference-policy-details[open] summary::before { content: '－'; }
+    .reference-policy-details > summary::-webkit-details-marker,
+    .reference-catalog-details > summary::-webkit-details-marker { display: none; }
+    .reference-policy-details > summary::before,
+    .reference-catalog-details > summary::before { content: '＋'; margin-right: 6px; }
+    .reference-policy-details[open] > summary::before,
+    .reference-catalog-details[open] > summary::before { content: '－'; }
+    .reference-catalog-details {
+      margin-top: 6px;
+      border-top: 1px solid #e2e8f0;
+      padding-top: 4px;
+    }
+    .reference-catalog-details > summary {
+      color: #475569;
+      font-size: .76rem;
+      font-weight: 700;
+    }
     .reference-policy-copy {
       margin: 2px 0 8px;
       padding: 8px;
@@ -1681,19 +1630,7 @@
       color: #0f172a;
       font-size: .86rem;
       font-weight: 800;
-    }
-    .learning-today-summary {
-      flex: 0 0 auto;
-      border: 1px solid #bbf7d0;
-      border-radius: 999px;
-      background: #f0fdf4;
-      color: #166534;
-      padding: 5px 8px;
-      font-size: .72rem;
-      font-weight: 800;
-      white-space: nowrap;
-    }
-    .learning-exp-track {
+    }    .learning-exp-track {
       height: 9px;
       margin-top: 10px;
       overflow: hidden;
@@ -1814,14 +1751,7 @@
       grid-column: 1 / -1;
       color: #64748b;
       font-size: .64rem;
-    }
-    .learning-next-goal {
-      margin-top: 7px;
-      color: #475569;
-      font-size: .72rem;
-      line-height: 1.5;
-    }
-    .next-stage-card {
+    }    .next-stage-card {
       margin-top: 10px;
       padding: 11px;
       border: 1px solid #c7d2fe;
@@ -1877,21 +1807,7 @@
       font-weight: 800;
       text-decoration: underline;
       text-underline-offset: 2px;
-    }
-    .problem-topic-level {
-      display: inline-flex;
-      min-height: 28px;
-      align-items: center;
-      padding: 4px 8px;
-      border: 1px solid #c4b5fd;
-      border-radius: 999px;
-      background: #f5f3ff;
-      color: #5b21b6;
-      font-size: .72rem;
-      font-weight: 900;
-      line-height: 1.2;
-    }
-    .learning-toast {
+    }    .learning-toast {
       position: fixed;
       left: 50%;
       top: calc(14px + env(safe-area-inset-top));
@@ -1926,26 +1842,15 @@
     @media (max-width: 390px) {
       .learning-growth-card { padding: 10px; }
       .learning-overall-level { font-size: 1.28rem; }
-      .learning-today-summary { font-size: .66rem; }
       .learning-quick-grid { gap: 4px; }
       .learning-quick-grid-primary { grid-template-columns: 1fr; }
       .learning-quick-item { padding: 6px 5px; }
     }
 
 
-    /* ===== v10.8 問題演習と学習状況を明確に分離 ===== */
+    /* ===== v10.9 問題演習・学習状況・学習データ・教材情報を4領域へ整理 ===== */
     .practice-area { margin-top: 10px; }
-    .practice-section-heading {
-      display: flex; align-items: center; justify-content: space-between; gap: 8px;
-      margin: 0 0 8px; padding: 8px 10px; border-left: 4px solid var(--primary);
-      background: #eff6ff; border-radius: 6px; color: #0f172a; font-weight: 900; font-size: .9rem;
-    }
-    .practice-mode-chip {
-      padding: 3px 8px; border-radius: 999px; background: #dbeafe; color: #1d4ed8;
-      font-size: .68rem; font-weight: 800;
-    }
-    .practice-mode-chip.table { background: #ede9fe; color: #6d28d9; }
-    .study-status-area, .learning-support-area { margin-top: 12px; }
+    .study-status-area, .learning-support-area, .about-area { margin-top: 12px; }
     .study-status-details, .learning-support-details {
       border: 1px solid var(--border-color); border-radius: 8px; background: #fff; overflow: hidden;
     }
@@ -1959,16 +1864,17 @@
     .study-status-details > summary::before, .learning-support-details > summary::before { content: '＋'; color: var(--primary); margin-right: 2px; }
     .study-status-details[open] > summary::before, .learning-support-details[open] > summary::before { content: '－'; }
     .study-status-details[open] > summary, .learning-support-details[open] > summary { border-bottom: 1px solid var(--border-color); }
-    .study-status-summary, .learning-support-summary { color: #64748b; font-size: .67rem; font-weight: 700; text-align: right; }
+    .study-status-summary { color: #64748b; font-size: .67rem; font-weight: 700; text-align: right; }
     .study-status-body, .learning-support-body { padding: 10px; }
     .study-status-body .learning-growth-card { margin: 0 0 10px; }
     .mode-status-panel .dashboard { margin-top: 0; }
     .mode-status-panel[hidden] { display: none !important; }
     .learning-support-body .next-stage-card { margin: 0 0 10px; }
     .learning-support-body .backup-card { margin: 0; }
+    .backup-card-simple { overflow: visible; }
     @media (max-width: 520px) {
       .study-status-details > summary, .learning-support-details > summary { align-items: flex-start; }
-      .study-status-summary, .learning-support-summary { max-width: 56%; }
+      .study-status-summary { max-width: 56%; }
     }
 
     /* ===== v10.8 電卓は計算操作を最優先し、説明は折りたたむ ===== */
@@ -1987,24 +1893,16 @@
     .calc-help-btn:focus-visible { background: rgba(255,255,255,.12); color: #fff; outline: 2px solid #fff; outline-offset: 1px; }
     .calc-learning-note { padding: 7px 9px 8px; border-top: 1px solid var(--border-color); background: #fff; color: #64748b; font-size: .68rem; line-height: 1.45; }
     .calc-learning-note[hidden] { display: none !important; }
-
-    .current-topic-status {
-      display: flex; justify-content: space-between; align-items: center; gap: 8px;
-      margin: 0 0 8px; padding: 7px 9px; border: 1px solid #e2e8f0; border-radius: 6px;
-      background: #f8fafc; color: #64748b; font-size: .7rem; font-weight: 700;
-    }
-    .current-topic-status .problem-topic-level { color: #5b21b6; font-size: .74rem; font-weight: 900; }
-
 </style>
 </head>
 <body>
 
 <div class="container">
   <header>
-    <h1>日商簿記3級 総合演習システム（仕訳200問＋表問題40問）</h1>
-    <p>2026年度出題区分対応 × 仕訳200問 × 表・決算演習40問 × 解説 × 教材版 v10.8</p>
+    <h1>日商簿記3級 総合演習システム</h1>
+    <p>2026年度出題区分対応</p>
   </header>
-  <div id="data-integrity-banner" class="data-integrity-banner" role="alert" aria-live="polite"></div>
+  <div id="data-integrity-banner" class="data-integrity-banner" role="alert" aria-live="assertive" aria-atomic="true"></div>
 
   <div class="mode-switcher" aria-label="演習モード切替">
     <button type="button" class="mode-btn active" id="mode-journal-btn" data-action="switch-mode" data-mode="journal">仕訳演習 200問</button>
@@ -2016,20 +1914,11 @@
 
   <main class="practice-area" id="practice-area" aria-label="問題演習">
   <section id="journal-mode-section" class="mode-section">
-    <div class="practice-section-heading">
-      <span>問題演習</span>
-      <span class="practice-mode-chip">仕訳</span>
-    </div>
-
   <!-- 項目別目次 -->
   <section class="toc-card" id="toc-card" aria-label="項目別目次">
     <details class="toc-main-details" id="toc-details">
-      <summary>
-        <span>☰ 項目別目次</span>
-        <span class="toc-summary-sub">全200問・タップで直接移動</span>
-      </summary>
+      <summary><span>☰ 項目別目次</span></summary>
       <div class="toc-body">
-        <p class="toc-help">項目を開き、学習したい問題を選択してください。目次から問題を開いただけでは学習回数や復習履歴は更新されません。</p>
         <div id="toc-groups"></div>
       </div>
     </details>
@@ -2042,9 +1931,6 @@
       <span id="problem-id-text" style="color: var(--text-muted); font-size: 0.75rem;">Q001</span>
     </div>
 
-    <div class="problem-difficulty-row">
-      <span class="problem-difficulty" id="problem-difficulty" aria-label="問題の難易度">難易度 ★☆☆☆☆（教材内目安）</span>
-    </div>
 
     <div class="statement" id="problem-statement">
       問題文を読み込んでいます...
@@ -2080,7 +1966,7 @@
       <button type="button" class="row-control-btn" id="add-row-btn" data-action="add-journal-row">＋ 行を追加</button>
       <button type="button" class="row-control-btn danger" id="remove-row-btn" data-action="remove-last-journal-row">－ 最後の行を削除</button>
     </div>
-    <button type="button" class="btn-submit" id="submit-btn" data-action="check-journal">決定（解答を提出）</button>
+    <button type="button" class="btn-submit" id="submit-btn" data-action="check-journal">採点する</button>
 
     <!-- 解答・解説エリア -->
     <div class="result-box" id="result-box">
@@ -2126,35 +2012,23 @@
           <summary>借方・貸方をもう一度確認する（必要なとき）</summary>
           <div class="account-effect-list" id="account-effect-list"></div>
         </details>
-        <details class="reference-policy-details" id="explanation-reference-details">
-          <summary>解説の参考資料・作成方針</summary>
-          <div class="reference-policy-copy" id="explanation-reference-policy"></div>
-          <div id="explanation-reference-list"></div>
-        </details>
       </div>
 
-      <div style="margin-top: 10px; font-weight: bold; font-size: 0.75rem;" id="eval-instruction">回答後の手応え:</div>
+      <div style="margin-top: 10px; font-weight: bold; font-size: 0.75rem;" id="eval-instruction">理解度:</div>
       <div class="self-eval-buttons">
-        <button type="button" class="eval-btn" id="eval-btn-0" data-action="journal-eval" data-quality="0" disabled>要復習 / 不正解<br>(1日後)</button>
-        <button type="button" class="eval-btn" id="eval-btn-2" data-action="journal-eval" data-quality="2" disabled>正解・やや不安<br>(標準)</button>
-        <button type="button" class="eval-btn" id="eval-btn-3" data-action="journal-eval" data-quality="3" disabled>正解・即答できた<br>(長期延長)</button>
+        <button type="button" class="eval-btn" id="eval-btn-0" data-action="journal-eval" data-quality="0" disabled>要復習</button>
+        <button type="button" class="eval-btn" id="eval-btn-2" data-action="journal-eval" data-quality="2" disabled>少し不安</button>
+        <button type="button" class="eval-btn" id="eval-btn-3" data-action="journal-eval" data-quality="3" disabled>理解できた</button>
       </div>
     </div>
   </div>
   </section>
 
   <section id="table-mode-section" class="mode-section" hidden>
-    <div class="practice-section-heading">
-      <span>問題演習</span>
-      <span class="practice-mode-chip table">表・決算</span>
-    </div>
-
-
     <section class="toc-card" id="table-toc-card" aria-label="表問題目次">
       <details class="toc-main-details" id="table-toc-details">
-        <summary><span>☰ 表・決算演習 目次</span><span class="toc-summary-sub">全40問・タップで直接移動</span></summary>
+        <summary><span>☰ 表・決算演習 目次</span></summary>
         <div class="toc-body">
-          <p class="toc-help">残高試算表、合計試算表、8桁精算表、決算整理後残高試算表、損益計算書、貸借対照表を演習します。</p>
           <div id="table-toc-groups"></div>
         </div>
       </details>
@@ -2183,14 +2057,14 @@
         <button type="button" class="tool-btn hint-btn" data-action="toggle-table-hint">💡 解き方のヒント</button>
       </div>
       <div class="hint-box" id="table-hint-box"></div>
-      <div class="table-note">枠線のある欄だけ入力します。「—」は記入不要です。金額は3桁区切りで表示されます。</div>
+      <div class="table-note">枠線のある欄だけ入力します。「—」は記入不要です。</div>
       <div class="table-workspace-guide" id="table-workspace-guide" aria-live="polite">
         <div class="table-workspace-title" id="table-workspace-title">この問題の入力方法</div>
         <div class="table-workspace-help" id="table-workspace-help"></div>
       </div>
       <div class="table-segment-nav" id="table-segment-nav" hidden aria-label="入力する欄の切替"></div>
       <div class="table-exercise-wrapper" id="table-exercise-wrapper"><div id="table-exercise-host"></div></div>
-      <button type="button" class="btn-submit" id="table-submit-btn" data-action="check-table">決定（表を採点）</button>
+      <button type="button" class="btn-submit" id="table-submit-btn" data-action="check-table">表を採点する</button>
       <div class="table-result-box" id="table-result-box">
         <div id="table-result-title" style="font-weight:800;"></div>
         <div id="table-result-detail" style="margin-top:4px;font-size:0.82rem;white-space:pre-line;"></div>
@@ -2208,113 +2082,87 @@
     <details class="study-status-details" id="study-status-details">
       <summary>
         <span>現在の学習状況</span>
-        <span class="study-status-summary" id="study-status-summary">学習済み 0 / 240問・今日 0 / 10問</span>
+        <span class="study-status-summary" id="study-status-summary">復習待ち 0問</span>
       </summary>
       <div class="study-status-body">
-  <section class="learning-growth-card" id="learning-growth-card" aria-label="学習の進み具合">
-    <div class="learning-growth-head">
-      <div>
-        <div class="learning-growth-kicker">学習の進み具合</div>
-        <div class="learning-overall-line">
-          <strong class="learning-overall-level" id="learning-overall-level">Lv.1</strong>
-          <span class="learning-overall-title" id="learning-overall-title">簿記見習い</span>
-        </div>
-      </div>
-      <div class="learning-today-summary" id="learning-today-summary">今日 0 / 10問</div>
-    </div>
-    <div class="learning-exp-track" aria-hidden="true"><div class="learning-exp-fill" id="learning-overall-bar"></div></div>
-    <div class="learning-exp-text" id="learning-overall-progress-text">次のLvまでの進み具合を計算しています。</div>
-    <p class="learning-disclaimer">※レベルは教材内の学習指標で、検定の得点・合格判定ではありません。</p>
-    <div class="learning-quick-grid learning-quick-grid-primary">
-      <div class="learning-quick-item"><span>学習済み</span><strong id="learning-studied-count">0 / 240問</strong></div>
-      <div class="learning-quick-item"><span>次におすすめ</span><strong id="learning-weakest-topic">—</strong></div>
-    </div>
-    <div class="learning-next-goal" id="learning-next-goal">今日の目標を確認しています。</div>
-    <details class="learning-topics-details" id="learning-topics-details">
-      <summary>項目別レベル・実績を見る</summary>
-      <div class="learning-details-summary">実績 <strong id="learning-achievement-count">0個</strong></div>
-      <div class="learning-topic-list" id="learning-topic-list"></div>
-    </details>
-    
-  </section>
+        <section class="learning-growth-card" id="learning-growth-card" aria-label="学習の進み具合">
+          <div class="learning-growth-head">
+            <div>
+              <div class="learning-growth-kicker">総合レベル</div>
+              <div class="learning-overall-line">
+                <strong class="learning-overall-level" id="learning-overall-level">Lv.1</strong>
+                <span class="learning-overall-title" id="learning-overall-title">簿記見習い</span>
+              </div>
+            </div>
+          </div>
+          <div class="learning-exp-track" role="progressbar" aria-label="次のレベルまでの進み具合" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="learning-exp-fill" id="learning-overall-bar"></div></div>
+          <p class="learning-disclaimer">※教材内の学習指標で、検定の得点・合格判定ではありません。</p>
+          <div class="learning-quick-grid learning-quick-grid-primary">
+            <div class="learning-quick-item"><span>学習済み</span><strong id="learning-studied-count">0 / 240問</strong></div>
+            <div class="learning-quick-item"><span>次におすすめ</span><strong id="learning-weakest-topic">—</strong></div>
+          </div>
+          <details class="learning-topics-details" id="learning-topics-details">
+            <summary>項目別レベル・実績</summary>
+            <div class="learning-details-summary">実績 <strong id="learning-achievement-count">0個</strong></div>
+            <div class="learning-topic-list" id="learning-topic-list"></div>
+          </details>
+        </section>
+
         <div class="mode-status-panel" id="journal-status-panel">
-          <div class="current-topic-status"><span>現在の項目</span><strong class="problem-topic-level" id="problem-topic-level">項目 Lv.1</strong></div>
-  <!-- ダッシュボード -->
-  <div class="dashboard">
-    <div class="dash-card">
-      <div class="title">総問題数</div>
-      <div class="value" id="stat-total">200</div>
-    </div>
-    <div class="dash-card">
-      <div class="title">復習待ち</div>
-      <div class="value" id="stat-due">0</div>
-    </div>
-    <div class="dash-card">
-      <div class="title">未学習</div>
-      <div class="value" id="stat-unstudied">200</div>
-    </div>
-    <div class="dash-card">
-      <div class="title">連続学習</div>
-      <div class="value streak" id="stat-streak">0 日</div>
-    </div>
-  </div>
-
-  <!-- 進捗メーター -->
-  <div class="progress-container">
-    <div class="progress-header">
-      <span>本日の目標進捗</span>
-      <span id="progress-text">0 / 10 問完了</span>
-    </div>
-    <div class="progress-bar-bg">
-      <div class="progress-bar-fill" id="progress-bar"></div>
-    </div>
-  </div>
+          <div class="dashboard">
+            <div class="dash-card"><div class="title">復習待ち</div><div class="value" id="stat-due">0</div></div>
+            <div class="dash-card"><div class="title">連続学習</div><div class="value streak" id="stat-streak">0 日</div></div>
+          </div>
         </div>
+
         <div class="mode-status-panel" id="table-status-panel" hidden>
-          <div class="current-topic-status"><span>現在の項目</span><strong class="problem-topic-level" id="table-problem-topic-level">項目 Lv.1</strong></div>
-    <div class="dashboard table-dashboard">
-      <div class="dash-card"><div class="title">表問題数</div><div class="value" id="table-stat-total">40</div></div>
-      <div class="dash-card"><div class="title">正解済み</div><div class="value" id="table-stat-solved">0</div></div>
-      <div class="dash-card"><div class="title">未正解</div><div class="value" id="table-stat-remaining">40</div></div>
-      <div class="dash-card"><div class="title">挑戦済み</div><div class="value" id="table-stat-attempted">0</div></div>
-      <div class="dash-card"><div class="title">復習期限</div><div class="value" id="table-stat-due">0</div></div>
-    </div>
+          <div class="dashboard table-dashboard">
+            <div class="dash-card"><div class="title">正解済み</div><div class="value" id="table-stat-solved">0</div></div>
+            <div class="dash-card"><div class="title">復習待ち</div><div class="value" id="table-stat-due">0</div></div>
+          </div>
         </div>
       </div>
     </details>
   </section>
 
-  <section class="learning-support-area" aria-label="学習設定とバックアップ">
+  <section class="learning-support-area" aria-label="学習データを守る">
     <details class="learning-support-details" id="learning-support-details">
-      <summary>
-        <span>学習設定・バックアップ</span>
-        <span class="learning-support-summary">必要なときだけ開く</span>
-      </summary>
+      <summary><span>学習データを守る</span></summary>
       <div class="learning-support-body">
-<div class="next-stage-card preview" id="learning-next-stage-card">
-      <div class="next-stage-kicker" id="learning-next-stage-kicker">この先の学習</div>
-      <div class="next-stage-title" id="learning-next-stage-title">3級を一巡すると、2級への学習ガイドが開きます。</div>
-      <div class="next-stage-status" id="learning-next-stage-status" hidden></div>
-      <div class="next-stage-body" id="learning-next-stage-body" hidden></div>
-      <a class="next-stage-link" id="learning-next-stage-link" href="https://www.kentei.ne.jp/bookkeeping/class2" target="_blank" rel="noopener noreferrer" hidden>日本商工会議所「簿記2級」の公式情報を確認</a>
-    </div>
-  <section class="backup-card" aria-label="学習履歴のバックアップ">
-    <details class="backup-details" id="backup-details">
-      <summary>
-        <span>💾 学習履歴のバックアップ</span>
-        <span class="backup-summary-sub">端末変更・ブラウザデータ削除に備える</span>
-      </summary>
-      <div class="backup-body">
-        <p class="backup-help">学習履歴・復習予定・教材内レベルはこのブラウザに保存されます。端末変更やデータ消失に備えて、必要に応じてバックアップファイルを保存できます。保存に失敗した場合は、この欄を自動で開いて対処方法を案内します。復元時はファイルの互換性と破損を確認します。</p>
-        <div class="backup-actions">
-          <button type="button" class="backup-btn primary" data-action="export-progress-backup">バックアップを保存</button>
-          <button type="button" class="backup-btn" data-action="choose-progress-restore">バックアップから復元</button>
-        </div>
-        <input id="progress-import-input" type="file" accept="application/json,.json" hidden>
-        <div class="backup-status" id="backup-status" role="status" aria-live="polite"></div>
+        <section class="backup-card backup-card-simple" aria-label="学習データの保存と復元">
+          <div class="backup-body">
+            <p class="backup-help">端末変更やデータ消去に備えて、学習記録をファイルに保存できます。</p>
+            <div class="backup-actions">
+              <button type="button" class="backup-btn primary" data-action="export-progress-backup">学習データを保存</button>
+              <button type="button" class="backup-btn" data-action="choose-progress-restore">保存データを戻す</button>
+            </div>
+            <input id="progress-import-input" type="file" accept="application/json,.json" hidden>
+            <div class="backup-status" id="backup-status" role="status" aria-live="polite"></div>
+          </div>
+        </section>
       </div>
     </details>
   </section>
+
+  <section class="about-area" aria-label="この教材について">
+    <details class="learning-support-details about-details" id="about-material-details">
+      <summary><span>この教材について</span></summary>
+      <div class="learning-support-body">
+        <div class="next-stage-card ready" id="learning-next-stage-card" hidden>
+          <div class="next-stage-kicker" id="learning-next-stage-kicker">2級への橋渡し</div>
+          <div class="next-stage-title" id="learning-next-stage-title">次のステージ：日商簿記2級</div>
+          <div class="next-stage-status" id="learning-next-stage-status" hidden></div>
+          <div class="next-stage-body" id="learning-next-stage-body" hidden></div>
+          <a class="next-stage-link" id="learning-next-stage-link" href="https://www.kentei.ne.jp/bookkeeping/class2" target="_blank" rel="noopener noreferrer" hidden>日本商工会議所「簿記2級」の公式情報を確認</a>
+        </div>
+        <details class="reference-policy-details" id="explanation-reference-details">
+          <summary>出題範囲・参考資料</summary>
+          <div class="reference-policy-copy" id="explanation-reference-policy"></div>
+          <details class="reference-catalog-details">
+            <summary>参考資料の詳細を見る</summary>
+            <div id="explanation-reference-list"></div>
+          </details>
+        </details>
       </div>
     </details>
   </section>
@@ -2382,7 +2230,7 @@
 <script type="module">
 
 /*
- * ===== v10.8 内部アーキテクチャ方針 =====
+ * ===== v10.12 内部アーキテクチャ方針 =====
  * 配布物はGitHub Pagesへそのまま置ける単一HTMLを維持する。
  * 物理ファイルは分割せず、以下の責務を論理的に分離して扱う。
  *   1) Domain Data      : 仕訳200問・表40問・目次・勘定科目
@@ -10824,9 +10672,8 @@ function renderTableOfContents() {
   if (!host) return;
   host.replaceChildren();
   const fragment = document.createDocumentFragment();
-  const learningSnapshot = buildLearningSnapshot(Runtime.state);
 
-  TOC_GROUPS.forEach((group, groupIndex) => {
+  TOC_GROUPS.forEach(group => {
     const wrapper = document.createElement('div');
     wrapper.className = 'toc-group';
     const details = document.createElement('details');
@@ -10835,10 +10682,8 @@ function renderTableOfContents() {
     label.textContent = group.title;
     const count = document.createElement('span');
     count.className = 'toc-group-count';
-    count.dataset.learningTopicId = `journal-${groupIndex + 1}`;
     count.dataset.rangeLabel = `Q${String(group.start).padStart(3, '0')}〜Q${String(group.end).padStart(3, '0')}`;
-    const topicState = learningSnapshot.topics.find(topic => topic.id === count.dataset.learningTopicId);
-    count.textContent = `Lv.${topicState?.level || 1}・${count.dataset.rangeLabel}`;
+    count.textContent = count.dataset.rangeLabel;
     summary.append(label, count);
     details.appendChild(summary);
 
@@ -10902,9 +10747,8 @@ function renderTableToc() {
   host.replaceChildren();
   const fragment = document.createDocumentFragment();
   const now = new Date();
-  const learningSnapshot = buildLearningSnapshot(Runtime.state);
 
-  TABLE_TOC_GROUPS.forEach((group, groupIndex) => {
+  TABLE_TOC_GROUPS.forEach(group => {
     const wrapper = document.createElement('div');
     wrapper.className = 'toc-group';
     const details = document.createElement('details');
@@ -10913,10 +10757,8 @@ function renderTableToc() {
     label.textContent = group.title;
     const count = document.createElement('span');
     count.className = 'toc-group-count';
-    count.dataset.learningTopicId = `table-${groupIndex + 1}`;
     count.dataset.rangeLabel = `T${String(group.start).padStart(3, '0')}〜T${String(group.end).padStart(3, '0')}`;
-    const topicState = learningSnapshot.topics.find(topic => topic.id === count.dataset.learningTopicId);
-    count.textContent = `Lv.${topicState?.level || 1}・${count.dataset.rangeLabel}`;
+    count.textContent = count.dataset.rangeLabel;
     summary.append(label, count);
     details.appendChild(summary);
     const list = document.createElement('div');
@@ -11388,6 +11230,10 @@ const DISALLOWED_VISIBLE_PRODUCT_CLAIMS = Object.freeze([
   '完全アクセシビリティ対応',
   'iPhone実機確認済み',
   'ブラウザE2E確認済み',
+  '技術的なバグは完全に解消',
+  '最高峰の仕上がり',
+  'Production Ready',
+  '安心して公開',
   '全240問を外部サイトと1対1で個別照合済み',
   '全200問をマネーフォワードと個別照合済み',
   '全200問をFunda簿記と個別照合済み'
@@ -11400,7 +11246,30 @@ function validateVisibleProductClaims() {
     .map(claim => `根拠を限定していない表示があります: ${claim}`);
 }
 
-const REQUIRED_DOM_IDS = Object.freeze(['account-effect-list', 'account-nature-details', 'add-row-btn', 'backup-status', 'calc-apply-bar', 'calc-apply-debit', 'calc-apply-table', 'calc-apply-credit', 'calc-help-btn', 'calc-display', 'calc-expression', 'calc-learning-note', 'calculator-modal', 'correct-journal-content', 'data-integrity-banner', 'diagnostic-box', 'diagnostic-list', 'diagnostic-summary', 'eval-btn-0', 'eval-btn-2', 'eval-btn-3', 'eval-instruction', 'explanation-reference-list', 'explanation-reference-policy', 'hint-box', 'journal-mode-section', 'journal-rows', 'journal-account-selection-help', 'learning-achievement-count', 'learning-growth-card', 'learning-next-goal', 'learning-next-stage-body', 'learning-next-stage-card', 'learning-next-stage-kicker', 'learning-next-stage-link', 'learning-next-stage-status', 'learning-next-stage-title', 'learning-overall-bar', 'learning-overall-level', 'learning-overall-progress-text', 'learning-overall-title', 'learning-studied-count', 'learning-today-summary', 'learning-toast', 'learning-topic-list', 'learning-support-details', 'study-status-details', 'study-status-summary', 'journal-status-panel', 'table-status-panel', 'learning-weakest-topic', 'mode-journal-btn', 'mode-table-btn', 'problem-category', 'problem-difficulty', 'problem-id-text', 'problem-statement', 'problem-topic-level', 'progress-bar', 'progress-import-input', 'progress-text', 'quiz-card', 'remove-row-btn', 'result-box', 'result-detail', 'result-title', 'scenario-amount-section', 'scenario-amount-text', 'scenario-confusion-section', 'scenario-confusion-text', 'scenario-cue-list', 'scenario-guide-box', 'scenario-reading-text', 'scenario-reason-text', 'stat-due', 'stat-streak', 'stat-total', 'stat-unstudied', 'submit-btn', 'table-exercise-host', 'table-exercise-wrapper', 'table-explanation-box', 'table-hint-box', 'table-mode-section', 'table-problem-category', 'table-problem-givens', 'table-problem-givens-block', 'table-problem-id-text', 'table-problem-instruction', 'table-problem-statement', 'table-problem-targets', 'table-problem-targets-block', 'table-problem-topic-level', 'table-quiz-card', 'table-result-box', 'table-result-detail', 'table-result-title', 'table-segment-nav', 'table-submit-btn', 'table-toc-card', 'table-toc-details', 'table-toc-groups', 'table-workspace-help', 'table-workspace-title', 'toc-card', 'toc-details', 'toc-groups']);
+function validateDomIdReferences() {
+  const issues = [];
+  const checkTarget = (source, attr, id) => {
+    const normalized = String(id || '').trim();
+    if (normalized && !document.getElementById(normalized)) {
+      const sourceName = source.id ? `#${source.id}` : source.tagName.toLowerCase();
+      issues.push(`${sourceName} の ${attr} が存在しない #${normalized} を参照しています`);
+    }
+  };
+
+  ['aria-controls', 'aria-describedby', 'aria-labelledby'].forEach(attr => {
+    document.querySelectorAll(`[${attr}]`).forEach(el => {
+      String(el.getAttribute(attr) || '').split(/\s+/).filter(Boolean).forEach(id => checkTarget(el, attr, id));
+    });
+  });
+  document.querySelectorAll('label[for]').forEach(label => checkTarget(label, 'for', label.getAttribute('for')));
+  document.querySelectorAll('a[href^="#"]').forEach(link => {
+    const target = String(link.getAttribute('href') || '').slice(1);
+    if (target) checkTarget(link, 'href', target);
+  });
+  return issues;
+}
+
+const REQUIRED_DOM_IDS = Object.freeze(['account-effect-list', 'account-nature-details', 'add-row-btn', 'backup-status', 'calc-apply-bar', 'calc-apply-debit', 'calc-apply-table', 'calc-apply-credit', 'calc-help-btn', 'calc-display', 'calc-expression', 'calc-learning-note', 'calculator-modal', 'correct-journal-content', 'data-integrity-banner', 'diagnostic-box', 'diagnostic-list', 'diagnostic-summary', 'eval-btn-0', 'eval-btn-2', 'eval-btn-3', 'eval-instruction', 'explanation-reference-list', 'explanation-reference-policy', 'hint-box', 'journal-mode-section', 'journal-rows', 'journal-account-selection-help', 'learning-achievement-count', 'learning-growth-card', 'learning-next-stage-body', 'learning-next-stage-card', 'learning-next-stage-kicker', 'learning-next-stage-link', 'learning-next-stage-status', 'learning-next-stage-title', 'learning-overall-bar', 'learning-overall-level', 'learning-overall-title', 'learning-studied-count', 'learning-toast', 'learning-topic-list', 'learning-support-details', 'study-status-details', 'study-status-summary', 'journal-status-panel', 'table-status-panel', 'learning-weakest-topic', 'mode-journal-btn', 'mode-table-btn', 'problem-category', 'problem-id-text', 'problem-statement', 'progress-import-input', 'quiz-card', 'remove-row-btn', 'result-box', 'result-detail', 'result-title', 'scenario-amount-section', 'scenario-amount-text', 'scenario-confusion-section', 'scenario-confusion-text', 'scenario-cue-list', 'scenario-guide-box', 'scenario-reading-text', 'scenario-reason-text', 'stat-due', 'stat-streak', 'submit-btn', 'table-exercise-host', 'table-exercise-wrapper', 'table-explanation-box', 'table-hint-box', 'table-mode-section', 'table-problem-category', 'table-problem-givens', 'table-problem-givens-block', 'table-problem-id-text', 'table-problem-instruction', 'table-problem-statement', 'table-problem-targets', 'table-problem-targets-block', 'table-quiz-card', 'table-result-box', 'table-result-detail', 'table-result-title', 'table-segment-nav', 'table-submit-btn', 'table-toc-card', 'table-toc-details', 'table-toc-groups', 'table-workspace-help', 'table-workspace-title', 'toc-card', 'toc-details', 'toc-groups']);
 
 function validateUiStructure() {
   const issues = [];
@@ -11410,6 +11279,7 @@ function validateUiStructure() {
     seen.add(el.id);
   });
   REQUIRED_DOM_IDS.forEach(id => { if (!document.getElementById(id)) issues.push(`getElementById参照先なし: ${id}`); });
+  issues.push(...validateDomIdReferences());
   if (document.querySelector('[onclick]')) issues.push('インラインonclickが残っています');
   const styleText = [...document.querySelectorAll('style')].map(style => style.textContent || '').join('\n');
   if (typeof addJournalRow !== 'function' || !styleText.includes('.journal-account-display') || !styleText.includes('.journal-account-wrap select')) issues.push('長い勘定科目名の独自表示機構を確認できません');
@@ -11627,12 +11497,34 @@ function collectIntegrityIssues() {
   return [...collectIntegrityBlockingIssues(), ...collectIntegrityAdvisories()];
 }
 
+function disableLearningUiForSafety() {
+  const selectors = [
+    '#practice-area button', '#practice-area input', '#practice-area select',
+    '.mode-switcher button', '.toc-fab', '.calc-fab'
+  ];
+  document.querySelectorAll(selectors.join(',')).forEach(control => {
+    if ('disabled' in control) control.disabled = true;
+    control.setAttribute('aria-disabled', 'true');
+  });
+}
+
+function reportStartupFailure(error) {
+  console.error('Application startup failed.', error);
+  disableLearningUiForSafety();
+  const banner = document.getElementById('data-integrity-banner');
+  if (banner) {
+    banner.textContent = '教材を開始できませんでした。ページを再読み込みしてください。解消しない場合は新しいファイルを使用してください。学習データの保存機能は、画面が操作できる場合のみ利用してください。';
+    banner.classList.add('visible');
+  }
+}
+
 function renderIntegrityStatus() {
   const blockingIssues = collectIntegrityBlockingIssues();
   const banner = document.getElementById('data-integrity-banner');
   if (blockingIssues.length) {
+    disableLearningUiForSafety();
     if (banner) {
-      banner.textContent = `教材データまたは採点機能に重大な整合性エラーを検出しました。\n${blockingIssues.join('\n')}`;
+      banner.textContent = '教材データまたは採点機能に異常を検出しました。安全のため学習を続けず、ページを再読み込みしてください。解消しない場合は新しいファイルを使用してください。';
       banner.classList.add('visible');
     }
   } else if (banner) {
@@ -11646,13 +11538,16 @@ function runCriticalIntegrityCheck() {
   const startedAt = integrityNowMs();
   const questionResult = validateQuestionBanks();
   const essentialUiIssues = validateEssentialUiStructure();
+  const startupStateIssues = validateDailyRolloverUtilities();
   const blockingIssues = [
     ...questionResult.issues.map(issue => `教材データ: ${issue}`),
-    ...essentialUiIssues.map(issue => `必須UI: ${issue}`)
+    ...essentialUiIssues.map(issue => `必須UI: ${issue}`),
+    ...startupStateIssues.map(issue => `起動時状態: ${issue}`)
   ];
   const result = {
     ...questionResult,
     essentialUiIssues,
+    startupStateIssues,
     blockingIssues,
     advisoryIssues: [],
     issues: [...blockingIssues],
@@ -11821,7 +11716,7 @@ function runIntegrityCheck() {
 deepFreeze(QUESTION_DATABASE);
 deepFreeze(TABLE_DATABASE);
 
-const APP_VERSION = 'v10.8';
+const APP_VERSION = 'v10.12';
 const STORAGE_SCHEMA_VERSION = 3;
 const COMPATIBLE_STORAGE_SCHEMA_VERSIONS = new Set([2, 3]);
 const JOURNAL_BANK_VERSION = 'v7.2';
@@ -11904,8 +11799,6 @@ function showStoragePersistenceFailure(message, title = '保存エラー') {
   if (typeof setBackupStatus === 'function') setBackupStatus(message, 'error');
   const support = document.getElementById('learning-support-details');
   if (support) support.open = true;
-  const details = document.getElementById('backup-details');
-  if (details) details.open = true;
 
   const now = Date.now();
   if (now - lastStorageFailureAlertAt >= STORAGE_FAILURE_ALERT_COOLDOWN_MS) {
@@ -11916,20 +11809,16 @@ function showStoragePersistenceFailure(message, title = '保存エラー') {
 
 function reportStorageSaveFailure(error, serializedState = '') {
   const quota = isQuotaExceededError(error);
-  const sizeKb = serializedState ? Math.max(1, Math.ceil(utf8ByteLength(serializedState) / 1024)) : null;
-  const sizeText = sizeKb ? `（現在の保存データ約${sizeKb.toLocaleString('ja-JP')}KB）` : '';
-  const message = quota
-    ? `ブラウザの保存領域へ学習履歴を保存できませんでした${sizeText}。容量上限に達した可能性があります。バックアップを保存して学習履歴を保護してください。`
-    : `ブラウザへ学習履歴を保存できませんでした${sizeText}。ブラウザ設定・保存領域・プライベート閲覧等により保存が拒否される場合があります。バックアップを保存して学習履歴を保護してください。`;
+  const sizeBytes = serializedState ? utf8ByteLength(serializedState) : 0;
+  console.warn('Storage save diagnostics.', { quota, sizeBytes, error });
+  const message = '学習記録をこの端末に保存できませんでした。先に「学習データを保存」でファイルを保管してください。';
   showStoragePersistenceFailure(message, '保存エラー');
 }
 
 function reportStorageLoadFailure(error) {
   const quota = isQuotaExceededError(error);
-  const detail = quota
-    ? '保存領域へのアクセス時にquota系エラーが返されました。'
-    : 'ブラウザから保存領域へのアクセスが拒否または失敗しました。';
-  const message = `以前の学習履歴をブラウザから読み込めなかったため、初期状態で開始します。${detail} バックアップファイルがある場合は「バックアップから復元」を使用してください。`;
+  console.warn('Storage load diagnostics.', { quota, error });
+  const message = '以前の学習記録を読み込めなかったため、初期状態で開始します。保存データがある場合は「保存データを戻す」を選んでください。';
   showStoragePersistenceFailure(message, '履歴読込エラー');
 }
 
@@ -12083,30 +11972,35 @@ class StorageManager {
   }
 
   static sanitizeBackupState(payload) {
-    const result = { ok: false, error: '', warnings: [], state: null, summary: null };
+    const result = { ok: false, error: '', warnings: [], debugWarnings: [], state: null, summary: null };
     if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
-      result.error = 'バックアップJSONの形式が正しくありません。';
+      result.error = 'このファイルは学習データとして読み込めません。';
+      result.debugWarnings.push('Backup payload is not an object.');
       return result;
     }
 
     if (payload.productId != null && payload.productId !== BACKUP_PRODUCT_ID) {
-      result.error = '別のアプリで作成されたバックアップのため復元できません。';
+      result.error = 'この教材の保存データではありません。';
+      result.debugWarnings.push(`Unexpected productId: ${String(payload.productId)}`);
       return result;
     }
     const backupFormat = payload.backupFormatVersion == null ? 1 : payload.backupFormatVersion;
     if (!COMPATIBLE_BACKUP_FORMAT_VERSIONS.has(backupFormat)) {
-      result.error = `未対応のバックアップ形式です（format ${backupFormat}）。`;
+      result.error = 'この保存データは、この版では読み込めません。';
+      result.debugWarnings.push(`Unsupported backup format: ${backupFormat}`);
       return result;
     }
 
     const raw = payload.state && typeof payload.state === 'object' ? payload.state : payload;
     if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
-      result.error = '学習履歴データが見つかりません。';
+      result.error = 'このファイルに学習記録が見つかりません。';
+      result.debugWarnings.push('Backup state object is missing.');
       return result;
     }
     const rawSchema = raw.schemaVersion == null ? 2 : raw.schemaVersion;
     if (!COMPATIBLE_STORAGE_SCHEMA_VERSIONS.has(rawSchema)) {
-      result.error = `この版では読み込めない保存形式です（保存形式 ${raw.schemaVersion ?? '不明'}）。`;
+      result.error = 'この保存データは、この版では読み込めません。';
+      result.debugWarnings.push(`Unsupported storage schema: ${String(raw.schemaVersion ?? 'unknown')}`);
       return result;
     }
 
@@ -12114,27 +12008,33 @@ class StorageManager {
     if (payload.stateChecksum != null && payload.state) {
       const actual = stableBankHash(raw);
       if (String(payload.stateChecksum) !== actual) {
-        result.error = 'バックアップファイルの整合性確認に失敗しました。ファイルが途中で変更・破損している可能性があります。';
+        result.error = '保存データが破損している可能性があるため、読み込めません。';
+        result.debugWarnings.push('Backup checksum mismatch.');
         return result;
       }
     }
 
     const journalVersion = typeof raw.journalBankVersion === 'string' ? raw.journalBankVersion : raw.bankVersion;
     if (!COMPATIBLE_JOURNAL_BANK_VERSIONS.has(journalVersion)) {
-      result.error = `仕訳問題データのバージョンが異なるため復元できません（${journalVersion || '不明'} → ${JOURNAL_BANK_VERSION}）。`;
+      result.error = 'この保存データは、この版では読み込めません。';
+      result.debugWarnings.push(`Unsupported journal bank version: ${journalVersion || 'unknown'} -> ${JOURNAL_BANK_VERSION}`);
       return result;
     }
     const tableVersion = typeof raw.tableBankVersion === 'string' ? raw.tableBankVersion : TABLE_BANK_VERSION;
     if (!COMPATIBLE_TABLE_BANK_VERSIONS.has(tableVersion)) {
-      result.error = `表問題データのバージョンが異なるため復元できません（${tableVersion || '不明'} → ${TABLE_BANK_VERSION}）。`;
+      result.error = 'この保存データは、この版では読み込めません。';
+      result.debugWarnings.push(`Unsupported table bank version: ${tableVersion || 'unknown'} -> ${TABLE_BANK_VERSION}`);
       return result;
     }
     const backupJournalPurgeSet = journalVersion === 'v7.0'
       ? new Set([...UPDATED_FROM_V7_0_IDS, ...UPDATED_FROM_V7_1_IDS])
       : journalVersion === 'v7.1' ? UPDATED_FROM_V7_1_IDS : new Set();
-    if (journalVersion !== JOURNAL_BANK_VERSION) result.warnings.push(`旧仕訳問題データ ${journalVersion} の履歴を互換移行します。内容変更対象の履歴は除外します。`);
-    if (tableVersion !== TABLE_BANK_VERSION) result.warnings.push(`旧表問題データ ${tableVersion} の履歴を互換移行します。`);
-    if (rawSchema !== STORAGE_SCHEMA_VERSION || backupFormat !== BACKUP_FORMAT_VERSION) result.warnings.push('旧版の学習履歴を現在の保存形式へ移行します。');
+    const needsMigration = journalVersion !== JOURNAL_BANK_VERSION || tableVersion !== TABLE_BANK_VERSION
+      || rawSchema !== STORAGE_SCHEMA_VERSION || backupFormat !== BACKUP_FORMAT_VERSION;
+    if (needsMigration) result.warnings.push('古い保存データを現在の形式に変換して戻します。');
+    if (journalVersion !== JOURNAL_BANK_VERSION) result.debugWarnings.push(`Journal history migration: ${journalVersion} -> ${JOURNAL_BANK_VERSION}`);
+    if (tableVersion !== TABLE_BANK_VERSION) result.debugWarnings.push(`Table history migration: ${tableVersion} -> ${TABLE_BANK_VERSION}`);
+    if (rawSchema !== STORAGE_SCHEMA_VERSION || backupFormat !== BACKUP_FORMAT_VERSION) result.debugWarnings.push(`Storage/backup migration: schema ${rawSchema}, format ${backupFormat}`);
 
     const progress = {};
     let droppedJournal = 0;
@@ -12176,7 +12076,8 @@ class StorageManager {
     }
 
     if (droppedJournal || droppedTable) {
-      result.warnings.push(`不正または未知の履歴 ${droppedJournal + droppedTable} 件は取り込み対象から除外しました。`);
+      result.warnings.push('一部の学習記録は復元対象外になります。');
+      result.debugWarnings.push(`Dropped unknown/invalid records: ${droppedJournal + droppedTable}`);
     }
 
     const streak = Number.isFinite(raw.streak) && raw.streak >= 0 ? Math.floor(raw.streak) : 0;
@@ -12350,23 +12251,96 @@ function ensureTodayLearningGame() {
   return Runtime.state.learningGame;
 }
 
-function checkDailyStreak() {
-  const today = getTodayString();
-  const game = ensureTodayLearningGame();
+/**
+ * 日付境界に合わせて学習状態をその場で更新する。
+ * 外部I/Oは行わず、渡されたstateのみを変更する決定的な状態更新ヘルパー。
+ * @param {object} state 更新対象の学習状態
+ * @param {string} today YYYY-MM-DD形式のローカル日付
+ * @returns {boolean} stateを変更した場合true
+ */
+function applyDailyLearningRollover(state, today) {
+  if (!state || typeof state !== 'object' || Array.isArray(state) || !/^\d{4}-\d{2}-\d{2}$/.test(String(today || ''))) return false;
   let changed = false;
-  if (!Runtime.state.lastStudyDate) {
-    if (Runtime.state.todayCount !== 0) { Runtime.state.todayCount = 0; changed = true; }
-  } else if (String(Runtime.state.lastStudyDate).slice(0, 10) !== today) {
-    const diffDays = calendarDayDiff(Runtime.state.lastStudyDate, today);
-    if (diffDays != null && diffDays > 1 && Runtime.state.streak !== 0) { Runtime.state.streak = 0; changed = true; }
-    if (Runtime.state.todayCount !== 0) { Runtime.state.todayCount = 0; changed = true; }
+
+  if (!state.learningGame || typeof state.learningGame !== 'object' || Array.isArray(state.learningGame)) {
+    state.learningGame = createDefaultLearningGameState();
+    changed = true;
   }
+  const game = state.learningGame;
+
+  if (!state.lastStudyDate) {
+    if (state.todayCount !== 0) { state.todayCount = 0; changed = true; }
+  } else if (String(state.lastStudyDate).slice(0, 10) !== today) {
+    const diffDays = calendarDayDiff(state.lastStudyDate, today);
+    if (diffDays != null && diffDays > 1 && state.streak !== 0) { state.streak = 0; changed = true; }
+    if (state.todayCount !== 0) { state.todayCount = 0; changed = true; }
+  }
+
   if (game.todayDate !== today) {
     game.todayDate = today;
     game.todayXp = 0;
     changed = true;
   }
-  if (changed) StorageManager.saveState(Runtime.state);
+  return changed;
+}
+
+function checkDailyStreak() {
+  const today = getTodayString();
+  if (applyDailyLearningRollover(Runtime.state, today)) StorageManager.saveState(Runtime.state);
+}
+
+function validateDailyRolloverUtilities() {
+  const issues = [];
+  const stale = StorageManager.getDefaultState();
+  stale.lastStudyDate = '2026-08-13';
+  stale.todayCount = 7;
+  stale.streak = 5;
+  stale.learningGame.todayDate = '2026-08-13';
+  stale.learningGame.todayXp = 123;
+  try {
+    const changed = applyDailyLearningRollover(stale, '2026-08-15');
+    if (!changed) issues.push('日付変更時の状態更新を検出できません');
+    if (stale.todayCount !== 0) issues.push('日付変更時に本日の学習数がリセットされません');
+    if (stale.streak !== 0) issues.push('2日以上空いたとき連続学習がリセットされません');
+    if (stale.learningGame.todayDate !== '2026-08-15' || stale.learningGame.todayXp !== 0) issues.push('日付変更時に当日EXP状態が更新されません');
+
+    const sameDay = StorageManager.getDefaultState();
+    sameDay.lastStudyDate = '2026-08-15';
+    sameDay.todayCount = 3;
+    sameDay.streak = 2;
+    sameDay.learningGame.todayDate = '2026-08-15';
+    sameDay.learningGame.todayXp = 9;
+    const sameDayChanged = applyDailyLearningRollover(sameDay, '2026-08-15');
+    if (sameDayChanged || sameDay.todayCount !== 3 || sameDay.streak !== 2 || sameDay.learningGame.todayXp !== 9) {
+      issues.push('同日アクセス時の学習状態を不要に変更しています');
+    }
+
+    const nextDay = StorageManager.getDefaultState();
+    nextDay.lastStudyDate = '2026-08-14';
+    nextDay.todayCount = 4;
+    nextDay.streak = 6;
+    nextDay.learningGame.todayDate = '2026-08-14';
+    nextDay.learningGame.todayXp = 21;
+    const nextDayChanged = applyDailyLearningRollover(nextDay, '2026-08-15');
+    if (!nextDayChanged || nextDay.todayCount !== 0 || nextDay.streak !== 6 || nextDay.learningGame.todayXp !== 0) {
+      issues.push('翌日アクセス時に連続学習を保持したまま当日状態を更新できません');
+    }
+
+    const missingGame = StorageManager.getDefaultState();
+    missingGame.learningGame = null;
+    const repaired = applyDailyLearningRollover(missingGame, '2026-08-15');
+    if (!repaired || !missingGame.learningGame || missingGame.learningGame.todayDate !== '2026-08-15') {
+      issues.push('学習ゲーム状態が欠損した場合の自己修復に失敗しています');
+    }
+
+    const untouched = { value: 1 };
+    if (applyDailyLearningRollover(untouched, 'invalid-date') !== false || untouched.value !== 1) {
+      issues.push('不正な日付入力時に状態を変更しています');
+    }
+  } catch (error) {
+    issues.push(`日付更新ロジックが例外を送出しました: ${error instanceof Error ? error.message : String(error)}`);
+  }
+  return issues;
 }
 
 function registerStudyActivity() {
@@ -12424,49 +12398,30 @@ function markNewAchievements(snapshot) {
   return newlyUnlocked;
 }
 
-function getNextLearningGoal() {
-  const todayCount = Number.isFinite(Runtime.state.todayCount) ? Math.max(0, Math.floor(Runtime.state.todayCount)) : 0;
-  if (todayCount < DAILY_STUDY_TARGET) return `今日の目標：あと ${DAILY_STUDY_TARGET - todayCount}問`;
-  return `✓ 今日の目標 ${DAILY_STUDY_TARGET}問を達成しました`;
-}
 
-function refreshTocLevelLabels(snapshot) {
-  const byId = new Map(snapshot.topics.map(topic => [topic.id, topic]));
-  document.querySelectorAll('[data-learning-topic-id][data-range-label]').forEach(el => {
-    const topic = byId.get(el.dataset.learningTopicId);
-    el.textContent = `Lv.${topic?.level || 1}・${el.dataset.rangeLabel}`;
-  });
-}
 
-function renderCurrentTopicLevel(type, questionId, targetId, snapshot = null) {
-  const target = document.getElementById(targetId);
-  if (!target) return;
-  const currentSnapshot = snapshot || buildLearningSnapshot(Runtime.state);
-  const topic = getLearningTopicForQuestion(type, questionId);
-  const topicState = topic ? currentSnapshot.topics.find(item => item.id === topic.id) : null;
-  target.textContent = topicState ? `${topicState.title} Lv.${topicState.level}` : '項目 Lv.1';
-}
 
 function renderLearningDashboard() {
   const snapshot = buildLearningSnapshot(Runtime.state);
-  const game = ensureTodayLearningGame();
   const setText = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = String(value); };
 
   setText('learning-overall-level', `Lv.${snapshot.overall.level}`);
   setText('learning-overall-title', snapshot.overall.title);
-  setText('learning-today-summary', `今日 ${Runtime.state.todayCount || 0} / ${DAILY_STUDY_TARGET}問`);
-  setText('study-status-summary', `学習済み ${snapshot.totalStudied} / 240問・今日 ${Runtime.state.todayCount || 0} / ${DAILY_STUDY_TARGET}問`);
+  const now = new Date();
+  const journalDue = Object.values(Runtime.state.progress || {}).filter(item => item?.nextReviewDate && new Date(item.nextReviewDate) <= now).length;
+  const tableDue = Object.values(Runtime.state.tableProgress || {}).filter(item => item?.nextReviewDate && new Date(item.nextReviewDate) <= now).length;
+  setText('study-status-summary', `復習待ち ${journalDue + tableDue}問`);
   const overallBar = document.getElementById('learning-overall-bar');
-  if (overallBar) overallBar.style.width = `${Math.round(snapshot.overall.levelProgress * 100)}%`;
-  setText('learning-overall-progress-text', snapshot.overall.level >= OVERALL_LEVEL_MAX
-    ? '教材内レベル上限に到達しています'
-    : `次のLvまで ${snapshot.overall.xpToNext.toLocaleString('ja-JP')} EXP`);
+  const overallPercent = Math.round(snapshot.overall.levelProgress * 100);
+  if (overallBar) {
+    overallBar.style.width = `${overallPercent}%`;
+    overallBar.parentElement?.setAttribute('aria-valuenow', String(overallPercent));
+  }
   setText('learning-studied-count', `${snapshot.totalStudied} / 240問`);
   const achieved = ACHIEVEMENT_DEFINITIONS.filter(item => item.check(snapshot));
   setText('learning-achievement-count', `${achieved.length}個`);
   const weakest = [...snapshot.topics].sort((a, b) => a.ratio - b.ratio || a.id.localeCompare(b.id))[0];
   setText('learning-weakest-topic', weakest ? `${weakest.title} Lv.${weakest.level}` : '—');
-  setText('learning-next-goal', getNextLearningGoal());
 
   const topicHost = document.getElementById('learning-topic-list');
   if (topicHost) {
@@ -12490,8 +12445,8 @@ function renderLearningDashboard() {
       const meta = document.createElement('div');
       meta.className = 'learning-topic-meta';
       meta.textContent = topic.level >= TOPIC_LEVEL_MAX
-        ? `EXP ${topic.xp.toLocaleString('ja-JP')} / ${topic.maxXp.toLocaleString('ja-JP')}・Lv.10`
-        : `次のLvまで ${topic.xpToNext.toLocaleString('ja-JP')} EXP`;
+        ? 'Lv.10（上限）'
+        : `次のLvまで ${Math.round(topic.levelProgress * 100)}%`;
       card.append(name, level, track, meta);
       fragment.appendChild(card);
     });
@@ -12503,36 +12458,29 @@ function renderLearningDashboard() {
   const stageBody = document.getElementById('learning-next-stage-body');
   const stageLink = document.getElementById('learning-next-stage-link');
   const allStudied = snapshot.totalStudied >= 240;
-  const halfway = snapshot.totalStudied >= 120;
   if (stageCard) {
-    stageCard.classList.toggle('ready', allStudied);
-    stageCard.classList.toggle('preview', !allStudied);
+    stageCard.hidden = !allStudied;
+    stageCard.classList.add('ready');
+    stageCard.classList.remove('preview');
   }
-  setText('learning-next-stage-kicker', allStudied ? '2級への橋渡し' : 'この先の学習');
-  setText('learning-next-stage-title', allStudied
-    ? '次のステージ：日商簿記2級'
-    : '3級を一巡すると、2級への学習ガイドが開きます。');
+  setText('learning-next-stage-kicker', '2級への橋渡し');
+  setText('learning-next-stage-title', '次のステージ：日商簿記2級');
   if (stageStatus) {
-    stageStatus.hidden = !allStudied && !halfway;
-    stageStatus.textContent = allStudied
-      ? 'この教材の全240問に学習履歴がつきました（教材内の「一巡」）。'
-      : halfway ? `一巡まであと ${Math.max(0, 240 - snapshot.totalStudied)}問です。` : '';
+    stageStatus.hidden = !allStudied;
+    stageStatus.textContent = allStudied ? '全240問を一巡しました。' : '';
   }
   if (stageBody) {
     stageBody.hidden = !allStudied;
     stageBody.textContent = allStudied
-      ? 'これは日商簿記3級の合格判定ではありません。3級で練習した仕訳・集計・決算の基礎を整理したうえで、次の学習範囲を確認するための案内です。'
+      ? '3級で練習した仕訳・集計・決算の基礎を整理したうえで、次の学習範囲を確認できます。'
       : '';
   }
   if (stageLink) stageLink.hidden = !allStudied;
 
-  refreshTocLevelLabels(snapshot);
-  if (Runtime.journal.currentQuestionIndex >= 0) renderCurrentTopicLevel('journal', QUESTION_DATABASE[Runtime.journal.currentQuestionIndex]?.id, 'problem-topic-level', snapshot);
-  if (Runtime.table.currentIndex >= 0) renderCurrentTopicLevel('table', TABLE_DATABASE[Runtime.table.currentIndex]?.id, 'table-problem-topic-level', snapshot);
   return snapshot;
 }
 
-function announceLearningGrowth({ before, after, gainedXp = 0, topicType, questionId, recovered = false, dailyGoal = false, achievements = [] }) {
+function announceLearningGrowth({ before, after, topicType, questionId, recovered = false, dailyGoal = false, achievements = [] }) {
   const lines = [];
   let hasLevelUp = false;
   if (after.overall.level > before.overall.level) {
@@ -12549,7 +12497,6 @@ function announceLearningGrowth({ before, after, gainedXp = 0, topicType, questi
     }
   }
   if (recovered) lines.push('成長記録：前回は要復習 → 今回は正解');
-  if (gainedXp > 0) lines.push(`定着EXP +${gainedXp}`);
   if (dailyGoal) lines.push(`✓ 今日の目標 ${DAILY_STUDY_TARGET}問を達成しました`);
   if (achievements.length) lines.push(`達成：${achievements.map(item => item.label).join('・')}`);
   if (!lines.length) return;
@@ -12582,11 +12529,11 @@ function setEvalButtonsDisabled(disabled, isCorrect = false) {
   const instruction = document.getElementById('eval-instruction');
   if (instruction) {
     if (disabled) {
-      instruction.innerText = '※採点（解答提出）を完了すると回答後の手応えを選べます:';
+      instruction.innerText = '採点後に理解度を選べます:';
     } else if (!isCorrect) {
-      instruction.innerText = '※不正解のため「要復習 / 不正解」で復習間隔が自動再設定されます:';
+      instruction.innerText = '不正解のため「要復習」を選んで次へ進みます:';
     } else {
-      instruction.innerText = '回答後の手応え（選択後に次の問題へ自動進みます）:';
+      instruction.innerText = '理解度を選ぶと次の問題へ進みます:';
     }
   }
 }
@@ -12610,28 +12557,15 @@ function setInputFieldsDisabled(disabled) {
 function updateDashboard() {
   checkDailyStreak();
 
-  const total = QUESTION_DATABASE.length;
-  let dueCount = 0;
-  let unstudiedCount = 0;
   const now = new Date();
-
+  let dueCount = 0;
   QUESTION_DATABASE.forEach(q => {
-    const p = Runtime.state.progress[q.id];
-    if (p) {
-      if (new Date(p.nextReviewDate) <= now) dueCount++;
-    } else {
-      unstudiedCount++;
-    }
+    const progress = Runtime.state.progress[q.id];
+    if (progress?.nextReviewDate && new Date(progress.nextReviewDate) <= now) dueCount += 1;
   });
 
-  document.getElementById('stat-total').innerText = total;
-  document.getElementById('stat-due').innerText = dueCount;
-  document.getElementById('stat-unstudied').innerText = unstudiedCount;
+  document.getElementById('stat-due').innerText = String(dueCount);
   document.getElementById('stat-streak').innerText = `${Runtime.state.streak} 日`;
-
-  const percent = Math.min(Math.round((Runtime.state.todayCount / DAILY_STUDY_TARGET) * 100), 100);
-  document.getElementById('progress-bar').style.width = `${percent}%`;
-  document.getElementById('progress-text').innerText = `${Runtime.state.todayCount} / ${DAILY_STUDY_TARGET} 問完了`;
   renderLearningDashboard();
 }
 
@@ -12695,8 +12629,6 @@ function loadQuestion(index) {
   setEvalButtonsDisabled(true);
 
   const q = QUESTION_DATABASE[index];
-  renderJournalDifficulty(q);
-  renderCurrentTopicLevel('journal', q.id, 'problem-topic-level');
   updateTocActive(q.id);
 
   document.getElementById('problem-category').innerText = q.category;
@@ -12738,11 +12670,19 @@ function cachedJournalTextWidth(ctx, value, size, fontStyle, fontWeight, fontFam
   const normalizedSize = Math.round(Number(size) * 100) / 100;
   const key = `${fontStyle}|${fontWeight}|${fontFamily}|${normalizedSize}|${value}`;
   const cached = journalAmountMeasureCache.get(key);
-  if (cached != null) return cached;
+  if (cached != null) {
+    // Mapの挿入順を利用し、参照されたキーを末尾へ移して簡易LRUとして扱う。
+    journalAmountMeasureCache.delete(key);
+    journalAmountMeasureCache.set(key, cached);
+    return cached;
+  }
 
   ctx.font = `${fontStyle} ${fontWeight} ${normalizedSize}px ${fontFamily}`;
   const width = ctx.measureText(value).width + 2; // 末尾の描画余裕
-  if (journalAmountMeasureCache.size >= JOURNAL_AMOUNT_MEASURE_CACHE_LIMIT) journalAmountMeasureCache.clear();
+  if (journalAmountMeasureCache.size >= JOURNAL_AMOUNT_MEASURE_CACHE_LIMIT) {
+    const oldestKey = journalAmountMeasureCache.keys().next().value;
+    if (oldestKey !== undefined) journalAmountMeasureCache.delete(oldestKey);
+  }
   journalAmountMeasureCache.set(key, width);
   return width;
 }
@@ -12997,14 +12937,6 @@ function getJournalDifficulty(q) {
   return 5;
 }
 
-function renderJournalDifficulty(q) {
-  const el = document.getElementById('problem-difficulty');
-  if (!el) return;
-  const level = getJournalDifficulty(q);
-  el.textContent = `難易度 ${'★'.repeat(level)}${'☆'.repeat(5 - level)}（教材内目安）`;
-  el.setAttribute('aria-label', `教材内の相対難易度 5段階中${level}`);
-  el.title = 'この教材内での相対的な難易度の目安です。';
-}
 
 function addJournalRow() {
   const tbody = document.getElementById('journal-rows');
@@ -13362,14 +13294,14 @@ function checkAnswer() {
   const creditRes = getEntries('credit');
 
   if (debitRes.hasIncomplete || creditRes.hasIncomplete) {
-    alert('【注意】勘定科目のみ、または金額のみが入力されているか、金額に小数や0以下の不正な数値が含まれています。正しく正の整数で入力してから提出してください。');
+    alert('入力途中の行、または使用できない金額があります。勘定科目と金額を確認してください。');
     return;
   }
   if (debitRes.duplicateAccounts.length || creditRes.duplicateAccounts.length) {
     const parts = [];
     if (debitRes.duplicateAccounts.length) parts.push(`借方：${debitRes.duplicateAccounts.join('、')}`);
     if (creditRes.duplicateAccounts.length) parts.push(`貸方：${creditRes.duplicateAccounts.join('、')}`);
-    alert(`【ネット試験の注意事項】同じ勘定科目は借方・貸方それぞれ1回までです。\n重複：${parts.join(' / ')}`);
+    alert(`同じ勘定科目は借方・貸方それぞれ1回までです。\n重複：${parts.join(' / ')}`);
     return;
   }
 
@@ -13561,8 +13493,13 @@ function renderContentReferencePolicy() {
   const policy = document.getElementById('explanation-reference-policy');
   const host = document.getElementById('explanation-reference-list');
   if (!policy || !host) return;
-  policy.textContent = `本版での公開情報確認日：${CONTENT_REFERENCE_POLICY.verifiedAt}\n${CONTENT_REFERENCE_POLICY.text}`;
+  policy.textContent = '2026年度の出題範囲は、日本商工会議所の公開資料を基準にしています。';
   host.replaceChildren();
+
+  const auditNote = document.createElement('p');
+  auditNote.className = 'reference-policy-copy';
+  auditNote.textContent = `公開情報確認日：${CONTENT_REFERENCE_POLICY.verifiedAt}\n${CONTENT_REFERENCE_POLICY.text}`;
+  host.appendChild(auditNote);
 
   const grouped = new Map();
   CONTENT_REFERENCE_CATALOG.forEach(source => {
@@ -13867,7 +13804,7 @@ function computeSrsProgress(previous, quality, errorType = 'NONE', now = new Dat
 
 function applySelfEval(quality) {
   if (!Runtime.journal.isAnswered || Runtime.journal.currentQuestionIndex === -1 || Runtime.journal.isEvalCompleted) {
-    alert('「解答を提出する」ボタンを押して採点を行ってから自己評価を選択してください。');
+    alert('「採点する」ボタンを押してから理解度を選択してください。');
     return;
   }
   if (![0, 2, 3].includes(quality)) return;
@@ -13881,7 +13818,7 @@ function applySelfEval(quality) {
   const activity = registerStudyActivity();
   const updated = { ...computeSrsProgress(previous, quality, Runtime.journal.currentErrorType, now), lastQuality: quality };
   Runtime.state.progress[q.id] = updated;
-  const gainedXp = awardQuestionMasteryXp('journal', q.id, updated, { correct: quality >= 2, quality, allowGrowth: reviewWasDue });
+  awardQuestionMasteryXp('journal', q.id, updated, { correct: quality >= 2, quality, allowGrowth: reviewWasDue });
   const after = buildLearningSnapshot(Runtime.state);
   const achievements = markNewAchievements(after);
 
@@ -13891,7 +13828,6 @@ function applySelfEval(quality) {
   announceLearningGrowth({
     before,
     after,
-    gainedXp,
     topicType: 'journal',
     questionId: q.id,
     recovered,
@@ -14155,10 +14091,6 @@ function renderTableTargets(q) {
     return;
   }
 
-  const note = document.createElement('p');
-  note.className = 'table-problem-target-note';
-  note.textContent = `下の「${q.group}」で枠線が付いている欄だけを入力します。`;
-  host.appendChild(note);
 }
 
 function renderStructuredTableStatement(q) {
@@ -14431,7 +14363,6 @@ function loadTableQuestion(index) {
   const initialViewMode = getResponsiveTableView();
   dispatchRuntimeLifecycle({ type: RUNTIME_ACTION.TABLE_LOAD, index, viewMode: initialViewMode });
   const q = TABLE_DATABASE[index];
-  renderCurrentTopicLevel('table', q.id, 'table-problem-topic-level');
   document.getElementById('table-problem-category').innerText = q.category;
   document.getElementById('table-problem-id-text').innerText = `ID: ${q.id} (${index + 1} / ${TABLE_DATABASE.length})`;
   renderStructuredTableStatement(q);
@@ -14502,7 +14433,7 @@ function checkTableAnswer() {
     const segmentIndex = segments.findIndex(segment => segment.columns.some(c => c.key === first.columnKey));
     if (segmentIndex >= 0) { Runtime.table.viewMode = 'compact'; Runtime.table.segmentIndex = segmentIndex; renderTableViewControls(q); renderTableQuestionTable(q); }
     requestAnimationFrame(() => document.querySelector(`#table-exercise-host .table-answer-input[data-row="${first.rowIndex}"][data-key="${CSS.escape(first.columnKey)}"]`)?.focus());
-    alert(`【注意】未入力が${missing.length}か所あります。最初の未入力欄へ移動します。`);
+    alert(`未入力が${missing.length}か所あります。最初の未入力欄へ移動します。`);
     return;
   }
 
@@ -14539,7 +14470,7 @@ function checkTableAnswer() {
     lastAttempt: now.toISOString()
   };
   Runtime.state.tableProgress[q.id] = updated;
-  const gainedXp = awardQuestionMasteryXp('table', q.id, updated, { correct: isCorrect, quality: isCorrect ? 2 : 0, allowGrowth: reviewWasDue });
+  awardQuestionMasteryXp('table', q.id, updated, { correct: isCorrect, quality: isCorrect ? 2 : 0, allowGrowth: reviewWasDue });
   const after = buildLearningSnapshot(Runtime.state);
   const achievements = markNewAchievements(after);
   StorageManager.saveState(Runtime.state);
@@ -14557,7 +14488,6 @@ function checkTableAnswer() {
   announceLearningGrowth({
     before,
     after,
-    gainedXp,
     topicType: 'table',
     questionId: q.id,
     recovered,
@@ -14570,21 +14500,15 @@ function updateTableDashboard() {
   const progress = Runtime.state.tableProgress || {};
   const now = new Date();
   let solved = 0;
-  let attempted = 0;
   let due = 0;
   TABLE_DATABASE.forEach(q => {
-    const p = progress[q.id];
-    if (!p) return;
-    attempted += 1;
-    if (p.correct) solved += 1;
-    if (p.nextReviewDate && new Date(p.nextReviewDate) <= now) due += 1;
+    const item = progress[q.id];
+    if (!item) return;
+    if (item.correct) solved += 1;
+    if (item.nextReviewDate && new Date(item.nextReviewDate) <= now) due += 1;
   });
-  const total = TABLE_DATABASE.length;
   const setText = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = String(value); };
-  setText('table-stat-total', total);
   setText('table-stat-solved', solved);
-  setText('table-stat-remaining', total - solved);
-  setText('table-stat-attempted', attempted);
   setText('table-stat-due', due);
 }
 
@@ -14999,19 +14923,27 @@ function exportProgressBackup() {
     link.click();
     link.remove();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
-    const journalRecords = Object.keys(Runtime.state.progress || {}).length;
-    const tableRecords = Object.keys(Runtime.state.tableProgress || {}).length;
-    setBackupStatus(`バックアップを作成しました（仕訳履歴 ${journalRecords}件・表履歴 ${tableRecords}件）。`, 'success');
+    setBackupStatus('✓ 学習データを保存しました', 'success');
   } catch (error) {
     console.error('Backup export failed.', error);
-    setBackupStatus('バックアップファイルを作成できませんでした。', 'error');
+    setBackupStatus('学習データを保存できませんでした。', 'error');
   }
 }
 
 function chooseProgressRestoreFile() {
   const input = document.getElementById('progress-import-input');
-  if (!input) return;
+  if (!(input instanceof HTMLInputElement)) return;
+  setBackupStatus('以前保存した学習データのファイルを選んでください。');
   input.value = '';
+  // ユーザー操作の同期処理内でネイティブpickerを優先し、未対応・拒否時のみclickへフォールバックする。
+  if (typeof input.showPicker === 'function') {
+    try {
+      input.showPicker();
+      return;
+    } catch (error) {
+      console.info('Native file picker was unavailable; falling back to input.click().', error);
+    }
+  }
   input.click();
 }
 
@@ -15039,38 +14971,37 @@ async function handleProgressRestoreFile(event) {
     const text = await readTextFile(file);
     const payload = JSON.parse(text);
     const checked = StorageManager.sanitizeBackupState(payload);
+    if (checked.debugWarnings?.length) console.warn('Backup restore diagnostics:', ...checked.debugWarnings);
     if (!checked.ok) {
       setBackupStatus(`復元できません：${checked.error}`, 'error');
       input.value = '';
       return;
     }
 
-    const summary = checked.summary || { journalRecords: 0, tableRecords: 0 };
-    const warningText = checked.warnings.length ? `\n${checked.warnings.join('\n')}` : '';
+    const warningText = checked.warnings.length ? `\n\n注意：\n${checked.warnings.join('\n')}` : '';
     const confirmed = window.confirm(
-      `現在の学習履歴を、このバックアップで置き換えます。\n\n` +
-      `仕訳履歴: ${summary.journalRecords}件\n表履歴: ${summary.tableRecords}件${warningText}\n\n復元しますか？`
+      `現在の学習記録を、選択した保存データで置き換えます。よろしいですか？${warningText}`
     );
     if (!confirmed) {
-      setBackupStatus('復元をキャンセルしました。');
+      setBackupStatus('データの復元をキャンセルしました。');
       input.value = '';
       return;
     }
 
     const restoredState = checked.state;
     if (!StorageManager.saveState(restoredState)) {
-      setBackupStatus('ブラウザへ学習履歴を保存できなかったため、復元を完了できませんでした。', 'error');
+      setBackupStatus('この端末に学習データを保存できなかったため、復元できませんでした。', 'error');
       input.value = '';
       return;
     }
     Runtime.state = restoredState;
 
-    setBackupStatus('学習履歴を復元しました。画面を更新します。', 'success');
+    setBackupStatus('✓ 学習データを戻しました。画面を更新します。', 'success');
     input.value = '';
     setTimeout(() => window.location.reload(), 350);
   } catch (error) {
     console.error('Backup import failed.', error);
-    setBackupStatus('バックアップファイルを読み込めませんでした。ファイルの内容を確認してください。', 'error');
+    setBackupStatus('保存データを読み込めませんでした。ファイルを確認してください。', 'error');
     if (input) input.value = '';
   }
 }
@@ -15116,7 +15047,11 @@ function handleDelegatedAction(event) {
 document.addEventListener('click', handleDelegatedAction);
 
 function initializeApp() {
-  runCriticalIntegrityCheck();
+  const critical = runCriticalIntegrityCheck();
+  if (critical.blockingIssues.length) {
+    console.error('重大な起動時異常を検出したため、演習UIの初期化を中断しました。', critical);
+    return;
+  }
   const importInput = document.getElementById('progress-import-input');
   if (importInput) importInput.addEventListener('change', handleProgressRestoreFile);
   const quizCard = document.getElementById('quiz-card');
@@ -15152,7 +15087,15 @@ function initializeApp() {
   scheduleDetailedIntegrityCheck();
 }
 
-initializeApp();
+function startApplication() {
+  try {
+    initializeApp();
+  } catch (error) {
+    reportStartupFailure(error);
+  }
+}
+
+startApplication();
 
 </script>
 
