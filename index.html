@@ -1200,6 +1200,72 @@
     }
     .account-effect-side { font-weight: 800; white-space: nowrap; }
 
+    .exam-readiness-details {
+      margin: 0 0 10px;
+      border: 1px solid #bfdbfe;
+      border-radius: 9px;
+      background: #f8fbff;
+      overflow: hidden;
+    }
+    .exam-readiness-details > summary {
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      padding: 9px 10px;
+      color: #1e3a8a;
+      font-size: .84rem;
+      font-weight: 900;
+      list-style: none;
+      touch-action: manipulation;
+    }
+    .exam-readiness-details > summary::-webkit-details-marker { display: none; }
+    .exam-readiness-details > summary::before { content: '＋'; margin-right: 6px; color: #2563eb; }
+    .exam-readiness-details[open] > summary::before { content: '－'; }
+    .exam-readiness-details[open] > summary { border-bottom: 1px solid #dbeafe; }
+    .exam-readiness-body { padding: 10px; color: #334155; font-size: .78rem; line-height: 1.65; }
+    .exam-readiness-body p { margin: 0 0 8px; }
+    .exam-readiness-body p:last-child { margin-bottom: 0; }
+    .exam-readiness-facts {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 6px;
+      margin: 8px 0 10px;
+    }
+    .exam-readiness-fact {
+      padding: 7px 6px;
+      border-radius: 7px;
+      background: #eff6ff;
+      text-align: center;
+    }
+    .exam-readiness-fact strong { display: block; color: #1e3a8a; font-size: .84rem; }
+    .exam-readiness-fact span { color: #64748b; font-size: .64rem; font-weight: 700; }
+    .exam-readiness-note {
+      padding: 8px 9px;
+      border-left: 3px solid #60a5fa;
+      border-radius: 4px;
+      background: #fff;
+    }
+    .exam-readiness-links { display: grid; gap: 6px; margin-top: 9px; }
+    .exam-readiness-links a {
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      padding: 8px 10px;
+      border: 1px solid #bfdbfe;
+      border-radius: 7px;
+      background: #fff;
+      color: #1d4ed8;
+      font-weight: 800;
+      text-decoration: none;
+    }
+    .exam-readiness-links a:focus-visible { outline: 3px solid #2563eb; outline-offset: 2px; }
+    @media (max-width: 420px) {
+      .exam-readiness-facts { grid-template-columns: 1fr; }
+      .exam-readiness-fact { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; text-align: left; }
+      .exam-readiness-fact strong { display: inline; }
+    }
+
     .reference-policy-details {
       margin-top: 10px;
       border-top: 1px dashed #93c5fd;
@@ -2148,6 +2214,23 @@
     <details class="learning-support-details about-details" id="about-material-details">
       <summary><span>この教材について</span></summary>
       <div class="learning-support-body">
+        <details class="exam-readiness-details" id="exam-readiness-details">
+          <summary>本試験に向けた仕上げ</summary>
+          <div class="exam-readiness-body" id="exam-readiness-guide">
+            <p>この教材は、仕訳200問と表・決算40問の反復を中心にした学習教材です。本試験のすべての出題形式を再現するものではありません。</p>
+            <div class="exam-readiness-facts" aria-label="日商簿記3級の公式試験情報">
+              <div class="exam-readiness-fact"><strong>60分</strong><span>試験時間</span></div>
+              <div class="exam-readiness-fact"><strong>70%以上</strong><span>合格基準</span></div>
+              <div class="exam-readiness-fact"><strong>3題以内</strong><span>出題問題数</span></div>
+            </div>
+            <p class="exam-readiness-note"><strong>受験前に別途確認：</strong>日本商工会議所の3級サンプル問題で、第2問の形式も解いてください。2026年公開サンプルには、勘定記入（次期繰越を含む）や固定資産台帳を使う問題があります。</p>
+            <p>ネット試験では、会場からA4サイズの計算・メモ用紙2枚と筆記具が配布され、規定に合う電卓を持ち込めます。受験前には、紙と普段使う電卓を併用して60分通しで解く練習も行うと、画面だけの単問演習との操作差を確認できます。</p>
+            <div class="exam-readiness-links">
+              <a href="https://www.kentei.ne.jp/bookkeeping/sample/sample_3" target="_blank" rel="noopener noreferrer">日本商工会議所「3級 サンプル問題」を確認</a>
+              <a href="https://www.kentei.ne.jp/33013" target="_blank" rel="noopener noreferrer">日本商工会議所「ネット試験について」を確認</a>
+            </div>
+          </div>
+        </details>
         <div class="next-stage-card ready" id="learning-next-stage-card" hidden>
           <div class="next-stage-kicker" id="learning-next-stage-kicker">2級への橋渡し</div>
           <div class="next-stage-title" id="learning-next-stage-title">次のステージ：日商簿記2級</div>
@@ -2230,7 +2313,7 @@
 <script type="module">
 
 /*
- * ===== v10.12 内部アーキテクチャ方針 =====
+ * ===== v10.13 内部アーキテクチャ方針 =====
  * 配布物はGitHub Pagesへそのまま置ける単一HTMLを維持する。
  * 物理ファイルは分割せず、以下の責務を論理的に分離して扱う。
  *   1) Domain Data      : 仕訳200問・表40問・目次・勘定科目
@@ -11234,6 +11317,10 @@ const DISALLOWED_VISIBLE_PRODUCT_CLAIMS = Object.freeze([
   '最高峰の仕上がり',
   'Production Ready',
   '安心して公開',
+  '確実に合格できます',
+  '一発合格できます',
+  '合格に必要な実力の8〜9割',
+  '74〜87点',
   '全240問を外部サイトと1対1で個別照合済み',
   '全200問をマネーフォワードと個別照合済み',
   '全200問をFunda簿記と個別照合済み'
@@ -11269,7 +11356,7 @@ function validateDomIdReferences() {
   return issues;
 }
 
-const REQUIRED_DOM_IDS = Object.freeze(['account-effect-list', 'account-nature-details', 'add-row-btn', 'backup-status', 'calc-apply-bar', 'calc-apply-debit', 'calc-apply-table', 'calc-apply-credit', 'calc-help-btn', 'calc-display', 'calc-expression', 'calc-learning-note', 'calculator-modal', 'correct-journal-content', 'data-integrity-banner', 'diagnostic-box', 'diagnostic-list', 'diagnostic-summary', 'eval-btn-0', 'eval-btn-2', 'eval-btn-3', 'eval-instruction', 'explanation-reference-list', 'explanation-reference-policy', 'hint-box', 'journal-mode-section', 'journal-rows', 'journal-account-selection-help', 'learning-achievement-count', 'learning-growth-card', 'learning-next-stage-body', 'learning-next-stage-card', 'learning-next-stage-kicker', 'learning-next-stage-link', 'learning-next-stage-status', 'learning-next-stage-title', 'learning-overall-bar', 'learning-overall-level', 'learning-overall-title', 'learning-studied-count', 'learning-toast', 'learning-topic-list', 'learning-support-details', 'study-status-details', 'study-status-summary', 'journal-status-panel', 'table-status-panel', 'learning-weakest-topic', 'mode-journal-btn', 'mode-table-btn', 'problem-category', 'problem-id-text', 'problem-statement', 'progress-import-input', 'quiz-card', 'remove-row-btn', 'result-box', 'result-detail', 'result-title', 'scenario-amount-section', 'scenario-amount-text', 'scenario-confusion-section', 'scenario-confusion-text', 'scenario-cue-list', 'scenario-guide-box', 'scenario-reading-text', 'scenario-reason-text', 'stat-due', 'stat-streak', 'submit-btn', 'table-exercise-host', 'table-exercise-wrapper', 'table-explanation-box', 'table-hint-box', 'table-mode-section', 'table-problem-category', 'table-problem-givens', 'table-problem-givens-block', 'table-problem-id-text', 'table-problem-instruction', 'table-problem-statement', 'table-problem-targets', 'table-problem-targets-block', 'table-quiz-card', 'table-result-box', 'table-result-detail', 'table-result-title', 'table-segment-nav', 'table-submit-btn', 'table-toc-card', 'table-toc-details', 'table-toc-groups', 'table-workspace-help', 'table-workspace-title', 'toc-card', 'toc-details', 'toc-groups']);
+const REQUIRED_DOM_IDS = Object.freeze(['account-effect-list', 'account-nature-details', 'add-row-btn', 'backup-status', 'calc-apply-bar', 'calc-apply-debit', 'calc-apply-table', 'calc-apply-credit', 'calc-help-btn', 'calc-display', 'calc-expression', 'calc-learning-note', 'calculator-modal', 'correct-journal-content', 'data-integrity-banner', 'diagnostic-box', 'diagnostic-list', 'diagnostic-summary', 'exam-readiness-details', 'exam-readiness-guide', 'eval-btn-0', 'eval-btn-2', 'eval-btn-3', 'eval-instruction', 'explanation-reference-list', 'explanation-reference-policy', 'hint-box', 'journal-mode-section', 'journal-rows', 'journal-account-selection-help', 'learning-achievement-count', 'learning-growth-card', 'learning-next-stage-body', 'learning-next-stage-card', 'learning-next-stage-kicker', 'learning-next-stage-link', 'learning-next-stage-status', 'learning-next-stage-title', 'learning-overall-bar', 'learning-overall-level', 'learning-overall-title', 'learning-studied-count', 'learning-toast', 'learning-topic-list', 'learning-support-details', 'study-status-details', 'study-status-summary', 'journal-status-panel', 'table-status-panel', 'learning-weakest-topic', 'mode-journal-btn', 'mode-table-btn', 'problem-category', 'problem-id-text', 'problem-statement', 'progress-import-input', 'quiz-card', 'remove-row-btn', 'result-box', 'result-detail', 'result-title', 'scenario-amount-section', 'scenario-amount-text', 'scenario-confusion-section', 'scenario-confusion-text', 'scenario-cue-list', 'scenario-guide-box', 'scenario-reading-text', 'scenario-reason-text', 'stat-due', 'stat-streak', 'submit-btn', 'table-exercise-host', 'table-exercise-wrapper', 'table-explanation-box', 'table-hint-box', 'table-mode-section', 'table-problem-category', 'table-problem-givens', 'table-problem-givens-block', 'table-problem-id-text', 'table-problem-instruction', 'table-problem-statement', 'table-problem-targets', 'table-problem-targets-block', 'table-quiz-card', 'table-result-box', 'table-result-detail', 'table-result-title', 'table-segment-nav', 'table-submit-btn', 'table-toc-card', 'table-toc-details', 'table-toc-groups', 'table-workspace-help', 'table-workspace-title', 'toc-card', 'toc-details', 'toc-groups']);
 
 function validateUiStructure() {
   const issues = [];
@@ -11287,6 +11374,25 @@ function validateUiStructure() {
   const sampleJournalSelect = document.querySelector('#journal-rows select');
   if (sampleJournalSelect && sampleJournalSelect.getAttribute('aria-describedby') !== 'journal-account-selection-help') issues.push('仕訳勘定科目selectに読み上げ補助説明が関連付けられていません');
   if (!document.getElementById('table-workspace-guide')) issues.push('表問題の見方ガイドがありません');
+  const examGuide = document.getElementById('exam-readiness-guide');
+  if (!examGuide) {
+    issues.push('本試験に向けた仕上げ案内がありません');
+  } else {
+    const guideText = String(examGuide.textContent || '');
+    ['60分', '70%以上', '3題以内', 'A4'].forEach(term => {
+      if (!guideText.includes(term)) issues.push(`本試験案内に必要な公式情報がありません: ${term}`);
+    });
+    examGuide.querySelectorAll('a[target="_blank"]').forEach(link => {
+      const rel = String(link.getAttribute('rel') || '');
+      if (!rel.includes('noopener') || !rel.includes('noreferrer')) issues.push('本試験案内の外部リンクに安全属性が不足しています');
+      try {
+        const url = new URL(link.href);
+        if (url.hostname !== 'www.kentei.ne.jp') issues.push(`本試験案内に非公式リンクがあります: ${url.hostname}`);
+      } catch {
+        issues.push('本試験案内のリンクURLが不正です');
+      }
+    });
+  }
   if (typeof reportStorageSaveFailure !== 'function' || typeof reportStorageLoadFailure !== 'function' || typeof isQuotaExceededError !== 'function') issues.push('ブラウザ保存・読込失敗の診断／バックアップ誘導機構がありません');
   document.querySelectorAll('[data-action]').forEach(el => { if (!el.closest(ACTION_ROOT_SELECTOR)) issues.push(`data-actionが許可されたUI領域外にあります: ${el.dataset.action || '不明'}`); });
   if (!document.getElementById('table-problem-instruction') || !document.getElementById('table-problem-givens') || !document.getElementById('table-problem-targets')) {
@@ -11716,7 +11822,7 @@ function runIntegrityCheck() {
 deepFreeze(QUESTION_DATABASE);
 deepFreeze(TABLE_DATABASE);
 
-const APP_VERSION = 'v10.12';
+const APP_VERSION = 'v10.13';
 const STORAGE_SCHEMA_VERSION = 3;
 const COMPATIBLE_STORAGE_SCHEMA_VERSIONS = new Set([2, 3]);
 const JOURNAL_BANK_VERSION = 'v7.2';
@@ -12272,7 +12378,9 @@ function applyDailyLearningRollover(state, today) {
     if (state.todayCount !== 0) { state.todayCount = 0; changed = true; }
   } else if (String(state.lastStudyDate).slice(0, 10) !== today) {
     const diffDays = calendarDayDiff(state.lastStudyDate, today);
-    if (diffDays != null && diffDays > 1 && state.streak !== 0) { state.streak = 0; changed = true; }
+    // 不正な保存日付または2日以上の空白だけストリークを切る。
+    // 時計・タイムゾーンが過去方向へ動いた場合（diffDays < 0）は、利用者を不当にリセットしない。
+    if ((diffDays == null || diffDays > 1) && state.streak !== 0) { state.streak = 0; changed = true; }
     if (state.todayCount !== 0) { state.todayCount = 0; changed = true; }
   }
 
@@ -12326,6 +12434,22 @@ function validateDailyRolloverUtilities() {
       issues.push('翌日アクセス時に連続学習を保持したまま当日状態を更新できません');
     }
 
+    const clockRollback = StorageManager.getDefaultState();
+    clockRollback.lastStudyDate = '2026-08-16';
+    clockRollback.todayCount = 2;
+    clockRollback.streak = 4;
+    clockRollback.learningGame.todayDate = '2026-08-16';
+    clockRollback.learningGame.todayXp = 12;
+    const rollbackChanged = applyDailyLearningRollover(clockRollback, '2026-08-15');
+    if (!rollbackChanged || clockRollback.todayCount !== 0 || clockRollback.streak !== 4
+      || clockRollback.learningGame.todayDate !== '2026-08-15' || clockRollback.learningGame.todayXp !== 0) {
+      issues.push('時計・タイムゾーンが過去方向へ動いた場合の学習状態を安全に更新できません');
+    }
+    if (resolveStreakOnStudyDateChange(4, -1) !== 4) issues.push('時計巻き戻り時に連続学習を不当に変更しています');
+    if (resolveStreakOnStudyDateChange(4, 1) !== 5) issues.push('翌日の学習で連続学習を正しく加算できません');
+    if (resolveStreakOnStudyDateChange(4, 2) !== 1) issues.push('2日以上空いた学習で連続学習を再開できません');
+    if (resolveStreakOnStudyDateChange(4, null) !== 1) issues.push('日付解析不能時の連続学習を安全側へ再開できません');
+
     const missingGame = StorageManager.getDefaultState();
     missingGame.learningGame = null;
     const repaired = applyDailyLearningRollover(missingGame, '2026-08-15');
@@ -12343,6 +12467,22 @@ function validateDailyRolloverUtilities() {
   return issues;
 }
 
+/**
+ * 学習日が前回記録日と異なるときのストリーク値を決める。
+ * - 翌日: 1日伸ばす
+ * - 過去方向への時計・タイムゾーン移動: 現在値を維持（不当な減算・加算をしない）
+ * - 2日以上の空白または日付解析不能: 1日目として再開
+ * @param {number} currentStreak
+ * @param {number|null} diffDays
+ * @returns {number}
+ */
+function resolveStreakOnStudyDateChange(currentStreak, diffDays) {
+  const normalized = Number.isFinite(currentStreak) ? Math.max(0, Math.floor(currentStreak)) : 0;
+  if (diffDays === 1) return Math.max(1, normalized + 1);
+  if (diffDays != null && diffDays < 0) return Math.max(1, normalized);
+  return 1;
+}
+
 function registerStudyActivity() {
   const today = getTodayString();
   const game = ensureTodayLearningGame();
@@ -12354,7 +12494,7 @@ function registerStudyActivity() {
     Runtime.state.todayCount = 0;
   } else if (lastDate !== today) {
     const diffDays = calendarDayDiff(lastDate, today);
-    Runtime.state.streak = diffDays === 1 ? Math.max(1, Runtime.state.streak + 1) : 1;
+    Runtime.state.streak = resolveStreakOnStudyDateChange(Runtime.state.streak, diffDays);
     Runtime.state.todayCount = 0;
   }
 
@@ -13416,18 +13556,20 @@ function getAuditedCueNotes(q) {
   return hint ? [hint] : [];
 }
 
-// v9.9: 日本商工会議所の公開資料を出題範囲・勘定科目・ネット試験公開仕様の一次資料とする。
+// v10.13: 日本商工会議所の公開資料を出題範囲・勘定科目・試験仕様・公式サンプルの一次資料とする。
 // マネーフォワード クラウドとFunda簿記は、説明順序・取引パターン・混同しやすい科目の区別を補助的に照合する。
 // 外部記事の記述を無批判に正答へ採用せず、問題条件・正答仕訳・解説の整合性を個別に確認する。文章は転載しない。
 // 代表的な公開ページを論点横断で参照しているが、全240問が各ページと1対1で対応するという意味ではない。
 const CONTENT_REFERENCE_POLICY = Object.freeze({
-  verifiedAt: '2026-08-15',
-  text: '2026年度の出題範囲、主要な標準・許容勘定科目、ネット試験の公開仕様は、日本商工会議所の資料を一次資料として確認しています。\nマネーフォワード クラウドとFunda簿記は、初学者向けの説明順序、取引パターンの捉え方、似た勘定科目の区別を論点別に補助照合し、本教材用の文章へ独自に再構成しています。各記事の一文をそのまま正答根拠にはせず、問題条件・正答仕訳・解説の整合性と矛盾する記述は採用しません。\n外部記事の文章は転載していません。また、下記は代表的な参照ページであり、全240問が各外部ページと1対1で対応しているという意味ではありません。'
+  verifiedAt: '2026-08-16',
+  text: '2026年度の出題範囲、主要な標準・許容勘定科目、3級の試験時間・合格基準、ネット試験の公開仕様、公式サンプル問題は、日本商工会議所の資料を一次資料として確認しています。\nマネーフォワード クラウドとFunda簿記は、初学者向けの説明順序、取引パターンの捉え方、似た勘定科目の区別を論点別に補助照合し、本教材用の文章へ独自に再構成しています。各記事の一文をそのまま正答根拠にはせず、問題条件・正答仕訳・解説の整合性と矛盾する記述は採用しません。\n外部記事の文章は転載していません。また、下記は代表的な参照ページであり、全240問が各外部ページと1対1で対応しているという意味ではありません。'
 });
 
 const CONTENT_REFERENCE_CATALOG = Object.freeze([
   { id:'jcci-scope', publisher:'日本商工会議所', title:'簿記 出題区分表', role:'2026年度の出題範囲確認', url:'https://www.kentei.ne.jp/bookkeeping/exam-list' },
   { id:'jcci-net', publisher:'日本商工会議所', title:'日商簿記検定試験（2級・3級等）ネット試験について', role:'ネット試験の公開仕様確認', url:'https://www.kentei.ne.jp/33013' },
+  { id:'jcci-class3-exam', publisher:'日本商工会議所', title:'簿記3級 試験科目・注意事項', role:'試験時間・合格基準・出題問題数の確認', url:'https://www.kentei.ne.jp/bookkeeping/class3/exam' },
+  { id:'jcci-sample3', publisher:'日本商工会議所', title:'簿記3級 サンプル問題', role:'第1問・第2問・第3問の公式サンプル形式確認', url:'https://www.kentei.ne.jp/bookkeeping/sample/sample_3' },
   { id:'jcci-accounts', publisher:'日本商工会議所', title:'商業簿記標準・許容勘定科目表（2022年度適用）', role:'3級の主要な標準・許容勘定科目の確認', url:'https://www.kentei.ne.jp/wp/wp-content/uploads/2021/12/2022_kamoku.pdf' },
   { id:'jcci-class2', publisher:'日本商工会議所', title:'簿記2級', role:'3級学習後の次の学習範囲を案内する際の公式確認', url:'https://www.kentei.ne.jp/bookkeeping/class2' },
 
@@ -14935,13 +15077,13 @@ function chooseProgressRestoreFile() {
   if (!(input instanceof HTMLInputElement)) return;
   setBackupStatus('以前保存した学習データのファイルを選んでください。');
   input.value = '';
-  // ユーザー操作の同期処理内でネイティブpickerを優先し、未対応・拒否時のみclickへフォールバックする。
+  // ユーザー操作の同期処理内でネイティブpickerを優先し、呼び出し自体が例外となった場合だけclickへフォールバックする。
   if (typeof input.showPicker === 'function') {
     try {
       input.showPicker();
       return;
     } catch (error) {
-      console.info('Native file picker was unavailable; falling back to input.click().', error);
+      console.debug('Native file picker unavailable; falling back to input.click().', error);
     }
   }
   input.click();
