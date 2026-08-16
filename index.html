@@ -924,18 +924,34 @@
       font-variant-numeric: tabular-nums;
       text-align: inherit;
     }
-    /* v10.14: 表問題では電卓を問題カード内に配置し、問題文・入力表へ重ねない。 */
+    /* v10.16: 電卓は仕訳・表の両モードでフローティング表示し、利用者が邪魔にならない位置へ移動できる。 */
     .calculator-floating-home { min-height: 0; }
-    .table-calculator-slot:empty { display: none; }
-    .table-calculator-slot:not(:empty) { margin: 10px 0 12px; }
-    .calculator-modal.table-inline {
-      position: static;
-      width: min(100%, 340px);
-      max-height: none;
-      margin: 0 auto;
-      overflow-y: visible;
-      box-shadow: 0 4px 14px rgba(15,23,42,.16);
-      z-index: auto;
+    .calc-drag-handle {
+      min-width: 0;
+      padding: 5px 7px;
+      border: 0;
+      border-radius: 5px;
+      background: transparent;
+      color: #fff;
+      font: inherit;
+      font-weight: 800;
+      text-align: left;
+      cursor: grab;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .calc-drag-handle:hover { background: rgba(255,255,255,.10); }
+    .calc-drag-handle:active,
+    .calculator-modal.dragging .calc-drag-handle { cursor: grabbing; background: rgba(255,255,255,.16); }
+    .calc-drag-handle:focus-visible {
+      outline: 2px solid #fff;
+      outline-offset: 1px;
+    }
+    .calculator-modal.dragging {
+      user-select: none;
+      -webkit-user-select: none;
+      box-shadow: 0 12px 28px rgba(0,0,0,.30);
     }
 
     .table-correct-answer-box {
@@ -2161,7 +2177,6 @@
         <div class="table-workspace-help" id="table-workspace-help"></div>
       </div>
       <div class="table-segment-nav" id="table-segment-nav" hidden aria-label="入力する欄の切替"></div>
-      <div class="table-calculator-slot" id="table-calculator-slot" aria-label="表問題用電卓"></div>
       <div class="table-exercise-wrapper" id="table-exercise-wrapper"><div id="table-exercise-host"></div></div>
       <button type="button" class="btn-submit" id="table-submit-btn" data-action="check-table">表を採点する</button>
       <div class="table-result-box" id="table-result-box">
@@ -2304,11 +2319,11 @@
   🧮 電卓
 </button>
 
-<!-- 内蔵電卓モーダル。表問題では問題カード内へ移動し、問題文へ重ならないようにする。 -->
+<!-- 内蔵電卓モーダル。仕訳・表の両モードでフローティング表示し、上部ハンドルから移動できる。 -->
 <div class="calculator-floating-home" id="calculator-floating-home">
 <div class="calculator-modal" id="calculator-modal">
   <div class="calc-header">
-    <span>電卓</span>
+    <button type="button" class="calc-drag-handle" id="calc-drag-handle" aria-label="電卓を移動" aria-describedby="calc-drag-help">⠿ 電卓</button>
     <div class="calc-header-actions">
       <button type="button" class="calc-help-btn" id="calc-help-btn" data-action="toggle-calc-help" aria-expanded="false" aria-controls="calc-learning-note" aria-label="電卓の操作説明を表示">?</button>
       <button type="button" class="calc-close-btn" data-action="toggle-calculator" aria-label="電卓を閉じる">✕</button>
@@ -2352,14 +2367,15 @@
     </div>
   </div>
 
-  <div class="calc-learning-note" id="calc-learning-note" hidden>ACは計算全体、Cは現在入力中の数値を消去します。％は表示中の値を100で割ります。</div>
+  <span class="visually-hidden" id="calc-drag-help">電卓上部の移動ボタンをドラッグして位置を変えられます。キーボードでは矢印キーで移動できます。</span>
+  <div class="calc-learning-note" id="calc-learning-note" hidden>上部の「⠿ 電卓」をドラッグすると移動できます。キーボードでは移動ボタンにフォーカスして矢印キーで動かせます。ACは計算全体、Cは現在入力中の数値を消去します。％は表示中の値を100で割ります。</div>
 </div>
 </div>
 
 <script type="module">
 
 /*
- * ===== v10.15 内部アーキテクチャ方針 =====
+ * ===== v10.16 内部アーキテクチャ方針 =====
  * 配布物はGitHub Pagesへそのまま置ける単一HTMLを維持する。
  * 物理ファイルは分割せず、以下の責務を論理的に分離して扱う。
  *   1) Domain Data      : 仕訳200問・表40問・目次・勘定科目
@@ -11433,7 +11449,7 @@ function validateDomIdReferences() {
   return issues;
 }
 
-const REQUIRED_DOM_IDS = Object.freeze(['account-effect-list', 'account-nature-details', 'add-row-btn', 'backup-status', 'calc-apply-bar', 'calc-apply-debit', 'calc-apply-table', 'calc-apply-credit', 'calc-help-btn', 'calc-display', 'calc-expression', 'calc-learning-note', 'calculator-floating-home', 'calculator-modal', 'correct-journal-content', 'data-integrity-banner', 'diagnostic-box', 'diagnostic-list', 'diagnostic-summary', 'exam-readiness-details', 'exam-readiness-guide', 'eval-btn-0', 'eval-btn-2', 'eval-btn-3', 'eval-instruction', 'explanation-reference-list', 'explanation-reference-policy', 'hint-box', 'journal-mode-section', 'journal-rows', 'journal-account-selection-help', 'learning-achievement-count', 'learning-growth-card', 'learning-next-stage-body', 'learning-next-stage-card', 'learning-next-stage-kicker', 'learning-next-stage-link', 'learning-next-stage-status', 'learning-next-stage-title', 'learning-overall-bar', 'learning-overall-level', 'learning-overall-title', 'learning-studied-count', 'learning-toast', 'learning-topic-list', 'learning-support-details', 'study-status-details', 'study-status-summary', 'journal-status-panel', 'table-status-panel', 'learning-weakest-topic', 'mode-journal-btn', 'mode-table-btn', 'problem-category', 'problem-id-text', 'problem-statement', 'progress-import-input', 'quiz-card', 'remove-row-btn', 'result-box', 'result-detail', 'result-title', 'scenario-amount-section', 'scenario-amount-text', 'scenario-confusion-section', 'scenario-confusion-text', 'scenario-cue-list', 'scenario-guide-box', 'scenario-reading-text', 'scenario-reason-text', 'stat-due', 'stat-streak', 'submit-btn', 'table-calculator-slot', 'table-correct-answer-box', 'table-correct-answer-host', 'table-eval-btn-0', 'table-eval-btn-2', 'table-eval-btn-3', 'table-eval-instruction', 'table-next-btn', 'table-exercise-host', 'table-exercise-wrapper', 'table-explanation-box', 'table-hint-box', 'table-mode-section', 'table-problem-category', 'table-problem-givens', 'table-problem-givens-block', 'table-problem-id-text', 'table-problem-instruction', 'table-problem-statement', 'table-problem-targets', 'table-problem-targets-block', 'table-quiz-card', 'table-result-box', 'table-result-detail', 'table-result-title', 'table-segment-nav', 'table-submit-btn', 'table-toc-card', 'table-toc-details', 'table-toc-groups', 'table-workspace-help', 'table-workspace-title', 'toc-card', 'toc-details', 'toc-groups']);
+const REQUIRED_DOM_IDS = Object.freeze(['account-effect-list', 'account-nature-details', 'add-row-btn', 'backup-status', 'calc-apply-bar', 'calc-apply-debit', 'calc-apply-table', 'calc-apply-credit', 'calc-help-btn', 'calc-drag-handle', 'calc-drag-help', 'calc-display', 'calc-expression', 'calc-learning-note', 'calculator-floating-home', 'calculator-modal', 'correct-journal-content', 'data-integrity-banner', 'diagnostic-box', 'diagnostic-list', 'diagnostic-summary', 'exam-readiness-details', 'exam-readiness-guide', 'eval-btn-0', 'eval-btn-2', 'eval-btn-3', 'eval-instruction', 'explanation-reference-list', 'explanation-reference-policy', 'hint-box', 'journal-mode-section', 'journal-rows', 'journal-account-selection-help', 'learning-achievement-count', 'learning-growth-card', 'learning-next-stage-body', 'learning-next-stage-card', 'learning-next-stage-kicker', 'learning-next-stage-link', 'learning-next-stage-status', 'learning-next-stage-title', 'learning-overall-bar', 'learning-overall-level', 'learning-overall-title', 'learning-studied-count', 'learning-toast', 'learning-topic-list', 'learning-support-details', 'study-status-details', 'study-status-summary', 'journal-status-panel', 'table-status-panel', 'learning-weakest-topic', 'mode-journal-btn', 'mode-table-btn', 'problem-category', 'problem-id-text', 'problem-statement', 'progress-import-input', 'quiz-card', 'remove-row-btn', 'result-box', 'result-detail', 'result-title', 'scenario-amount-section', 'scenario-amount-text', 'scenario-confusion-section', 'scenario-confusion-text', 'scenario-cue-list', 'scenario-guide-box', 'scenario-reading-text', 'scenario-reason-text', 'stat-due', 'stat-streak', 'submit-btn', 'table-correct-answer-box', 'table-correct-answer-host', 'table-eval-btn-0', 'table-eval-btn-2', 'table-eval-btn-3', 'table-eval-instruction', 'table-next-btn', 'table-exercise-host', 'table-exercise-wrapper', 'table-explanation-box', 'table-hint-box', 'table-mode-section', 'table-problem-category', 'table-problem-givens', 'table-problem-givens-block', 'table-problem-id-text', 'table-problem-instruction', 'table-problem-statement', 'table-problem-targets', 'table-problem-targets-block', 'table-quiz-card', 'table-result-box', 'table-result-detail', 'table-result-title', 'table-segment-nav', 'table-submit-btn', 'table-toc-card', 'table-toc-details', 'table-toc-groups', 'table-workspace-help', 'table-workspace-title', 'toc-card', 'toc-details', 'toc-groups']);
 
 function validateUiStructure() {
   const issues = [];
@@ -11489,7 +11505,12 @@ function validateUiStructure() {
   if (practiceArea?.contains(document.getElementById('learning-growth-card'))) issues.push('学習ステータスが問題演習領域内に混在しています');
   const calcHelp = document.getElementById('calc-learning-note');
   if (calcHelp && !calcHelp.hidden) issues.push('電卓の操作説明が初期状態で表示されています');
-  if (typeof syncCalculatorContext !== 'function' || typeof syncCalculatorPlacement !== 'function') issues.push('電卓のモード別配置・反映制御がありません');
+  if (typeof syncCalculatorContext !== 'function' || typeof syncCalculatorPlacement !== 'function') issues.push('電卓のモード別反映制御がありません');
+  if (typeof bindCalculatorDragging !== 'function' || typeof clampCalculatorCoordinates !== 'function' || typeof ensureCalculatorInViewport !== 'function') {
+    issues.push('電卓を安全に移動するドラッグ制御がありません');
+  }
+  const calcDragHandle = document.getElementById('calc-drag-handle');
+  if (calcDragHandle && calcDragHandle.getAttribute('aria-describedby') !== 'calc-drag-help') issues.push('電卓移動ハンドルに操作説明が関連付けられていません');
   if (typeof fitTableAmountFont !== 'function' || typeof fitTableStaticNumberText !== 'function') {
     issues.push('表問題の入力金額・固定金額に表示幅フィット処理がありません');
   }
@@ -11591,6 +11612,10 @@ function validateCalculatorUtilities() {
   if (!calcNote.includes('100で割る') && !percentButtonLabel.includes('100で割る')) {
     issues.push('電卓の％キー仕様をヘルプまたはaria-labelから確認できません');
   }
+  const clamped = clampCalculatorCoordinates(-100, 900, 270, 300, { left: 0, top: 0, width: 390, height: 844 }, 8);
+  if (clamped.left !== 8 || clamped.top !== 536) issues.push('電卓ドラッグ位置の画面内クランプ異常');
+  const inside = clampCalculatorCoordinates(50, 60, 270, 300, { left: 0, top: 0, width: 390, height: 844 }, 8);
+  if (inside.left !== 50 || inside.top !== 60) issues.push('電卓ドラッグ位置が不要に変更されています');
   const percent50 = calculatePercentValue(50);
   if (!Number.isFinite(percent50) || percent50 !== 0.5) issues.push('電卓の％単項処理（50→0.5）異常');
 
@@ -11906,7 +11931,7 @@ function runIntegrityCheck() {
 deepFreeze(QUESTION_DATABASE);
 deepFreeze(TABLE_DATABASE);
 
-const APP_VERSION = 'v10.15';
+const APP_VERSION = 'v10.16';
 const STORAGE_SCHEMA_VERSION = 3;
 const COMPATIBLE_STORAGE_SCHEMA_VERSIONS = new Set([2, 3]);
 const JOURNAL_BANK_VERSION = 'v7.2';
@@ -12326,7 +12351,7 @@ function createRuntime() {
     // draftは現在表示中の表問題だけの一時入力。LocalStorage／JSONバックアップへは永続化しない。
     table: { currentIndex: -1, answered: false, isEvalCompleted: false, lastResultCorrect: null, wrongCellKeys: [], lastFocusedInput: null, viewMode: 'full', viewPreference: 'auto', segmentIndex: 0, hintLevel: 0, draft: {} },
     calculator: { current: '0', prev: null, op: null, resetOnNext: false, error: false, lastOperand: null, lastOp: null },
-    ui: { quizCardTemplate: null, journalResizeTimer: null, journalRefitRaf: null, tableRefitRaf: null, tableMediaQuery: null, tableMediaHandler: null, resizeObserver: null, learningToastTimer: null }
+    ui: { quizCardTemplate: null, journalResizeTimer: null, journalRefitRaf: null, tableRefitRaf: null, tableMediaQuery: null, tableMediaHandler: null, resizeObserver: null, learningToastTimer: null, calculatorClampRaf: null, calculatorDrag: { active: false, pointerId: null, offsetX: 0, offsetY: 0, left: null, top: null } }
   };
   Object.seal(runtime.journal);
   Object.seal(runtime.table);
@@ -15102,17 +15127,134 @@ function toggleCalculatorHelp() {
   if (!note) return;
   note.hidden = !note.hidden;
   if (button) button.setAttribute('aria-expanded', String(!note.hidden));
+  // ヘルプ表示で電卓の高さが変わっても画面外へ出さない。
+  requestAnimationFrame(scheduleCalculatorViewportClamp);
+}
+
+function getCalculatorViewportRect() {
+  const viewport = window.visualViewport;
+  const left = Number(viewport?.offsetLeft) || 0;
+  const top = Number(viewport?.offsetTop) || 0;
+  const width = Number(viewport?.width) || document.documentElement.clientWidth || window.innerWidth || 0;
+  const height = Number(viewport?.height) || document.documentElement.clientHeight || window.innerHeight || 0;
+  return { left, top, width, height };
+}
+
+function clampCalculatorCoordinates(left, top, modalWidth, modalHeight, viewport = getCalculatorViewportRect(), margin = 8) {
+  const width = Math.max(0, Number(modalWidth) || 0);
+  const height = Math.max(0, Number(modalHeight) || 0);
+  const minLeft = viewport.left + margin;
+  const minTop = viewport.top + margin;
+  const maxLeft = Math.max(minLeft, viewport.left + viewport.width - width - margin);
+  const maxTop = Math.max(minTop, viewport.top + viewport.height - height - margin);
+  const safeLeft = Math.min(maxLeft, Math.max(minLeft, Number(left) || 0));
+  const safeTop = Math.min(maxTop, Math.max(minTop, Number(top) || 0));
+  return { left: safeLeft, top: safeTop };
+}
+
+function setCalculatorPosition(left, top, remember = true) {
+  const modal = document.getElementById('calculator-modal');
+  if (!modal) return null;
+  const rect = modal.getBoundingClientRect();
+  const next = clampCalculatorCoordinates(left, top, rect.width, rect.height);
+  modal.style.left = `${Math.round(next.left)}px`;
+  modal.style.top = `${Math.round(next.top)}px`;
+  modal.style.right = 'auto';
+  modal.style.bottom = 'auto';
+  if (remember) {
+    Runtime.ui.calculatorDrag.left = next.left;
+    Runtime.ui.calculatorDrag.top = next.top;
+  }
+  return next;
+}
+
+function ensureCalculatorInViewport({ preferRemembered = true } = {}) {
+  const modal = document.getElementById('calculator-modal');
+  if (!modal || modal.style.display !== 'block') return;
+  const rect = modal.getBoundingClientRect();
+  const savedLeft = Runtime.ui.calculatorDrag.left;
+  const savedTop = Runtime.ui.calculatorDrag.top;
+  if (preferRemembered && Number.isFinite(savedLeft) && Number.isFinite(savedTop)) {
+    setCalculatorPosition(savedLeft, savedTop, true);
+    return;
+  }
+  const viewport = getCalculatorViewportRect();
+  const defaultLeft = viewport.left + viewport.width - rect.width - 10;
+  // 右下の電卓FABと重なりにくい位置を初期位置にする。
+  const defaultTop = viewport.top + viewport.height - rect.height - 66;
+  setCalculatorPosition(defaultLeft, defaultTop, true);
+}
+
+function scheduleCalculatorViewportClamp() {
+  if (Runtime.ui.calculatorClampRaf != null) return;
+  Runtime.ui.calculatorClampRaf = requestAnimationFrame(() => {
+    Runtime.ui.calculatorClampRaf = null;
+    if (!Runtime.ui.calculatorDrag.active) ensureCalculatorInViewport({ preferRemembered: true });
+  });
+}
+
+function endCalculatorDrag(event = null) {
+  const state = Runtime.ui.calculatorDrag;
+  if (!state.active) return;
+  const handle = document.getElementById('calc-drag-handle');
+  if (event && state.pointerId != null && handle?.hasPointerCapture?.(state.pointerId)) {
+    try { handle.releasePointerCapture(state.pointerId); } catch {}
+  }
+  state.active = false;
+  state.pointerId = null;
+  document.getElementById('calculator-modal')?.classList.remove('dragging');
+}
+
+function bindCalculatorDragging() {
+  const handle = document.getElementById('calc-drag-handle');
+  const modal = document.getElementById('calculator-modal');
+  if (!handle || !modal || handle.dataset.dragBound === 'true') return;
+  handle.dataset.dragBound = 'true';
+
+  handle.addEventListener('pointerdown', event => {
+    if (event.pointerType === 'mouse' && event.button !== 0) return;
+    const rect = modal.getBoundingClientRect();
+    const state = Runtime.ui.calculatorDrag;
+    state.active = true;
+    state.pointerId = event.pointerId;
+    state.offsetX = event.clientX - rect.left;
+    state.offsetY = event.clientY - rect.top;
+    modal.classList.add('dragging');
+    try { handle.setPointerCapture?.(event.pointerId); } catch {}
+    event.preventDefault();
+  });
+
+  handle.addEventListener('pointermove', event => {
+    const state = Runtime.ui.calculatorDrag;
+    if (!state.active || state.pointerId !== event.pointerId) return;
+    setCalculatorPosition(event.clientX - state.offsetX, event.clientY - state.offsetY, true);
+    event.preventDefault();
+  });
+
+  handle.addEventListener('pointerup', endCalculatorDrag);
+  handle.addEventListener('pointercancel', endCalculatorDrag);
+  handle.addEventListener('lostpointercapture', () => endCalculatorDrag());
+
+  handle.addEventListener('keydown', event => {
+    const delta = event.shiftKey ? 32 : 12;
+    const movement = {
+      ArrowLeft: [-delta, 0], ArrowRight: [delta, 0],
+      ArrowUp: [0, -delta], ArrowDown: [0, delta]
+    }[event.key];
+    if (!movement) return;
+    const rect = modal.getBoundingClientRect();
+    setCalculatorPosition(rect.left + movement[0], rect.top + movement[1], true);
+    event.preventDefault();
+  });
 }
 
 function syncCalculatorPlacement() {
   const modal = document.getElementById('calculator-modal');
-  const tableSlot = document.getElementById('table-calculator-slot');
   const floatingHome = document.getElementById('calculator-floating-home');
   if (!modal) return;
-  const inline = Runtime.mode === 'table' && tableSlot;
-  const target = inline ? tableSlot : floatingHome;
-  if (target && modal.parentElement !== target) target.appendChild(modal);
-  modal.classList.toggle('table-inline', Boolean(inline));
+  if (floatingHome && modal.parentElement !== floatingHome) floatingHome.appendChild(modal);
+  modal.classList.remove('table-inline');
+  if (modal.style.display === 'block') scheduleCalculatorViewportClamp();
 }
 
 function syncCalculatorContext() {
@@ -15138,9 +15280,12 @@ function toggleCalculator() {
     const helpButton = document.getElementById('calc-help-btn');
     if (note) note.hidden = true;
     if (helpButton) helpButton.setAttribute('aria-expanded', 'false');
+    modal.style.display = 'block';
+    requestAnimationFrame(() => ensureCalculatorInViewport({ preferRemembered: true }));
+  } else {
+    endCalculatorDrag();
+    modal.style.display = 'none';
   }
-  modal.style.display = opening ? 'block' : 'none';
-  if (opening && Runtime.mode === 'table') requestAnimationFrame(() => modal.scrollIntoView({ block: 'nearest' }));
 }
 
 function calculatorOperatorSymbol(op) {
@@ -15568,9 +15713,19 @@ async function handleProgressRestoreFile(event) {
 
 window.addEventListener('resize', () => {
   clearTimeout(Runtime.ui.journalResizeTimer);
-  Runtime.ui.journalResizeTimer = setTimeout(scheduleAllAmountRefits, 80);
+  Runtime.ui.journalResizeTimer = setTimeout(() => {
+    scheduleAllAmountRefits();
+    scheduleCalculatorViewportClamp();
+  }, 80);
 });
-window.addEventListener('orientationchange', () => setTimeout(scheduleAllAmountRefits, 180));
+window.addEventListener('orientationchange', () => setTimeout(() => {
+  scheduleAllAmountRefits();
+  scheduleCalculatorViewportClamp();
+}, 180));
+if (window.visualViewport) {
+  window.visualViewport.addEventListener('resize', scheduleCalculatorViewportClamp);
+  window.visualViewport.addEventListener('scroll', scheduleCalculatorViewportClamp);
+}
 
 const ACTION_ROOT_SELECTOR = '.container, .toc-fab, .calc-fab, #calculator-modal';
 
@@ -15617,6 +15772,7 @@ function initializeApp() {
   if (importInput) importInput.addEventListener('change', handleProgressRestoreFile);
   const quizCard = document.getElementById('quiz-card');
   Runtime.ui.quizCardTemplate = quizCard ? quizCard.cloneNode(true) : null;
+  bindCalculatorDragging();
   renderContentReferencePolicy();
   renderTableOfContents();
   updateDashboard();
