@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="application-version" content="v10.21">
   <title>日商簿記3級 総合演習システム（2026年度出題区分対応・仕訳200問＋表問題40問）</title>
   <style>
     :root {
@@ -304,9 +305,33 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
       border-bottom: 2px solid var(--border-color);
       padding-bottom: 6px;
       margin-bottom: 10px;
+    }
+
+    .problem-meta {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 6px;
+      flex-wrap: wrap;
+      min-width: 0;
+    }
+    .difficulty-badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 24px;
+      padding: 2px 7px;
+      border: 1px solid #cbd5e1;
+      border-radius: 999px;
+      background: #f8fafc;
+      color: #475569;
+      font-size: .69rem;
+      font-weight: 800;
+      white-space: nowrap;
     }
 
     .category-badge {
@@ -855,6 +880,71 @@
       color: #fff;
       border-color: var(--primary);
     }
+    .story-control {
+      display: flex;
+      align-items: center;
+      margin: -5px 0 12px;
+    }
+    .story-toggle-btn {
+      flex: 0 0 auto;
+      min-height: 40px;
+      border: 1px solid #93c5fd;
+      border-radius: 8px;
+      padding: 7px 10px;
+      background: #fff;
+      color: #1e3a8a;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .story-toggle-btn:focus-visible { outline: 3px solid #2563eb; outline-offset: 2px; }
+    .story-toggle-btn[aria-pressed="true"] {
+      background: #1d4ed8;
+      color: #fff;
+      border-color: #1d4ed8;
+    }
+    .story-control-note {
+      color: #64748b;
+      font-size: .68rem;
+      line-height: 1.45;
+    }
+    .story-panel {
+      margin: 0 0 10px;
+      padding: 10px 11px;
+      border: 1px solid #bfdbfe;
+      border-left: 4px solid #3b82f6;
+      border-radius: 7px;
+      background: #eff6ff;
+    }
+    .story-panel[hidden] { display: none !important; }
+    .story-kicker {
+      color: #1d4ed8;
+      font-size: .67rem;
+      font-weight: 900;
+      letter-spacing: .02em;
+    }
+    .story-title {
+      margin-top: 2px;
+      color: #172554;
+      font-size: .88rem;
+      font-weight: 900;
+    }
+    .story-body {
+      margin: 5px 0 0;
+      color: #334155;
+      font-size: .78rem;
+      line-height: 1.55;
+    }
+    .story-safety-note {
+      margin: 5px 0 0;
+      color: #64748b;
+      font-size: .67rem;
+      line-height: 1.45;
+    }
+    @media (max-width: 520px) {
+      .story-control { align-items: flex-start; }
+      .story-control-note { padding-top: 2px; }
+      .problem-meta { width: 100%; justify-content: space-between; }
+    }
     .mode-section[hidden] { display: none !important; }
     .table-dashboard .value { color: #7c3aed; }
     .table-exercise-wrapper {
@@ -1215,6 +1305,50 @@
       color: #334155;
       white-space: pre-line;
     }
+    .practical-context-section {
+      border-color: #bbf7d0;
+      background: #f0fdf4;
+    }
+    .practical-context-section .scenario-section-title {
+      color: #166534;
+    }
+    .practical-context-note {
+      margin-top: 7px;
+      padding-top: 7px;
+      border-top: 1px dashed #86efac;
+      color: #365314;
+      font-size: .8rem;
+      line-height: 1.65;
+      white-space: pre-line;
+    }
+    .table-practical-context {
+      margin-top: 10px;
+      padding: 12px;
+      border: 1px solid #bbf7d0;
+      border-left: 4px solid #16a34a;
+      border-radius: 7px;
+      background: #f0fdf4;
+      color: #334155;
+    }
+    .table-practical-title {
+      color: #166534;
+      font-size: .86rem;
+      font-weight: 800;
+      margin-bottom: 5px;
+    }
+    .table-practical-body,
+    .table-practical-check {
+      font-size: .82rem;
+      line-height: 1.7;
+      white-space: pre-line;
+    }
+    .table-practical-check {
+      margin-top: 7px;
+      padding-top: 7px;
+      border-top: 1px dashed #86efac;
+      color: #365314;
+    }
+
     .account-nature-details {
       margin-top: 10px;
       border-top: 1px dashed #93c5fd;
@@ -2022,9 +2156,10 @@
     <button type="button" class="mode-btn active" id="mode-journal-btn" data-action="switch-mode" data-mode="journal">仕訳演習 200問</button>
     <button type="button" class="mode-btn" id="mode-table-btn" data-action="switch-mode" data-mode="table">表・決算演習 40問</button>
   </div>
-
-
-
+  <div class="story-control" id="story-control" aria-label="ストーリーモード">
+    <button type="button" class="story-toggle-btn" id="story-mode-toggle" data-action="toggle-story-mode" aria-pressed="false" aria-describedby="story-mode-note">📖 ストーリー OFF</button>
+    <span class="story-control-note visually-hidden" id="story-mode-note">ストーリーモードは演出のみで、問題・採点・復習は通常演習と同じです。各問題は独立しており、復習順によって表示する月や章が前後することがあります。</span>
+  </div>
 
   <main class="practice-area" id="practice-area" aria-label="問題演習">
   <section id="journal-mode-section" class="mode-section">
@@ -2042,9 +2177,17 @@
   <div class="card" id="quiz-card">
     <div class="problem-header">
       <span class="category-badge" id="problem-category">カテゴリー</span>
-      <span id="problem-id-text" style="color: var(--text-muted); font-size: 0.75rem;">Q001</span>
+      <span class="problem-meta">
+        <span class="difficulty-badge" id="problem-difficulty" title="本教材独自の目安です。">難易度 —</span>
+        <span id="problem-id-text" style="color: var(--text-muted); font-size: 0.75rem;">1 / 200</span>
+      </span>
     </div>
-
+    <section class="story-panel" id="journal-story-panel" hidden aria-label="ストーリー">
+      <div class="story-kicker" id="journal-story-kicker">STORY</div>
+      <div class="story-title" id="journal-story-title"></div>
+      <p class="story-body" id="journal-story-body"></p>
+      <p class="story-safety-note">※各問題は独立した演習です。前の問題の金額や取引内容は引き継ぎません。復習では月の表示が前後することがあります。</p>
+    </section>
 
     <div class="statement" id="problem-statement">
       問題文を読み込んでいます...
@@ -2099,6 +2242,11 @@
           <div class="scenario-section-title">この取引では何が起きている？</div>
           <div class="scenario-section-text" id="scenario-reading-text"></div>
         </div>
+        <div class="scenario-section practical-context-section" id="journal-practical-context">
+          <div class="scenario-section-title" id="journal-practical-title">実務とのつながり</div>
+          <div class="scenario-section-text" id="journal-practical-text"></div>
+          <div class="practical-context-note" id="journal-practical-check"></div>
+        </div>
         <div class="scenario-section">
           <div class="scenario-section-title">問題文のポイント</div>
           <ul class="scenario-cue-list" id="scenario-cue-list"></ul>
@@ -2151,8 +2299,17 @@
     <div class="card" id="table-quiz-card">
       <div class="problem-header">
         <span class="category-badge" id="table-problem-category">表問題</span>
-        <span id="table-problem-id-text" style="color: var(--text-muted); font-size:0.75rem;">T001</span>
+        <span class="problem-meta">
+          <span class="difficulty-badge" id="table-problem-difficulty" title="本教材独自の目安です。">難易度 —</span>
+          <span id="table-problem-id-text" style="color: var(--text-muted); font-size:0.75rem;">1 / 40</span>
+        </span>
       </div>
+      <section class="story-panel" id="table-story-panel" hidden aria-label="ストーリー">
+        <div class="story-kicker" id="table-story-kicker">STORY</div>
+        <div class="story-title" id="table-story-title"></div>
+        <p class="story-body" id="table-story-body"></p>
+        <p class="story-safety-note">※各問題は独立した演習です。前の問題の数値は引き継ぎません。復習では章の表示が前後することがあります。</p>
+      </section>
       <div class="table-problem-brief" id="table-problem-statement" aria-label="問題文">
         <section class="table-problem-block" aria-labelledby="table-problem-instruction-title">
           <h2 class="table-problem-block-title" id="table-problem-instruction-title">問題の指示</h2>
@@ -2183,6 +2340,11 @@
         <div id="table-result-title" style="font-weight:800;"></div>
         <div id="table-result-detail" style="margin-top:4px;font-size:0.82rem;white-space:pre-line;"></div>
         <div class="table-explanation" id="table-explanation-box"></div>
+        <div class="table-practical-context" id="table-practical-context">
+          <div class="table-practical-title" id="table-practical-title">実務とのつながり</div>
+          <div class="table-practical-body" id="table-practical-text"></div>
+          <div class="table-practical-check" id="table-practical-check"></div>
+        </div>
         <div class="table-correct-answer-box" id="table-correct-answer-box" hidden>
           <div class="table-correct-answer-title">正しい完成表</div>
           <p class="table-correct-answer-note">不正解だった欄は、正答表で色を付けて示します。精算表は上の区分ボタンで切り替えて確認できます。</p>
@@ -2250,16 +2412,16 @@
     </details>
   </section>
 
-  <section class="learning-support-area" aria-label="学習データを守る">
+  <section class="learning-support-area" aria-label="学習記録の保存・復元">
     <details class="learning-support-details" id="learning-support-details">
-      <summary><span>学習データを守る</span></summary>
+      <summary><span>学習記録の保存・復元</span></summary>
       <div class="learning-support-body">
-        <section class="backup-card backup-card-simple" aria-label="学習データの保存と復元">
+        <section class="backup-card backup-card-simple" aria-label="学習記録の保存と復元">
           <div class="backup-body">
-            <p class="backup-help">端末変更やデータ消去に備えて、学習記録をファイルに保存できます。</p>
+            <p class="backup-help">機種変更やブラウザのデータ削除に備えて、学習記録をファイルとして保存できます。</p>
             <div class="backup-actions">
-              <button type="button" class="backup-btn primary" data-action="export-progress-backup">学習データを保存</button>
-              <button type="button" class="backup-btn" data-action="choose-progress-restore">保存データを戻す</button>
+              <button type="button" class="backup-btn primary" data-action="export-progress-backup">学習記録を保存</button>
+              <button type="button" class="backup-btn" data-action="choose-progress-restore">学習記録を復元</button>
             </div>
             <input id="progress-import-input" type="file" accept="application/json,.json" hidden>
             <div class="backup-status" id="backup-status" role="status" aria-live="polite"></div>
@@ -2269,21 +2431,21 @@
     </details>
   </section>
 
-  <section class="about-area" aria-label="この教材について">
+  <section class="about-area" aria-label="受験前の確認">
     <details class="learning-support-details about-details" id="about-material-details">
-      <summary><span>この教材について</span></summary>
+      <summary><span>受験前の確認</span></summary>
       <div class="learning-support-body">
         <details class="exam-readiness-details" id="exam-readiness-details">
-          <summary>本試験に向けた仕上げ</summary>
+          <summary>試験形式と仕上げ方</summary>
           <div class="exam-readiness-body" id="exam-readiness-guide">
-            <p>この教材は、仕訳200問と表・決算40問の反復を中心にした学習教材です。本試験のすべての出題形式を再現するものではありません。</p>
+            <p>この教材は、仕訳200問と表・決算40問の反復演習を中心にしています。本試験には、この教材だけでは扱わない形式もあります。受験前に、日本商工会議所の公式サンプル問題も確認してください。</p>
             <div class="exam-readiness-facts" aria-label="日商簿記3級の公式試験情報">
               <div class="exam-readiness-fact"><strong>60分</strong><span>試験時間</span></div>
               <div class="exam-readiness-fact"><strong>70%以上</strong><span>合格基準</span></div>
               <div class="exam-readiness-fact"><strong>3題以内</strong><span>出題問題数</span></div>
             </div>
-            <p class="exam-readiness-note"><strong>受験前に別途確認：</strong>日本商工会議所の3級サンプル問題で、第2問の形式も解いてください。2026年公開サンプルには、勘定記入（次期繰越を含む）や固定資産台帳を使う問題があります。</p>
-            <p>ネット試験では、会場からA4サイズの計算・メモ用紙2枚と筆記具が配布され、規定に合う電卓を持ち込めます。受験前には、紙と普段使う電卓を併用して60分通しで解く練習も行うと、画面だけの単問演習との操作差を確認できます。</p>
+            <p class="exam-readiness-note"><strong>第2問対策：</strong>日本商工会議所の3級サンプル問題で、第2問の形式も練習してください。2026年公開サンプルには、勘定記入（次期繰越を含む）や固定資産台帳を使う問題があります。</p>
+            <p>ネット試験では、会場からA4サイズの計算・メモ用紙2枚と筆記具が配布され、規定に合う電卓を持ち込めます。受験前に、紙と普段使う電卓を併用して60分通しで解いておくと、単問演習との操作の違いを確認できます。</p>
             <div class="exam-readiness-links">
               <a href="https://www.kentei.ne.jp/bookkeeping/sample/sample_3" target="_blank" rel="noopener noreferrer">日本商工会議所「3級 サンプル問題」を確認</a>
               <a href="https://www.kentei.ne.jp/33013" target="_blank" rel="noopener noreferrer">日本商工会議所「ネット試験について」を確認</a>
@@ -2315,13 +2477,13 @@
 <button type="button" class="toc-fab" data-action="open-toc">☰ 目次</button>
 
 <!-- フローティング電卓ボタン -->
-<button type="button" class="calc-fab" data-action="toggle-calculator">
+<button type="button" class="calc-fab" id="calculator-toggle-button" data-action="toggle-calculator" aria-controls="calculator-modal" aria-expanded="false">
   🧮 電卓
 </button>
 
-<!-- 内蔵電卓モーダル。仕訳・表の両モードでフローティング表示し、上部ハンドルから移動できる。 -->
+<!-- 内蔵電卓。背景を操作できる非モーダルのフローティング領域として表示し、上部ハンドルから移動できる。 -->
 <div class="calculator-floating-home" id="calculator-floating-home">
-<div class="calculator-modal" id="calculator-modal">
+<div class="calculator-modal" id="calculator-modal" role="region" aria-labelledby="calc-drag-handle" aria-hidden="true">
   <div class="calc-header">
     <button type="button" class="calc-drag-handle" id="calc-drag-handle" aria-label="電卓を移動" aria-describedby="calc-drag-help">⠿ 電卓</button>
     <div class="calc-header-actions">
@@ -10811,6 +10973,38 @@ const TOC_GROUPS = [
   { title: "総合演習", start: 161, end: 200 }
 ];
 
+// ===== v10.21 Story Layer（表示専用・学習者向けUI文言を校閲） =====
+// Story Layerは表示専用。正解・金額・仕訳・採点・SRS・保存状態を持たない。
+// 既存240問は連続した1社の帳簿ではないため、各問題を独立ケースとして扱う。
+const STORY_COMPANY = Object.freeze({
+  name: '青葉商事株式会社',
+  fictional: true,
+  setting: '地域の取引先に商品を販売する架空の中小卸売会社'
+});
+
+const JOURNAL_STORY_CHAPTERS = Object.freeze([
+  { id:'J01', month:'4月', groupTitle:'商品売買・手付金・諸掛り', title:'初仕事――会社の数字を預かる', intro:'青葉商事の経理担当として迎えた最初の月。まず任されたのは、日々の取引を正しく記録する仕事です。一つひとつの仕訳が会社の数字をつくる――そんな第一歩から始めます。' },
+  { id:'J02', month:'5月', groupTitle:'現金・預金・小口現金', title:'お金の流れを追える人になる', intro:'仕事に少し慣れ、現金や預金の動きも任されるようになりました。入出金の理由を丁寧にたどり、帳簿の数字が何を表しているのかを見抜いていきます。' },
+  { id:'J03', month:'6月', groupTitle:'手形・電子記録債権債務', title:'取引先との決済が一段複雑に', intro:'取引が広がるにつれ、決済方法も増えてきました。似た名前に惑わされず、「いつ債権・債務が生まれ、いつ決済されたのか」を読み分ける力が試されます。' },
+  { id:'J04', month:'7月', groupTitle:'固定資産・減価償却', title:'会社を支える資産を任される', intro:'今度は、会社が長く使う資産の記録です。取得・決算・売却など、同じ資産でも時点によって処理は変わります。経理担当として、時間の流れまで数字に落とし込みます。' },
+  { id:'J05', month:'8月', groupTitle:'貸倒れ・貸倒引当金', title:'順調な売上の裏にあるリスク', intro:'売上を記録するだけでは経理の仕事は終わりません。代金を回収できない可能性にも目を向けます。問題文の時点を見極め、債権管理の考え方を身につけます。' },
+  { id:'J06', month:'9月', groupTitle:'経過勘定・消耗品', title:'数字を「いつのものか」で見る', intro:'半年を越え、決算を意識する場面が増えてきました。支払日や入金日だけでなく、費用・収益がどの期間に属するのかを見抜く視点を磨きます。' },
+  { id:'J07', month:'10月', groupTitle:'給与・社会保険・税金', title:'従業員を支える数字に向き合う', intro:'給与や社会保険、税金など、会社と従業員をつなぐ数字を扱います。支給・控除・会社負担・納付を切り分け、正確に整理する力を養います。' },
+  { id:'J08', month:'11月', groupTitle:'株式会社の純資産・配当', title:'経営に近い数字が見えてくる', intro:'経理担当として扱う範囲が、会社の資本や利益の処分へ広がります。決議・払込み・配当などの時点を読み分け、会社の土台となる数字を整理します。' },
+  { id:'J09', month:'12月', groupTitle:'小口現金・貯蔵品・借入金', title:'年末――散らばる数字を整える', intro:'年末を迎え、資金・物品・借入れなど確認すべきものが増えてきました。名称だけに頼らず、取引の意味を一つずつ整理して、年明けへ備えます。' },
+  { id:'J10', month:'1月', groupTitle:'決算整理・仮勘定・諸費用収益', title:'決算の足音が近づく', intro:'年度末まで残りわずか。仮のまま残った項目や、決算で調整すべき項目を整理していきます。問題文の時点・残高・追加条件を切り分ける力が、ここで効いてきます。' },
+  { id:'J11', month:'2月', groupTitle:'商品売買・消費税 追加演習', title:'決算前の最終トレーニング', intro:'これまで身につけた処理を、違う条件でも使えるか確かめる月です。前の問題には頼らず、その場の条件だけで判断する力を仕上げます。' },
+  { id:'J12', month:'3月', groupTitle:'総合演習', title:'年度末――一年分の力を試す', intro:'いよいよ総仕上げ。複数の論点が同時に現れても、条件を分解すれば道筋は見えてきます。青葉商事の経理担当として歩んだ一年を、総合問題で締めくくります。' }
+].map(Object.freeze));
+
+const TABLE_STORY_CHAPTERS = Object.freeze([
+  { id:'T01', label:'決算編 1', groupTitle:'残高試算表', title:'決算室へ――まず残高をつかむ', intro:'仕訳で積み上げてきた数字を、今度は表で確認します。まずは各勘定の残高を見渡し、決算作業の出発点を整えます。' },
+  { id:'T02', label:'決算編 2', groupTitle:'合計試算表', title:'数字の動きを集計で確かめる', intro:'残高だけでなく、借方・貸方の動きも追います。表の構造を読み、どの数字をどこへ集計するのかを落ち着いて見極めます。' },
+  { id:'T03', label:'決算編 3', groupTitle:'8桁精算表', title:'決算整理――数字を完成形へ近づける', intro:'試算表の数字に決算整理を反映し、損益計算書と貸借対照表へつなげます。ばらばらに見えた処理が一つの流れになる瞬間です。' },
+  { id:'T04', label:'決算編 4', groupTitle:'決算整理後残高試算表', title:'整理後の数字をもう一度確かめる', intro:'決算整理を反映した後の残高を確認します。ここでは「整理前」と「整理後」を混同せず、財務諸表へ進む前の数字を整えます。' },
+  { id:'T05', label:'決算編 5', groupTitle:'損益計算書', title:'一年の成果を一枚にまとめる', intro:'収益と費用を整理し、一定期間の経営成績を表にします。仕訳で学んだ一つひとつの処理が、会社の成果としてまとまっていきます。' },
+  { id:'T06', label:'決算編 6', groupTitle:'貸借対照表', title:'決算完了――会社の姿を数字で示す', intro:'最後は、決算日時点の資産・負債・純資産を一つの表にまとめます。問題ごとの数値は独立していますが、簿記全体の流れを意識して完成させましょう。' }
+].map(Object.freeze));
 
 function renderTableOfContents() {
   const host = document.getElementById('toc-groups');
@@ -10958,6 +11152,7 @@ function switchMode(mode, shouldScroll=true) {
   if (journalStatus) journalStatus.hidden = Runtime.mode !== 'journal';
   if (tableStatus) tableStatus.hidden = Runtime.mode !== 'table';
   syncCalculatorContext();
+  refreshStoryPanels();
   if (Runtime.mode === 'table') {
     updateTableDashboard();
     renderTableToc();
@@ -11398,6 +11593,8 @@ const DISALLOWED_VISIBLE_PRODUCT_CLAIMS = Object.freeze([
   '文字見切れが物理的に発生しない',
   '非の打ち所がありません',
   '文句なしに完成',
+  '実在する青葉商事株式会社',
+  '240問が1社の連続取引',
   '確実に合格できます',
   '一発合格できます',
   '合格に必要な実力の8〜9割',
@@ -11449,7 +11646,68 @@ function validateDomIdReferences() {
   return issues;
 }
 
-const REQUIRED_DOM_IDS = Object.freeze(['account-effect-list', 'account-nature-details', 'add-row-btn', 'backup-status', 'calc-apply-bar', 'calc-apply-debit', 'calc-apply-table', 'calc-apply-credit', 'calc-help-btn', 'calc-drag-handle', 'calc-drag-help', 'calc-display', 'calc-expression', 'calc-learning-note', 'calculator-floating-home', 'calculator-modal', 'correct-journal-content', 'data-integrity-banner', 'diagnostic-box', 'diagnostic-list', 'diagnostic-summary', 'exam-readiness-details', 'exam-readiness-guide', 'eval-btn-0', 'eval-btn-2', 'eval-btn-3', 'eval-instruction', 'explanation-reference-list', 'explanation-reference-policy', 'hint-box', 'journal-mode-section', 'journal-rows', 'journal-account-selection-help', 'learning-achievement-count', 'learning-growth-card', 'learning-next-stage-body', 'learning-next-stage-card', 'learning-next-stage-kicker', 'learning-next-stage-link', 'learning-next-stage-status', 'learning-next-stage-title', 'learning-overall-bar', 'learning-overall-level', 'learning-overall-title', 'learning-studied-count', 'learning-toast', 'learning-topic-list', 'learning-support-details', 'study-status-details', 'study-status-summary', 'journal-status-panel', 'table-status-panel', 'learning-weakest-topic', 'mode-journal-btn', 'mode-table-btn', 'problem-category', 'problem-id-text', 'problem-statement', 'progress-import-input', 'quiz-card', 'remove-row-btn', 'result-box', 'result-detail', 'result-title', 'scenario-amount-section', 'scenario-amount-text', 'scenario-confusion-section', 'scenario-confusion-text', 'scenario-cue-list', 'scenario-guide-box', 'scenario-reading-text', 'scenario-reason-text', 'stat-due', 'stat-streak', 'submit-btn', 'table-correct-answer-box', 'table-correct-answer-host', 'table-eval-btn-0', 'table-eval-btn-2', 'table-eval-btn-3', 'table-eval-instruction', 'table-next-btn', 'table-exercise-host', 'table-exercise-wrapper', 'table-explanation-box', 'table-hint-box', 'table-mode-section', 'table-problem-category', 'table-problem-givens', 'table-problem-givens-block', 'table-problem-id-text', 'table-problem-instruction', 'table-problem-statement', 'table-problem-targets', 'table-problem-targets-block', 'table-quiz-card', 'table-result-box', 'table-result-detail', 'table-result-title', 'table-segment-nav', 'table-submit-btn', 'table-toc-card', 'table-toc-details', 'table-toc-groups', 'table-workspace-help', 'table-workspace-title', 'toc-card', 'toc-details', 'toc-groups']);
+const REQUIRED_DOM_IDS = Object.freeze(['account-effect-list', 'account-nature-details', 'add-row-btn', 'backup-status', 'calc-apply-bar', 'calc-apply-debit', 'calc-apply-table', 'calc-apply-credit', 'calc-help-btn', 'calc-drag-handle', 'calc-drag-help', 'calc-display', 'calc-expression', 'calc-learning-note', 'calculator-floating-home', 'calculator-modal', 'calculator-toggle-button', 'correct-journal-content', 'data-integrity-banner', 'diagnostic-box', 'diagnostic-list', 'diagnostic-summary', 'exam-readiness-details', 'exam-readiness-guide', 'eval-btn-0', 'eval-btn-2', 'eval-btn-3', 'eval-instruction', 'explanation-reference-list', 'explanation-reference-policy', 'hint-box', 'journal-mode-section', 'journal-rows', 'journal-account-selection-help', 'learning-achievement-count', 'learning-growth-card', 'learning-next-stage-body', 'learning-next-stage-card', 'learning-next-stage-kicker', 'learning-next-stage-link', 'learning-next-stage-status', 'learning-next-stage-title', 'learning-overall-bar', 'learning-overall-level', 'learning-overall-title', 'learning-studied-count', 'learning-toast', 'learning-topic-list', 'learning-support-details', 'study-status-details', 'study-status-summary', 'journal-status-panel', 'table-status-panel', 'learning-weakest-topic', 'mode-journal-btn', 'mode-table-btn', 'story-control', 'story-mode-toggle', 'story-mode-note', 'journal-story-panel', 'journal-story-kicker', 'journal-story-title', 'journal-story-body', 'problem-category', 'problem-difficulty', 'problem-id-text', 'problem-statement', 'progress-import-input', 'quiz-card', 'remove-row-btn', 'result-box', 'result-detail', 'result-title', 'scenario-amount-section', 'scenario-amount-text', 'scenario-confusion-section', 'scenario-confusion-text', 'scenario-cue-list', 'scenario-guide-box', 'scenario-reading-text', 'scenario-reason-text', 'stat-due', 'stat-streak', 'submit-btn', 'table-correct-answer-box', 'table-correct-answer-host', 'table-eval-btn-0', 'table-eval-btn-2', 'table-eval-btn-3', 'table-eval-instruction', 'table-next-btn', 'table-exercise-host', 'table-exercise-wrapper', 'table-explanation-box', 'table-hint-box', 'table-mode-section', 'table-story-panel', 'table-story-kicker', 'table-story-title', 'table-story-body', 'table-problem-category', 'table-problem-difficulty', 'table-problem-givens', 'table-problem-givens-block', 'table-problem-id-text', 'table-problem-instruction', 'table-problem-statement', 'table-problem-targets', 'table-problem-targets-block', 'table-quiz-card', 'table-result-box', 'table-result-detail', 'table-result-title', 'table-segment-nav', 'table-submit-btn', 'table-toc-card', 'table-toc-details', 'table-toc-groups', 'table-workspace-help', 'table-workspace-title', 'toc-card', 'toc-details', 'toc-groups']);
+
+function validateStoryAndDifficultyLayer() {
+  const issues = [];
+  const allowedStoryKeys = new Set(['id','month','label','groupTitle','title','intro']);
+  const forbiddenStoryKeys = new Set(['answer','debit','credit','amount','hint','explanation','nextReviewDate','quality','intervalDays','easeFactor']);
+  if (!STORY_COMPANY.fictional || !String(STORY_COMPANY.name || '').trim()) issues.push('ストーリー会社が架空設定として明示されていません');
+  if (JOURNAL_STORY_CHAPTERS.length !== TOC_GROUPS.length) issues.push('仕訳ストーリー章数が目次区分と一致しません');
+  if (TABLE_STORY_CHAPTERS.length !== TABLE_TOC_GROUPS.length) issues.push('表ストーリー章数が目次区分と一致しません');
+
+  const allChapters = [...JOURNAL_STORY_CHAPTERS, ...TABLE_STORY_CHAPTERS];
+  const ids = new Set();
+  allChapters.forEach(chapter => {
+    if (!chapter || typeof chapter !== 'object') { issues.push('ストーリー章データが不正です'); return; }
+    if (ids.has(chapter.id)) issues.push(`ストーリー章ID重複: ${chapter.id}`);
+    ids.add(chapter.id);
+    Object.keys(chapter).forEach(key => {
+      if (!allowedStoryKeys.has(key)) issues.push(`ストーリー章に未許可フィールドがあります: ${chapter.id}.${key}`);
+      if (forbiddenStoryKeys.has(key)) issues.push(`ストーリー章が学習エンジン領域を保持しています: ${chapter.id}.${key}`);
+    });
+    if (!String(chapter.title || '').trim() || !String(chapter.intro || '').trim()) issues.push(`ストーリー章の表示文が不足しています: ${chapter.id}`);
+  });
+  TOC_GROUPS.forEach((group, index) => {
+    if (JOURNAL_STORY_CHAPTERS[index]?.groupTitle !== group.title) issues.push(`仕訳ストーリー章と目次の対応不一致: ${group.title}`);
+  });
+  TABLE_TOC_GROUPS.forEach((group, index) => {
+    if (TABLE_STORY_CHAPTERS[index]?.groupTitle !== group.title) issues.push(`表ストーリー章と目次の対応不一致: ${group.title}`);
+  });
+  QUESTION_DATABASE.forEach(q => {
+    const level = getJournalDifficulty(q);
+    if (!Number.isInteger(level) || level < 1 || level > 5) issues.push(`${q.id}: 難易度が不正です ${level}`);
+  });
+  TABLE_DATABASE.forEach(q => {
+    const level = getTableDifficulty(q);
+    if (!Number.isInteger(level) || level < 1 || level > 5) issues.push(`${q.id}: 表問題の難易度が不正です ${level}`);
+  });
+  const difficultySignature = buildDifficultySignature();
+  const journalDifficultyHash = stableBankHash(difficultySignature.journal);
+  const tableDifficultyHash = stableBankHash(difficultySignature.table);
+  if (journalDifficultyHash !== EXPECTED_JOURNAL_DIFFICULTY_HASH) issues.push(`仕訳難易度hash不一致: ${journalDifficultyHash}`);
+  if (tableDifficultyHash !== EXPECTED_TABLE_DIFFICULTY_HASH) issues.push(`表問題難易度hash不一致: ${tableDifficultyHash}`);
+  for (let level = 1; level <= 5; level++) {
+    const expected = `${'★'.repeat(level)}${'☆'.repeat(5 - level)}`;
+    if (formatDifficultyStars(level) !== expected) issues.push(`難易度${level}: 星表記が不正です`);
+  }
+  return issues;
+}
+
+function validateReleaseManifest() {
+  const issues = [];
+  const metaVersion = String(document.querySelector('meta[name="application-version"]')?.getAttribute('content') || '');
+  if (RELEASE_MANIFEST.appVersion !== APP_VERSION) issues.push(`Release ManifestとAPP_VERSIONが不一致です: ${RELEASE_MANIFEST.appVersion} / ${APP_VERSION}`);
+  if (metaVersion !== APP_VERSION) issues.push(`HTML application-versionとAPP_VERSIONが不一致です: ${metaVersion || '未設定'} / ${APP_VERSION}`);
+  if (RELEASE_MANIFEST.journalBankVersion !== JOURNAL_BANK_VERSION) issues.push('Release Manifestの仕訳bank versionが不一致です');
+  if (RELEASE_MANIFEST.tableBankVersion !== TABLE_BANK_VERSION) issues.push('Release Manifestの表bank versionが不一致です');
+  if (RELEASE_MANIFEST.journalBankHash !== EXPECTED_QUESTION_BANK_HASH) issues.push('Release Manifestの仕訳bank hashが不一致です');
+  if (RELEASE_MANIFEST.tableBankHash !== EXPECTED_TABLE_BANK_HASH) issues.push('Release Manifestの表bank hashが不一致です');
+  ['storyLayerVersion','practicalContextVersion','difficultyLogicVersion'].forEach(key => {
+    if (!String(RELEASE_MANIFEST[key] || '').trim()) issues.push(`Release Manifestの${key}が未設定です`);
+  });
+  return issues;
+}
 
 function validateUiStructure() {
   const issues = [];
@@ -11511,11 +11769,38 @@ function validateUiStructure() {
   }
   const calcDragHandle = document.getElementById('calc-drag-handle');
   if (calcDragHandle && calcDragHandle.getAttribute('aria-describedby') !== 'calc-drag-help') issues.push('電卓移動ハンドルに操作説明が関連付けられていません');
+  const calcModal = document.getElementById('calculator-modal');
+  const calcToggleButton = calculatorToggleButton();
+  if (calcModal?.getAttribute('role') !== 'region' || calcModal?.hasAttribute('aria-modal')) issues.push('電卓が背景操作可能な非モーダル領域として定義されていません');
+  if (calcToggleButton?.getAttribute('aria-controls') !== 'calculator-modal') issues.push('電卓開閉ボタンと電卓領域が関連付けられていません');
+  if (typeof getJournalPracticalContext !== 'function' || typeof getTablePracticalContext !== 'function' || typeof renderJournalPracticalContext !== 'function' || typeof renderTablePracticalContext !== 'function') {
+    issues.push('実務シチュエーション解説レイヤーがありません');
+  }
+  ['journal-practical-context','journal-practical-text','journal-practical-check','table-practical-context','table-practical-text','table-practical-check'].forEach(id => {
+    if (!document.getElementById(id)) issues.push(`実務シチュエーションUIがありません: ${id}`);
+  });
   if (typeof fitTableAmountFont !== 'function' || typeof fitTableStaticNumberText !== 'function') {
     issues.push('表問題の入力金額・固定金額に表示幅フィット処理がありません');
   }
   if (typeof renderTableCorrectAnswer !== 'function') issues.push('表問題の不正解時に正しい完成表を表示する機構がありません');
   if (typeof applyTableSelfEval !== 'function') issues.push('表問題の復習用自己評価機構がありません');
+  if (typeof toggleStoryMode !== 'function' || typeof renderStoryPanel !== 'function' || typeof refreshStoryPanels !== 'function') {
+    issues.push('ストーリーレイヤーの表示切替機構がありません');
+  }
+  if (typeof getJournalDifficulty !== 'function' || typeof getTableDifficulty !== 'function' || typeof renderDifficultyBadge !== 'function') {
+    issues.push('難易度の表示機構がありません');
+  }
+  const storyToggle = document.getElementById('story-mode-toggle');
+  if (storyToggle && !['true','false'].includes(String(storyToggle.getAttribute('aria-pressed')))) issues.push('ストーリーモード切替のaria-pressedが不正です');
+  const storyModeNoteElement = document.getElementById('story-mode-note');
+  const storyModeNote = String(storyModeNoteElement?.textContent || '');
+  if (!storyModeNote.includes('復習順') || !storyModeNote.includes('通常演習と同じ')) issues.push('ストーリーモードに復習順・学習エンジン非干渉の説明がありません');
+  if (storyModeNoteElement && !storyModeNoteElement.classList.contains('visually-hidden')) issues.push('ストーリーモードの補足説明が常時表示されています');
+  if (storyToggle?.getAttribute('aria-describedby') !== 'story-mode-note') issues.push('ストーリーモード切替に補足説明が関連付けられていません');
+  const journalProgressText = String(document.getElementById('problem-id-text')?.textContent || '');
+  const tableProgressText = String(document.getElementById('table-problem-id-text')?.textContent || '');
+  if (/\bID\s*:|Q\d{3}/.test(journalProgressText)) issues.push('仕訳問題ヘッダーに内部問題IDが表示されています');
+  if (/\bID\s*:|T\d{3}/.test(tableProgressText)) issues.push('表問題ヘッダーに内部問題IDが表示されています');
   return issues;
 }
 
@@ -11608,6 +11893,12 @@ function validateCalculatorUtilities() {
   if (!document.getElementById('calc-expression')) issues.push('電卓の演算子・式表示欄がありません');
   const calcNote = String(document.getElementById('calc-learning-note')?.textContent || '');
   const percentButtonLabel = String(document.querySelector('.calc-grid [data-value="%"]')?.getAttribute('aria-label') || '');
+  const calcModal = document.getElementById('calculator-modal');
+  const calcToggle = calculatorToggleButton();
+  if (calcModal?.getAttribute('role') !== 'region' || calcModal?.hasAttribute('aria-modal')) issues.push('電卓が非モーダル領域として定義されていません');
+  if (calcModal?.getAttribute('aria-labelledby') !== 'calc-drag-handle') issues.push('電卓領域の見出し関連付けがありません');
+  if (calcToggle?.getAttribute('aria-controls') !== 'calculator-modal' || !['true','false'].includes(String(calcToggle?.getAttribute('aria-expanded')))) issues.push('電卓開閉ボタンのaria-controls/expandedが不正です');
+  if (typeof openCalculator !== 'function' || typeof closeCalculator !== 'function' || typeof handleCalculatorEscape !== 'function') issues.push('電卓のフォーカス復帰／Escape終了機構がありません');
   // 操作説明は通常時は隠してよい。ヘルプ本文または％キーのaria-labelのどちらかで仕様を確認できればよい。
   if (!calcNote.includes('100で割る') && !percentButtonLabel.includes('100で割る')) {
     issues.push('電卓の％キー仕様をヘルプまたはaria-labelから確認できません');
@@ -11655,7 +11946,7 @@ function validateCalculatorUtilities() {
 function validateRuntimeShape() {
   const issues = [];
   if (!Object.isSealed(Runtime)) issues.push('Runtime本体がsealされていません');
-  ['journal', 'table', 'calculator', 'ui'].forEach(key => {
+  ['journal', 'table', 'story', 'calculator', 'ui'].forEach(key => {
     if (!Object.isSealed(Runtime[key])) issues.push(`Runtime.${key}がsealされていません`);
   });
   if (!Object.isSealed(PerformanceDiagnostics)) issues.push('PerformanceDiagnosticsがsealされていません');
@@ -11676,9 +11967,9 @@ function integrityNowMs() {
 function validateEssentialUiStructure() {
   const issues = [];
   const essentialIds = [
-    'mode-journal-btn', 'mode-table-btn', 'journal-mode-section', 'table-mode-section',
-    'quiz-card', 'journal-rows', 'submit-btn', 'result-box',
-    'table-quiz-card', 'table-exercise-host', 'table-submit-btn', 'table-result-box'
+    'mode-journal-btn', 'mode-table-btn', 'story-mode-toggle', 'journal-mode-section', 'table-mode-section',
+    'quiz-card', 'problem-difficulty', 'journal-rows', 'submit-btn', 'result-box',
+    'table-quiz-card', 'table-problem-difficulty', 'table-exercise-host', 'table-submit-btn', 'table-result-box'
   ];
   essentialIds.forEach(id => {
     if (!document.getElementById(id)) issues.push(`必須UI要素がありません: ${id}`);
@@ -11788,6 +12079,8 @@ function runDetailedNonDomIntegritySuite() {
     sourceAuditedCaseIssues: validateSourceAuditedCoreCases(),
     sourceAuditedTextIssues: validateSourceAuditedTextExpectations(),
     tablePresentationIssues: validateTablePresentationUtilities(),
+    storyDifficultyIssues: validateStoryAndDifficultyLayer(),
+    practicalContextIssues: validatePracticalContextLayer(),
     learningLevelIssues: validateLearningLevelSystem(),
     runtimeLifecycleIssues: validateRuntimeLifecycleTransitions()
   };
@@ -11801,7 +12094,8 @@ function runDetailedDomRuntimeIntegritySuite() {
     amountFitIssues: validateRenderedAmountFitState(),
     uiStructureIssues: validateUiStructure(),
     runtimeShapeIssues: validateRuntimeShape(),
-    calculatorIssues: validateCalculatorUtilities()
+    calculatorIssues: validateCalculatorUtilities(),
+    releaseManifestIssues: validateReleaseManifest()
   };
 }
 
@@ -11831,9 +12125,12 @@ function buildDetailedIntegritySeverity(all = {}) {
     ...values('visibleClaimIssues').map(issue => `表示表現: ${issue}`),
     ...values('amountFitIssues').map(issue => `金額表示: ${issue}`),
     ...values('tablePresentationIssues').map(issue => `表問題表示: ${issue}`),
+    ...values('storyDifficultyIssues').map(issue => `ストーリー・難易度: ${issue}`),
+    ...values('practicalContextIssues').map(issue => `実務シチュエーション: ${issue}`),
     ...values('uiStructureIssues').map(issue => `UI品質: ${issue}`),
     ...values('runtimeShapeIssues').map(issue => `実装構造: ${issue}`),
     ...values('calculatorIssues').map(issue => `電卓QA: ${issue}`),
+    ...values('releaseManifestIssues').map(issue => `リリース整合: ${issue}`),
     ...values('learningLevelIssues').map(issue => `学習レベル: ${issue}`)
   ];
   return { blockingIssues, advisoryIssues };
@@ -11931,7 +12228,7 @@ function runIntegrityCheck() {
 deepFreeze(QUESTION_DATABASE);
 deepFreeze(TABLE_DATABASE);
 
-const APP_VERSION = 'v10.16';
+const APP_VERSION = 'v10.21';
 const STORAGE_SCHEMA_VERSION = 3;
 const COMPATIBLE_STORAGE_SCHEMA_VERSIONS = new Set([2, 3]);
 const JOURNAL_BANK_VERSION = 'v7.2';
@@ -11949,6 +12246,20 @@ const TABLE_BANK_VERSION = 'v8.5';
  */
 const EXPECTED_QUESTION_BANK_HASH = '7eec5e67';
 const EXPECTED_TABLE_BANK_HASH = '269213e1';
+// 難易度ロジックの意図しない変更を検出するため、問題IDと算出難易度だけを固定監視する。
+const EXPECTED_JOURNAL_DIFFICULTY_HASH = '0e7232f5';
+const EXPECTED_TABLE_DIFFICULTY_HASH = '6c3c5b90';
+// リリース取り違え検出用。APP/BANK定数から派生させず、意図的にリリース値を重複保持する。
+const RELEASE_MANIFEST = Object.freeze({
+  appVersion: 'v10.21',
+  storyLayerVersion: 'v3',
+  practicalContextVersion: 'v2',
+  difficultyLogicVersion: 'v2',
+  journalBankVersion: 'v7.2',
+  tableBankVersion: 'v8.5',
+  journalBankHash: '7eec5e67',
+  tableBankHash: '269213e1'
+});
 const BACKUP_PRODUCT_ID = 'boki3-comprehensive';
 const BACKUP_FORMAT_VERSION = 2;
 const COMPATIBLE_BACKUP_FORMAT_VERSIONS = new Set([1, 2]);
@@ -12350,11 +12661,13 @@ function createRuntime() {
     journal: { currentQuestionIndex: -1, currentErrorType: 'NONE', isAnswered: false, isEvalCompleted: false, lastFocusedInput: null },
     // draftは現在表示中の表問題だけの一時入力。LocalStorage／JSONバックアップへは永続化しない。
     table: { currentIndex: -1, answered: false, isEvalCompleted: false, lastResultCorrect: null, wrongCellKeys: [], lastFocusedInput: null, viewMode: 'full', viewPreference: 'auto', segmentIndex: 0, hintLevel: 0, draft: {} },
+    story: { enabled: false },
     calculator: { current: '0', prev: null, op: null, resetOnNext: false, error: false, lastOperand: null, lastOp: null },
-    ui: { quizCardTemplate: null, journalResizeTimer: null, journalRefitRaf: null, tableRefitRaf: null, tableMediaQuery: null, tableMediaHandler: null, resizeObserver: null, learningToastTimer: null, calculatorClampRaf: null, calculatorDrag: { active: false, pointerId: null, offsetX: 0, offsetY: 0, left: null, top: null } }
+    ui: { quizCardTemplate: null, journalResizeTimer: null, journalRefitRaf: null, tableRefitRaf: null, tableMediaQuery: null, tableMediaHandler: null, resizeObserver: null, learningToastTimer: null, calculatorClampRaf: null, calculatorReturnFocus: null, calculatorDrag: { active: false, pointerId: null, offsetX: 0, offsetY: 0, left: null, top: null } }
   };
   Object.seal(runtime.journal);
   Object.seal(runtime.table);
+  Object.seal(runtime.story);
   Object.seal(runtime.calculator);
   Object.seal(runtime.ui);
   return Object.seal(runtime);
@@ -12900,8 +13213,12 @@ function loadQuestion(index) {
   updateTocActive(q.id);
 
   document.getElementById('problem-category').innerText = q.category;
-  document.getElementById('problem-id-text').innerText = `ID: ${q.id} (${index + 1} / ${QUESTION_DATABASE.length})`;
+  renderDifficultyBadge('problem-difficulty', getJournalDifficulty(q));
+  const problemProgress = document.getElementById('problem-id-text');
+  problemProgress.innerText = `${index + 1} / ${QUESTION_DATABASE.length}`;
+  problemProgress.setAttribute('aria-label', `${index + 1}問目、全${QUESTION_DATABASE.length}問`);
   document.getElementById('problem-statement').innerText = q.statement;
+  renderStoryPanel('journal', storyChapterForJournalIndex(index));
 
   const hintBox = document.getElementById('hint-box');
   hintBox.innerText = q.hint || "ヒントはありません。問題文の仕訳構造を考えましょう。";
@@ -13374,6 +13691,92 @@ function getJournalDifficulty(q) {
   return 5;
 }
 
+// 表問題にはv10.16まで難易度データがなかったため、問題構造だけから本教材独自の目安を決定する。
+// 正答金額の大小・学習履歴・外部評価は使わず、入力セル数と列構造だけで決定する。
+function getTableDifficulty(q) {
+  if (!q) return 1;
+  const answerCells = (q.rows || []).reduce((total, row) => total + Object.values(row.cells || {})
+    .filter(cell => cell && Object.prototype.hasOwnProperty.call(cell, 'answer')).length, 0);
+  const columnCount = Array.isArray(q.columns) ? q.columns.length : 0;
+  let points = 0;
+  if (answerCells >= 4) points += 1;
+  if (answerCells >= 10) points += 1;
+  if (answerCells >= 14) points += 1;
+  if (columnCount >= 4) points += 1;
+  if (columnCount >= 8) points += 1;
+  if (q.group === '8桁精算表') points += 1;
+  if (q.group === '決算整理後残高試算表' && answerCells >= 5) points += 1;
+  return Math.min(5, Math.max(1, 1 + points));
+}
+
+function buildDifficultySignature() {
+  return {
+    journal: QUESTION_DATABASE.map(q => ({ id: q.id, difficulty: getJournalDifficulty(q) })),
+    table: TABLE_DATABASE.map(q => ({ id: q.id, difficulty: getTableDifficulty(q) }))
+  };
+}
+
+function formatDifficultyStars(difficulty) {
+  const level = Number.isInteger(difficulty) ? Math.min(5, Math.max(1, difficulty)) : 1;
+  return `${'★'.repeat(level)}${'☆'.repeat(5 - level)}`;
+}
+
+function renderDifficultyBadge(elementId, difficulty) {
+  const el = document.getElementById(elementId);
+  if (!el) return;
+  const level = Number.isInteger(difficulty) ? Math.min(5, Math.max(1, difficulty)) : 1;
+  el.textContent = `難易度 ${formatDifficultyStars(level)}`;
+  el.setAttribute('aria-label', `難易度 ${level}、5段階中。本教材独自の目安です`);
+}
+
+function storyChapterForJournalIndex(index) {
+  const group = TOC_GROUPS.find(item => index + 1 >= item.start && index + 1 <= item.end);
+  return group ? JOURNAL_STORY_CHAPTERS.find(chapter => chapter.groupTitle === group.title) || null : null;
+}
+
+function storyChapterForTableIndex(index) {
+  const group = TABLE_TOC_GROUPS.find(item => index + 1 >= item.start && index + 1 <= item.end);
+  return group ? TABLE_STORY_CHAPTERS.find(chapter => chapter.groupTitle === group.title) || null : null;
+}
+
+function renderStoryPanel(kind, chapter) {
+  const prefix = kind === 'table' ? 'table' : 'journal';
+  const panel = document.getElementById(`${prefix}-story-panel`);
+  const kicker = document.getElementById(`${prefix}-story-kicker`);
+  const title = document.getElementById(`${prefix}-story-title`);
+  const body = document.getElementById(`${prefix}-story-body`);
+  if (!panel || !kicker || !title || !body) return;
+  const visible = Runtime.story.enabled && Boolean(chapter);
+  panel.hidden = !visible;
+  if (!visible) return;
+  const chapterLabel = chapter.month || chapter.label || 'STORY';
+  kicker.textContent = `${chapterLabel}｜${STORY_COMPANY.name}（架空）`;
+  title.textContent = chapter.title;
+  body.textContent = chapter.intro;
+}
+
+function refreshStoryPanels() {
+  if (Runtime.journal.currentQuestionIndex >= 0) {
+    renderStoryPanel('journal', storyChapterForJournalIndex(Runtime.journal.currentQuestionIndex));
+  } else {
+    renderStoryPanel('journal', null);
+  }
+  if (Runtime.table.currentIndex >= 0) {
+    renderStoryPanel('table', storyChapterForTableIndex(Runtime.table.currentIndex));
+  } else {
+    renderStoryPanel('table', null);
+  }
+  const toggle = document.getElementById('story-mode-toggle');
+  if (toggle) {
+    toggle.setAttribute('aria-pressed', String(Runtime.story.enabled));
+    toggle.textContent = Runtime.story.enabled ? '📖 ストーリー ON' : '📖 ストーリー OFF';
+  }
+}
+
+function toggleStoryMode() {
+  Runtime.story.enabled = !Runtime.story.enabled;
+  refreshStoryPanels();
+}
 
 function addJournalRow() {
   const tbody = document.getElementById('journal-rows');
@@ -13776,6 +14179,7 @@ function checkAnswer() {
   // 正解仕訳はDOM APIで描画し、教材データをHTML文字列として解釈させない。
   if (correctJournalContent) renderCorrectJournal(correctJournalContent, q);
 
+  renderJournalPracticalContext(q, isAllCorrect);
   renderScenarioGuide(q);
 }
 
@@ -13843,6 +14247,257 @@ function parseExplanationSections(explanation) {
 // 「取引内容を把握 → 勘定科目を判断 → 借方・貸方を確認」という
 // 初学者向けの説明順序や、似た勘定科目の区別の仕方のみ参考にする。
 // 外部記事の文章は転載せず、本教材に個別登録された問題・正答・解説を表示する。
+
+// ===== v10.20 実務シチュエーション解説レイヤー（曖昧ケースをID固定） =====
+// 正答・金額・SRSには介入せず、問題に実在する勘定科目／表種別だけから補助説明を選ぶ。
+// 各文は「例えば」「実務では〜ことがあります」とし、問題文にない個別事実を追加しない。
+const JOURNAL_PRACTICAL_CONTEXT_RULES = Object.freeze([
+  Object.freeze({
+    id:'cash-difference', accounts:['現金過不足'],
+    situation:'実務では、レジ締めや金庫の現金実査で、帳簿上の現金残高と実際の現金が一致しないことがあります。原因がすぐに分からない場合はいったん差額を整理し、後から領収書や入出金記録をたどって原因を確認します。',
+    check:'確認資料の例：現金実査表、レジ締め資料、領収書、入出金記録。原因が判明した時点で、内容に応じた勘定科目へ振り替えます。'
+  }),
+  Object.freeze({
+    id:'depreciation', accounts:['減価償却費','備品減価償却累計額','建物減価償却累計額','車両運搬具減価償却累計額'],
+    situation:'実務では、決算や月次締めで、長期間使用する備品・建物・車両などの取得原価を使用期間に配分します。会計ソフトで自動計算する場合でも、取得日・耐用年数・取得価額などの登録内容を確認します。',
+    check:'確認資料の例：固定資産台帳、購入時の請求書、資産登録情報。売却や除却がある場合は、処分日と帳簿価額の確認も重要です。'
+  }),
+  Object.freeze({
+    id:'fixed-asset-sale', accounts:['固定資産売却益','固定資産売却損'],
+    situation:'実務では、社用車・備品・建物などを売却したときに、売却価額と売却時点の帳簿価額との差額を整理します。単に売却価額をそのまま収益とするのではなく、資産の帳簿残高や減価償却の状況を確認します。',
+    check:'確認資料の例：売買契約書、入金記録、固定資産台帳。売却日までの減価償却をどのように処理するかも問題条件に沿って確認します。'
+  }),
+  Object.freeze({
+    id:'allowance', accounts:['貸倒引当金','貸倒引当金繰入','貸倒引当金戻入','貸倒損失','償却債権取立益'],
+    situation:'実務では、売掛金などの債権について回収不能のリスクを決算で見積もるときや、実際に回収できなくなったとき、以前処理した債権を後日回収したときに関係します。',
+    check:'確認資料の例：売掛金の年齢表、得意先別残高、督促・回収状況。引当金の計上と実際の貸倒れは別の処理なので、問題文の時点を確認します。'
+  }),
+  Object.freeze({
+    id:'consumption-tax', accounts:['仮払消費税','仮受消費税','未払消費税'],
+    situation:'実務では、税抜方式で仕入・経費の支払い時に負担した消費税と、売上時に預かった消費税を記録し、決算や申告時に納付額を整理する場面で使います。',
+    check:'確認資料の例：請求書、領収書、売上・仕入データ、税区分設定。教材では問題文で指定された処理方法を優先してください。'
+  }),
+  Object.freeze({
+    id:'corporate-tax', accounts:['仮払法人税等','未払法人税等','法人税、住民税及び事業税'],
+    situation:'実務では、法人税等を中間納付したときや、決算で当期の税額を確定し、未納額を計上するときに関係します。すでに支払った額と当期の負担額を分けて考えることがポイントです。',
+    check:'確認資料の例：納付書、税額計算資料、銀行の支払記録。中間納付なのか決算確定なのかを問題文から見分けます。'
+  }),
+  Object.freeze({
+    id:'payroll', accounts:['給料','所得税預り金','社会保険料預り金','法定福利費','預り金'],
+    situation:'実務では、毎月の給与計算で、従業員へ支給する給与と、会社が一時的に預かる所得税・社会保険料などを分けて記録する場面です。会社負担分の社会保険料は従業員からの預り分とは別に処理します。',
+    check:'確認資料の例：給与台帳、給与明細、社会保険料の通知、納付記録。総支給額・控除額・実際の振込額の関係を確認します。'
+  }),
+  Object.freeze({
+    id:'dividend', accounts:['未払配当金','利益準備金','繰越利益剰余金'],
+    situation:'実務では、株主総会などで利益剰余金の配当や処分を決議したとき、その決議内容を会計へ反映する場面があります。決議した時点と実際に支払う時点が分かれることがあります。',
+    check:'確認資料の例：株主総会議事録、配当計算資料、支払記録。問題文が「決議時」か「支払時」かを確認します。'
+  }),
+  Object.freeze({
+    id:'capital', accounts:['資本金'],
+    situation:'実務では、会社設立時や増資で株主から出資を受けたときに、会社の純資産として資本金を記録する場面があります。',
+    check:'確認資料の例：払込証明、銀行入金記録、設立・増資関係書類。借入金とは異なり、返済を前提とする負債ではありません。'
+  }),
+  Object.freeze({
+    id:'borrowing', accounts:['借入金','手形借入金','支払利息','未払利息','未収利息','受取利息','貸付金','手形貸付金'],
+    situation:'実務では、銀行などから資金を借りたときや元本を返済したとき、利息を支払ったとき、または資金を貸し付けて利息を受け取るときに関係します。元本と利息は性質が異なるため、分けて記録します。',
+    check:'確認資料の例：金銭消費貸借契約書、返済予定表、銀行明細。決算では未払い・未収の利息がないか期間帰属も確認します。'
+  }),
+  Object.freeze({
+    id:'accrual-deferral', accounts:['前払保険料','前払地代','前払手数料','前受家賃','前受手数料','未払保険料','未払地代','未払家賃','未収利息','未払利息'],
+    situation:'実務では、決算時に、現金を支払った・受け取った時点だけでなく、費用や収益がどの期間に属するかを確認します。翌期分を前払いしている場合や、当期分なのにまだ支払っていない場合などが典型です。',
+    check:'確認資料の例：契約書、請求書、支払予定表、入出金記録。対象期間を日付で確認し、当期分と翌期分を分けます。'
+  }),
+  Object.freeze({
+    id:'trade-advance', accounts:['前払金','前受金'],
+    situation:'実務では、商品の引渡しやサービス提供より前に手付金・内金を支払ったり受け取ったりしたときに使うことがあります。まだ通常の仕入・売上が完了していない段階の取引として扱います。',
+    check:'確認資料の例：注文書、契約書、請求書、入出金記録。商品売買が完了した後は、前払金・前受金を精算する処理が必要になります。'
+  }),
+  Object.freeze({
+    id:'notes-electronic', accounts:['受取手形','支払手形','電子記録債権','電子記録債務'],
+    situation:'実務では、掛代金の決済などに手形や電子記録債権・債務を利用する場面があります。取引の発生時と決済時を区別し、決済手段に応じた債権・債務を記録します。',
+    check:'確認資料の例：手形記録、でんさい等の取引記録、得意先・仕入先別残高。発生時と決済時を区別します。'
+  }),
+  Object.freeze({
+    id:'cashless-sales', accounts:['クレジット売掛金','受取商品券'],
+    situation:'実務では、店舗やサービス現場でクレジットカードや商品券による販売を行い、販売時点では現金を受け取らず、後日決済事業者などから入金される場面で関係します。',
+    check:'確認資料の例：売上日報、決済明細、入金明細。販売時と後日の入金時を分けて記録します。'
+  }),
+  Object.freeze({
+    id:'trade-credit', accounts:['売掛金','買掛金'],
+    situation:'実務では、商品を掛けで販売して後日代金を回収する場合や、商品を掛けで仕入れて後日支払う場合に日常的に発生します。請求と入金・支払のタイミングがずれるため、得意先・仕入先ごとの残高管理が重要です。',
+    check:'確認資料の例：請求書、納品書、入金明細、仕入先請求書、得意先・仕入先別台帳。商品売買以外の債権債務との区別も確認します。'
+  }),
+  Object.freeze({
+    id:'nontrade-receivable-payable', accounts:['未収入金','未払金'],
+    situation:'実務では、固定資産の売却代金が後日入金される場合や、備品購入代金を後日支払う場合など、通常の商品売買以外から債権・債務が生じる場面で使います。',
+    check:'確認資料の例：売買契約書、請求書、固定資産関係資料、入出金明細。商品売買なら売掛金・買掛金を使う点との違いを確認します。'
+  }),
+  Object.freeze({
+    id:'fixed-assets', accounts:['備品','建物','土地','車両運搬具'],
+    situation:'実務では、パソコン・机・車両・建物・土地など、事業で継続して使用するものを購入したときに関係します。会計上の取扱いに応じて、固定資産として計上・管理する場面があります。',
+    check:'確認資料の例：請求書、契約書、固定資産台帳、支払記録。問題文で付随費用の扱いや支払方法も確認します。'
+  }),
+  Object.freeze({
+    id:'merchandise', accounts:['仕入','売上','繰越商品'],
+    situation:'実務では、卸売業や小売業が商品を仕入れ、得意先へ販売する日常業務で発生します。現金取引か掛取引か、送料などの付随費用を誰が負担するかによって仕訳が変わります。',
+    check:'確認資料の例：発注書、納品書、仕入先請求書、売上請求書、入出金明細。問題文の取引条件を一つずつ確認します。'
+  }),
+  Object.freeze({
+    id:'temporary', accounts:['仮払金','仮受金','立替金'],
+    situation:'実務では、出張前の概算払い、内容がまだ確定していない入金、従業員や取引先の費用を一時的に立て替えた場合などに使います。後で内容が確定したら本来の勘定科目へ精算します。',
+    check:'確認資料の例：仮払申請、精算書、領収書、入金明細。未精算のまま残っていないか定期的に確認します。'
+  }),
+  Object.freeze({
+    id:'closing-entry', accounts:['損益'],
+    situation:'実務では、決算で収益・費用の勘定を締め切り、当期の損益を確定したうえで利益または損失を純資産へ振り替える締切処理に関係します。会計ソフトで自動処理される場合でも、決算の流れを理解するうえで重要な考え方です。',
+    check:'確認資料の例：決算整理後の残高、総勘定元帳、締切処理の一覧。問題文が「収益・費用を損益へ振り替える段階」か「当期純利益・純損失を純資産へ振り替える段階」かを確認します。'
+  }),
+  Object.freeze({
+    id:'expenses', accountClasses:['費用'],
+    situation:'実務では、家賃・保険料・交通費・広告費・水道光熱費など、事業活動に必要な支出を請求書や領収書に基づいて費用計上する場面です。支払時期と費用になる時期がずれる場合は決算整理が必要になることがあります。',
+    check:'確認資料の例：請求書、領収書、契約書、経費精算書、銀行明細。何のための支出かと対象期間を確認します。'
+  }),
+  Object.freeze({
+    id:'cash-bank', accounts:['現金','普通預金','当座預金','定期預金','小口現金'],
+    situation:'実務では、現金の受払い、銀行振込、預金間の振替、小口経費の精算など、日々の資金移動を帳簿へ記録する場面です。',
+    check:'確認資料の例：銀行明細、通帳データ、領収書、現金出納帳、小口現金精算書。帳簿残高と実際の残高を定期的に照合します。'
+  })
+]);
+
+// 複数の実務ルールに該当しやすく、主論点を誤選択すると学習上のノイズになる問題だけを明示固定する。
+// 問題データ・正答は変更せず、表示する一般実務例の選択先だけを監査済みIDで固定する。
+const JOURNAL_PRACTICAL_CONTEXT_OVERRIDES = Object.freeze({
+  Q062:'fixed-asset-sale', Q063:'fixed-asset-sale', Q068:'fixed-asset-sale', Q069:'fixed-asset-sale',
+  Q070:'fixed-asset-sale', Q075:'fixed-asset-sale', Q076:'fixed-asset-sale', Q078:'fixed-asset-sale', Q169:'fixed-asset-sale',
+  Q092:'accrual-deferral', Q094:'accrual-deferral', Q096:'accrual-deferral', Q098:'accrual-deferral',
+  Q145:'accrual-deferral', Q167:'accrual-deferral', Q168:'accrual-deferral',
+  Q115:'closing-entry', Q116:'closing-entry', Q180:'closing-entry', Q181:'closing-entry', Q182:'closing-entry'
+});
+
+const GENERIC_JOURNAL_PRACTICAL_CONTEXT = Object.freeze({
+  id:'generic',
+  situation:'実務では、請求書・領収書・契約書・入出金記録などの証憑（取引の根拠となる書類）を確認し、その取引が資産・負債・純資産・収益・費用のどれを増減させるか判断して記帳します。',
+  check:'この問題では、問題文に示された事実だけを根拠にしてください。実務でも、証憑にない内容を推測せず、不明点を確認してから処理することが大切です。'
+});
+
+const TABLE_PRACTICAL_CONTEXTS = Object.freeze({
+  '残高試算表': Object.freeze({
+    situation:'実務では、月次締めや決算前に、各勘定科目の残高を一覧で確認する場面に近い作業です。会計ソフトから試算表を出力し、預金・売掛金・買掛金などの残高が補助資料と合っているか確認します。',
+    check:'確認資料の例：総勘定元帳、銀行明細、得意先・仕入先別残高。借方合計と貸方合計が一致していても、勘定科目の選択ミスまで自動的に正しいとは限らない点に注意します。'
+  }),
+  '合計試算表': Object.freeze({
+    situation:'実務では、各勘定の期中の借方・貸方の動きを集計して、取引量や転記状況を確認する考え方に近いものです。現在は会計ソフトが集計することも多いですが、総額と残高の関係を理解する基礎になります。',
+    check:'残高だけでなく借方・貸方それぞれの累計を扱います。残高試算表と混同せず、問題が「合計」を求めていることを確認します。'
+  }),
+  '8桁精算表': Object.freeze({
+    situation:'実務の決算では、決算整理仕訳を反映し、その後の残高を確認して損益計算書・貸借対照表へつなげます。8桁精算表は、その流れを1枚の表で整理して確認するための形式です。企業が必ずこの形式の表を手作業で使うという意味ではありません。',
+    check:'「試算表 → 修正記入（決算整理） → 損益計算書・貸借対照表」という流れを追います。実務では、会計ソフトなどで決算整理仕訳を反映し、その後の残高や財務諸表を確認します。'
+  }),
+  '決算整理後残高試算表': Object.freeze({
+    situation:'実務では、減価償却・経過勘定・貸倒引当金などの決算整理仕訳をすべて反映した後、財務諸表を作る前に各勘定の最終残高を確認する場面に相当します。',
+    check:'決算整理前の残高と混ぜず、「整理仕訳を反映した後」の残高かを確認します。元帳や決算整理仕訳一覧との突合が重要です。'
+  }),
+  '損益計算書': Object.freeze({
+    situation:'実務では、一定期間の売上などの収益と、仕入・給料・家賃などの費用を集計し、その期間の経営成績を確認する場面です。月次管理や年度決算で利用されます。',
+    check:'収益と費用の期間がそろっているか、決算整理が反映されているかを確認します。利益は単なる現金残高ではありません。'
+  }),
+  '貸借対照表': Object.freeze({
+    situation:'実務では、決算日など特定時点の現金・預金・売掛金・固定資産、買掛金・借入金、純資産などを一覧にして、会社の財政状態を確認する場面です。',
+    check:'資産と、負債・純資産の関係を確認します。貸倒引当金や減価償却累計額など、関連資産から控除して見る項目にも注意します。'
+  })
+});
+
+const GENERIC_TABLE_PRACTICAL_CONTEXT = Object.freeze({
+  situation:'実務では、会計ソフトや元帳から集計した数値を、月次・決算の確認資料として照合する場面に近い作業です。',
+  check:'表の名称、列の意味、与えられた数値の出所を確認し、どの段階の残高を求めているかを切り分けます。'
+});
+
+function journalAnswerAccounts(q) {
+  return [...(q?.debit || []), ...(q?.credit || [])].map(entry => String(entry?.account || '')).filter(Boolean);
+}
+
+function getJournalPracticalContext(q) {
+  const accounts = new Set(journalAnswerAccounts(q));
+  const category = String(q?.category || '');
+  const ruleById = id => JOURNAL_PRACTICAL_CONTEXT_RULES.find(rule => rule.id === id);
+  const overrideRuleId = JOURNAL_PRACTICAL_CONTEXT_OVERRIDES[String(q?.id || '')];
+  if (overrideRuleId) return ruleById(overrideRuleId) || GENERIC_JOURNAL_PRACTICAL_CONTEXT;
+
+  // 複数論点にまたがる問題は、問題カテゴリが明示する主論点を優先する。
+  // 例: 固定資産売却には減価償却累計額も出るが、実務場面は「売却」を先に説明する。
+  if (/(売却|買い替え)/.test(category) && [...accounts].some(account => ['備品','建物','土地','車両運搬具','固定資産売却益','固定資産売却損'].includes(account))) {
+    return ruleById('fixed-asset-sale') || GENERIC_JOURNAL_PRACTICAL_CONTEXT;
+  }
+  if (/(未払費用|未収収益|未払利息|未収利息|前払費用|前受収益|経過勘定|再振替)/.test(category)) {
+    const accrual = ruleById('accrual-deferral');
+    if (accrual && accrual.accounts.some(account => accounts.has(account))) return accrual;
+  }
+
+  for (const rule of JOURNAL_PRACTICAL_CONTEXT_RULES) {
+    if (Array.isArray(rule.accounts) && rule.accounts.some(account => accounts.has(account))) return rule;
+    if (Array.isArray(rule.accountClasses) && [...accounts].some(account => rule.accountClasses.includes(ACCOUNT_CLASSIFICATIONS[account]))) return rule;
+  }
+  return GENERIC_JOURNAL_PRACTICAL_CONTEXT;
+}
+
+function getTablePracticalContext(q) {
+  const key = String(q?.group || q?.category || '').trim();
+  return TABLE_PRACTICAL_CONTEXTS[key] || GENERIC_TABLE_PRACTICAL_CONTEXT;
+}
+
+function renderJournalPracticalContext(q, isCorrect) {
+  const title = document.getElementById('journal-practical-title');
+  const body = document.getElementById('journal-practical-text');
+  const check = document.getElementById('journal-practical-check');
+  if (!title || !body || !check || !q) return;
+  const context = getJournalPracticalContext(q);
+  title.textContent = isCorrect ? '実務とのつながり' : '実務とのつながり（再確認）';
+  body.textContent = context.situation;
+  check.textContent = `${context.check}\n※実務例は理解を助けるための一般例です。解答は、問題文に示された条件に従って判断してください。`;
+}
+
+function renderTablePracticalContext(q, isCorrect) {
+  const title = document.getElementById('table-practical-title');
+  const body = document.getElementById('table-practical-text');
+  const check = document.getElementById('table-practical-check');
+  if (!title || !body || !check || !q) return;
+  const context = getTablePracticalContext(q);
+  title.textContent = isCorrect ? '実務とのつながり' : '実務とのつながり（再確認）';
+  body.textContent = context.situation;
+  check.textContent = `${context.check}\n※実務例は理解を助けるための一般例です。解答は、問題文と表に示された条件に従って判断してください。`;
+}
+
+function validatePracticalContextLayer() {
+  const issues = [];
+  const ruleIds = new Set(JOURNAL_PRACTICAL_CONTEXT_RULES.map(rule => rule.id));
+  Object.entries(JOURNAL_PRACTICAL_CONTEXT_OVERRIDES).forEach(([questionId, ruleId]) => {
+    if (!VALID_QUESTION_IDS.has(questionId)) issues.push(`実務例overrideの問題IDが不正です: ${questionId}`);
+    if (!ruleIds.has(ruleId)) issues.push(`実務例overrideのルールIDが不正です: ${questionId} -> ${ruleId}`);
+    const question = QUESTION_DATABASE.find(q => q.id === questionId);
+    const selected = question ? getJournalPracticalContext(question) : null;
+    if (selected?.id !== ruleId) issues.push(`実務例overrideが反映されていません: ${questionId} -> ${ruleId}`);
+  });
+  const validateText = (id, context) => {
+    if (!context || typeof context !== 'object') { issues.push(`${id}: 実務例がありません`); return; }
+    if (!String(context.situation || '').trim()) issues.push(`${id}: 実務場面の説明が空です`);
+    if (!String(context.check || '').trim()) issues.push(`${id}: 実務確認ポイントが空です`);
+  };
+  QUESTION_DATABASE.forEach(q => {
+    const context = getJournalPracticalContext(q);
+    validateText(q.id, context);
+    const rendered = `${context?.situation || ''}\n${context?.check || ''}`;
+    [...(q.debit || []), ...(q.credit || [])].forEach(entry => {
+      const rawAmount = String(entry.amount ?? '');
+      if (rawAmount.length >= 4 && rendered.includes(rawAmount)) issues.push(`${q.id}: 実務例に問題固有の正答金額が混入しています`);
+    });
+  });
+  TABLE_DATABASE.forEach(q => validateText(q.id, getTablePracticalContext(q)));
+  if (!String(TABLE_PRACTICAL_CONTEXTS['8桁精算表']?.situation || '').includes('必ずこの形式')) {
+    issues.push('8桁精算表の実務例に、実務での使用形態を限定しない注意書きがありません');
+  }
+  return issues;
+}
+
 function getAuditedScenarioText(q) {
   const sections = parseExplanationSections(q?.explanation);
   return String(sections.thinking || q?.explanation || '').trim();
@@ -14898,7 +15553,11 @@ function loadTableQuestion(index) {
   dispatchRuntimeLifecycle({ type: RUNTIME_ACTION.TABLE_LOAD, index, viewMode: initialViewMode });
   const q = TABLE_DATABASE[index];
   document.getElementById('table-problem-category').innerText = q.category;
-  document.getElementById('table-problem-id-text').innerText = `ID: ${q.id} (${index + 1} / ${TABLE_DATABASE.length})`;
+  renderDifficultyBadge('table-problem-difficulty', getTableDifficulty(q));
+  const tableProblemProgress = document.getElementById('table-problem-id-text');
+  tableProblemProgress.innerText = `${index + 1} / ${TABLE_DATABASE.length}`;
+  tableProblemProgress.setAttribute('aria-label', `${index + 1}問目、全${TABLE_DATABASE.length}問`);
+  renderStoryPanel('table', storyChapterForTableIndex(index));
   renderStructuredTableStatement(q);
   const hint = document.getElementById('table-hint-box'); hint.innerText = tableHintFor(q, 1); hint.style.display = 'none';
   renderTableViewControls(q); renderTableQuestionTable(q);
@@ -15012,6 +15671,7 @@ function checkTableAnswer() {
   document.getElementById('table-result-title').innerText = isCorrect ? '正解' : '不正解';
   document.getElementById('table-result-detail').innerText = isCorrect ? 'すべての空欄が一致しています。' : `${wrong}か所不一致です。\n${wrongItems.join('\n')}`;
   document.getElementById('table-explanation-box').innerText = q.explanation;
+  renderTablePracticalContext(q, isCorrect);
   renderTableCorrectAnswer(q);
   setTableEvalButtonsDisabled(false, isCorrect);
 }
@@ -15116,7 +15776,7 @@ function applyCalcToTable() {
   if(isNaN(num) || num<0){ alert('有効な金額を計算してから反映してください。'); return; }
   let target=Runtime.table.lastFocusedInput;
   if(!target || target.disabled || !target.isConnected) target=document.querySelector('#table-exercise-host .table-answer-input:not(:disabled)');
-  if(target){ target.value=formatJournalAmountValue(num); target.dispatchEvent(new Event('input', { bubbles:true })); fitTableAmountFont(target); target.style.backgroundColor='#fef08a'; setTimeout(()=>target.style.backgroundColor='',400); toggleCalculator(); }
+  if(target){ target.value=formatJournalAmountValue(num); target.dispatchEvent(new Event('input', { bubbles:true })); fitTableAmountFont(target); target.style.backgroundColor='#fef08a'; setTimeout(()=>target.style.backgroundColor='',400); closeCalculator({ restoreFocus: false, focusTarget: target }); }
 }
 
 // === 内蔵電卓（計算機）ロジック ===
@@ -15270,22 +15930,57 @@ function syncCalculatorContext() {
   syncCalculatorPlacement();
 }
 
+function calculatorToggleButton() {
+  return document.getElementById('calculator-toggle-button');
+}
+
+function openCalculator() {
+  const modal = document.getElementById('calculator-modal');
+  if (!modal || modal.style.display === 'block') return;
+  syncCalculatorContext();
+  const active = document.activeElement;
+  Runtime.ui.calculatorReturnFocus = active instanceof HTMLElement ? active : calculatorToggleButton();
+  const note = document.getElementById('calc-learning-note');
+  const helpButton = document.getElementById('calc-help-btn');
+  if (note) note.hidden = true;
+  if (helpButton) helpButton.setAttribute('aria-expanded', 'false');
+  modal.style.display = 'block';
+  modal.setAttribute('aria-hidden', 'false');
+  calculatorToggleButton()?.setAttribute('aria-expanded', 'true');
+  requestAnimationFrame(() => {
+    ensureCalculatorInViewport({ preferRemembered: true });
+    document.getElementById('calc-drag-handle')?.focus({ preventScroll: true });
+  });
+}
+
+function closeCalculator({ restoreFocus = true, focusTarget = null } = {}) {
+  const modal = document.getElementById('calculator-modal');
+  if (!modal || modal.style.display !== 'block') return;
+  endCalculatorDrag();
+  modal.style.display = 'none';
+  modal.setAttribute('aria-hidden', 'true');
+  calculatorToggleButton()?.setAttribute('aria-expanded', 'false');
+  const fallback = Runtime.ui.calculatorReturnFocus;
+  Runtime.ui.calculatorReturnFocus = null;
+  const target = focusTarget instanceof HTMLElement && focusTarget.isConnected
+    ? focusTarget
+    : (restoreFocus && fallback instanceof HTMLElement && fallback.isConnected ? fallback : null);
+  if (target) target.focus({ preventScroll: true });
+}
+
 function toggleCalculator() {
   const modal = document.getElementById('calculator-modal');
   if (!modal) return;
-  syncCalculatorContext();
-  const opening = modal.style.display !== 'block';
-  if (opening) {
-    const note = document.getElementById('calc-learning-note');
-    const helpButton = document.getElementById('calc-help-btn');
-    if (note) note.hidden = true;
-    if (helpButton) helpButton.setAttribute('aria-expanded', 'false');
-    modal.style.display = 'block';
-    requestAnimationFrame(() => ensureCalculatorInViewport({ preferRemembered: true }));
-  } else {
-    endCalculatorDrag();
-    modal.style.display = 'none';
-  }
+  if (modal.style.display === 'block') closeCalculator();
+  else openCalculator();
+}
+
+function handleCalculatorEscape(event) {
+  if (event.key !== 'Escape' || event.defaultPrevented) return;
+  const modal = document.getElementById('calculator-modal');
+  if (!modal || modal.style.display !== 'block') return;
+  event.preventDefault();
+  closeCalculator();
 }
 
 function calculatorOperatorSymbol(op) {
@@ -15598,7 +16293,7 @@ function applyCalcToJournal(side) {
     setTimeout(() => {
       targetInput.style.backgroundColor = '';
     }, 400);
-    toggleCalculator();
+    closeCalculator({ restoreFocus: false, focusTarget: targetInput });
   }
 }
 
@@ -15736,6 +16431,7 @@ function handleDelegatedAction(event) {
   const action = trigger.dataset.action;
   switch (action) {
     case 'switch-mode': switchMode(trigger.dataset.mode); break;
+    case 'toggle-story-mode': toggleStoryMode(); break;
     case 'toggle-hint': toggleHint(); break;
     case 'toggle-calculator': toggleCalculator(); break;
     case 'toggle-calc-help': toggleCalculatorHelp(); break;
@@ -15761,6 +16457,7 @@ function handleDelegatedAction(event) {
 }
 
 document.addEventListener('click', handleDelegatedAction);
+document.addEventListener('keydown', handleCalculatorEscape);
 
 function initializeApp() {
   const critical = runCriticalIntegrityCheck();
@@ -15782,6 +16479,7 @@ function initializeApp() {
   renderTableToc();
   loadTableQuestion(getNextTableQuestionIndex());
   switchMode('journal', false);
+  refreshStoryPanels();
 
   if (typeof window.matchMedia === 'function') {
     const mediaQuery = window.matchMedia('(max-width: 600px)');
