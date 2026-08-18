@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="application-version" content="v10.26">
+  <meta name="application-version" content="v10.27">
   <title>日商簿記3級 総合演習システム（2026年度出題区分対応・仕訳200問＋表問題40問）</title>
   <style>
     :root {
@@ -310,6 +310,7 @@
       border-bottom: 2px solid var(--border-color);
       padding-bottom: 6px;
       margin-bottom: 10px;
+      scroll-margin-top: 10px;
     }
 
     .problem-meta {
@@ -350,6 +351,7 @@
       padding: 12px;
       border-radius: 6px;
       word-break: break-word;
+      white-space: pre-line;
       font-weight: 500;
     }
 
@@ -391,6 +393,7 @@
       margin-bottom: 10px;
       font-size: 0.8rem;
       color: #78350f;
+      white-space: pre-line;
       display: none;
     }
 
@@ -2236,7 +2239,7 @@
 
   <!-- 問題カード -->
   <div class="card" id="quiz-card">
-    <div class="problem-header">
+    <div class="problem-header" id="journal-problem-header">
       <span class="category-badge" id="problem-category">カテゴリー</span>
       <span class="problem-meta">
         <span class="difficulty-badge" id="problem-difficulty" title="本教材独自の目安です。">難易度 —</span>
@@ -2360,7 +2363,7 @@
     </section>
 
     <div class="card" id="table-quiz-card">
-      <div class="problem-header">
+      <div class="problem-header" id="table-problem-header">
         <span class="category-badge" id="table-problem-category">表問題</span>
         <span class="problem-meta">
           <span class="difficulty-badge" id="table-problem-difficulty" title="本教材独自の目安です。">難易度 —</span>
@@ -11796,7 +11799,7 @@ function validateDomIdReferences() {
   return issues;
 }
 
-const REQUIRED_DOM_IDS = Object.freeze(['account-effect-list', 'account-nature-details', 'add-row-btn', 'backup-status', 'calc-apply-bar', 'calc-apply-debit', 'calc-apply-table', 'calc-apply-credit', 'calc-help-btn', 'calc-drag-handle', 'calc-drag-help', 'calc-display', 'calc-expression', 'calc-learning-note', 'calculator-floating-home', 'calculator-modal', 'calculator-toggle-button', 'correct-journal-content', 'data-integrity-banner', 'diagnostic-box', 'diagnostic-list', 'diagnostic-summary', 'exam-readiness-details', 'exam-readiness-guide', 'eval-btn-0', 'eval-btn-2', 'eval-btn-3', 'eval-instruction', 'explanation-reference-list', 'explanation-reference-policy', 'hint-box', 'journal-mode-section', 'journal-rows', 'journal-account-selection-help', 'learning-achievement-count', 'learning-growth-card', 'learning-next-stage-body', 'learning-next-stage-card', 'learning-next-stage-kicker', 'learning-next-stage-link', 'learning-next-stage-status', 'learning-next-stage-title', 'learning-overall-bar', 'learning-overall-level', 'learning-overall-title', 'learning-studied-count', 'learning-toast', 'learning-topic-list', 'learning-support-details', 'study-status-details', 'study-status-summary', 'journal-status-panel', 'table-status-panel', 'learning-weakest-topic', 'mode-journal-btn', 'mode-table-btn', 'story-control', 'story-mode-toggle', 'story-mode-note', 'story-roadmap-details', 'story-roadmap-summary', 'story-roadmap-list', 'journal-story-panel', 'journal-story-kicker', 'journal-story-title', 'journal-story-body', 'journal-story-learning-status', 'journal-story-progress', 'journal-story-progress-fill', 'problem-category', 'problem-difficulty', 'problem-id-text', 'problem-statement', 'progress-import-input', 'quiz-card', 'remove-row-btn', 'result-box', 'result-detail', 'result-title', 'scenario-amount-section', 'scenario-amount-text', 'scenario-confusion-section', 'scenario-confusion-text', 'scenario-cue-list', 'scenario-guide-box', 'scenario-reading-text', 'scenario-reason-text', 'stat-due', 'stat-streak', 'submit-btn', 'table-correct-answer-box', 'table-correct-answer-host', 'table-eval-btn-0', 'table-eval-btn-2', 'table-eval-btn-3', 'table-eval-instruction', 'table-next-btn', 'table-exercise-host', 'table-exercise-wrapper', 'table-explanation-box', 'table-hint-box', 'table-mode-section', 'table-story-panel', 'table-story-kicker', 'table-story-title', 'table-story-body', 'table-story-learning-status', 'table-story-progress', 'table-story-progress-fill', 'table-problem-category', 'table-problem-difficulty', 'table-problem-givens', 'table-problem-givens-block', 'table-problem-id-text', 'table-problem-instruction', 'table-problem-statement', 'table-problem-targets', 'table-problem-targets-block', 'table-quiz-card', 'table-result-box', 'table-result-detail', 'table-result-title', 'table-segment-nav', 'table-submit-btn', 'table-toc-card', 'table-toc-details', 'table-toc-groups', 'table-workspace-help', 'table-workspace-title', 'toc-card', 'toc-details', 'toc-groups']);
+const REQUIRED_DOM_IDS = Object.freeze(['account-effect-list', 'account-nature-details', 'add-row-btn', 'backup-status', 'calc-apply-bar', 'calc-apply-debit', 'calc-apply-table', 'calc-apply-credit', 'calc-help-btn', 'calc-drag-handle', 'calc-drag-help', 'calc-display', 'calc-expression', 'calc-learning-note', 'calculator-floating-home', 'calculator-modal', 'calculator-toggle-button', 'correct-journal-content', 'data-integrity-banner', 'diagnostic-box', 'diagnostic-list', 'diagnostic-summary', 'exam-readiness-details', 'exam-readiness-guide', 'eval-btn-0', 'eval-btn-2', 'eval-btn-3', 'eval-instruction', 'explanation-reference-list', 'explanation-reference-policy', 'hint-box', 'journal-mode-section', 'journal-problem-header', 'journal-rows', 'journal-account-selection-help', 'learning-achievement-count', 'learning-growth-card', 'learning-next-stage-body', 'learning-next-stage-card', 'learning-next-stage-kicker', 'learning-next-stage-link', 'learning-next-stage-status', 'learning-next-stage-title', 'learning-overall-bar', 'learning-overall-level', 'learning-overall-title', 'learning-studied-count', 'learning-toast', 'learning-topic-list', 'learning-support-details', 'study-status-details', 'study-status-summary', 'journal-status-panel', 'table-status-panel', 'learning-weakest-topic', 'mode-journal-btn', 'mode-table-btn', 'story-control', 'story-mode-toggle', 'story-mode-note', 'story-roadmap-details', 'story-roadmap-summary', 'story-roadmap-list', 'journal-story-panel', 'journal-story-kicker', 'journal-story-title', 'journal-story-body', 'journal-story-learning-status', 'journal-story-progress', 'journal-story-progress-fill', 'problem-category', 'problem-difficulty', 'problem-id-text', 'problem-statement', 'progress-import-input', 'quiz-card', 'remove-row-btn', 'result-box', 'result-detail', 'result-title', 'scenario-amount-section', 'scenario-amount-text', 'scenario-confusion-section', 'scenario-confusion-text', 'scenario-cue-list', 'scenario-guide-box', 'scenario-reading-text', 'scenario-reason-text', 'stat-due', 'stat-streak', 'submit-btn', 'table-correct-answer-box', 'table-correct-answer-host', 'table-eval-btn-0', 'table-eval-btn-2', 'table-eval-btn-3', 'table-eval-instruction', 'table-next-btn', 'table-exercise-host', 'table-exercise-wrapper', 'table-explanation-box', 'table-hint-box', 'table-mode-section', 'table-problem-header', 'table-story-panel', 'table-story-kicker', 'table-story-title', 'table-story-body', 'table-story-learning-status', 'table-story-progress', 'table-story-progress-fill', 'table-problem-category', 'table-problem-difficulty', 'table-problem-givens', 'table-problem-givens-block', 'table-problem-id-text', 'table-problem-instruction', 'table-problem-statement', 'table-problem-targets', 'table-problem-targets-block', 'table-quiz-card', 'table-result-box', 'table-result-detail', 'table-result-title', 'table-segment-nav', 'table-submit-btn', 'table-toc-card', 'table-toc-details', 'table-toc-groups', 'table-workspace-help', 'table-workspace-title', 'toc-card', 'toc-details', 'toc-groups']);
 
 function validateStoryAndDifficultyLayer() {
   const issues = [];
@@ -11918,6 +11921,7 @@ function validateUiStructure() {
   REQUIRED_DOM_IDS.forEach(id => { if (!document.getElementById(id)) issues.push(`getElementById参照先なし: ${id}`); });
   issues.push(...validateDomIdReferences());
   if (document.querySelector('[onclick]')) issues.push('インラインonclickが残っています');
+  if (typeof scrollToCurrentProblemHeader !== 'function') issues.push('次問遷移時に難易度を含む問題ヘッダーへ戻す機構がありません');
   const styleText = [...document.querySelectorAll('style')].map(style => style.textContent || '').join('\n');
   if (typeof addJournalRow !== 'function' || !styleText.includes('.journal-account-display') || !styleText.includes('.journal-account-wrap select')) issues.push('長い勘定科目名の独自表示機構を確認できません');
   if (!styleText.includes('@media (forced-colors: active)') || !styleText.includes('outline: 3px solid Highlight')) issues.push('High Contrast向けフォーカス表示CSSを確認できません');
@@ -12431,7 +12435,7 @@ function runIntegrityCheck() {
 deepFreeze(QUESTION_DATABASE);
 deepFreeze(TABLE_DATABASE);
 
-const APP_VERSION = 'v10.26';
+const APP_VERSION = 'v10.27';
 const STORAGE_SCHEMA_VERSION = 3;
 const COMPATIBLE_STORAGE_SCHEMA_VERSIONS = new Set([2, 3]);
 const JOURNAL_BANK_VERSION = 'v7.3';
@@ -12454,7 +12458,7 @@ const EXPECTED_JOURNAL_DIFFICULTY_HASH = '0e7232f5';
 const EXPECTED_TABLE_DIFFICULTY_HASH = '6c3c5b90';
 // リリース取り違え検出用。APP/BANK定数から派生させず、意図的にリリース値を重複保持する。
 const RELEASE_MANIFEST = Object.freeze({
-  appVersion: 'v10.26',
+  appVersion: 'v10.27',
   storyLayerVersion: 'v6',
   practicalContextVersion: 'v2',
   difficultyLogicVersion: 'v2',
@@ -13314,11 +13318,11 @@ function setEvalButtonsDisabled(disabled, isCorrect = false) {
   const instruction = document.getElementById('eval-instruction');
   if (instruction) {
     if (disabled) {
-      instruction.innerText = '採点後、理解度を選んでください。';
+      instruction.textContent = '採点後、理解度を選んでください。';
     } else if (!isCorrect) {
-      instruction.innerText = '不正解です。「要復習」を選んで次へ進んでください。';
+      instruction.textContent = '不正解です。「要復習」を選んで次へ進んでください。';
     } else {
-      instruction.innerText = '理解度を選んで次の問題へ進んでください。';
+      instruction.textContent = '理解度を選んで次の問題へ進んでください。';
     }
   }
 }
@@ -13349,8 +13353,8 @@ function updateDashboard() {
     if (progress?.nextReviewDate && new Date(progress.nextReviewDate) <= now) dueCount += 1;
   });
 
-  document.getElementById('stat-due').innerText = String(dueCount);
-  document.getElementById('stat-streak').innerText = `${Runtime.state.streak}日`;
+  document.getElementById('stat-due').textContent = String(dueCount);
+  document.getElementById('stat-streak').textContent = `${Runtime.state.streak}日`;
   renderLearningDashboard();
   renderStoryRoadmap();
 }
@@ -13434,16 +13438,16 @@ function loadQuestion(index) {
   const q = QUESTION_DATABASE[index];
   updateTocActive(q.id);
 
-  document.getElementById('problem-category').innerText = q.category;
+  document.getElementById('problem-category').textContent = q.category;
   renderDifficultyBadge('problem-difficulty', getJournalDifficulty(q));
   const problemProgress = document.getElementById('problem-id-text');
-  problemProgress.innerText = `${index + 1} / ${QUESTION_DATABASE.length}`;
+  problemProgress.textContent = `${index + 1} / ${QUESTION_DATABASE.length}`;
   problemProgress.setAttribute('aria-label', `${index + 1}問目、全${QUESTION_DATABASE.length}問`);
-  document.getElementById('problem-statement').innerText = q.statement;
+  document.getElementById('problem-statement').textContent = q.statement;
   renderStoryPanel('journal', storyChapterForJournalIndex(index), index);
 
   const hintBox = document.getElementById('hint-box');
-  hintBox.innerText = q.hint || "ヒントはありません。問題文の仕訳構造を考えましょう。";
+  hintBox.textContent = q.hint || "ヒントはありません。問題文の仕訳構造を考えましょう。";
   hintBox.style.display = 'none';
 
   document.getElementById('result-box').style.display = 'none';
@@ -14554,13 +14558,13 @@ function checkAnswer() {
 
   if (isAllCorrect) {
     resultBox.className = 'result-box correct';
-    resultTitle.innerText = '正解';
-    resultDetail.innerText = '借方・貸方の勘定科目と金額が正解と一致しています。';
+    resultTitle.textContent = '正解';
+    resultDetail.textContent = '借方・貸方の勘定科目と金額が正解と一致しています。';
     renderJournalDiagnostic(null);
   } else {
     resultBox.className = 'result-box incorrect';
-    resultTitle.innerText = '不正解';
-    resultDetail.innerText = diagnostic.summary;
+    resultTitle.textContent = '不正解';
+    resultDetail.textContent = diagnostic.summary;
     renderJournalDiagnostic(diagnostic);
   }
 
@@ -15319,10 +15323,10 @@ function applySelfEval(quality) {
   nextQuestion();
 }
 
-// v10.26: 次の問題へ進んだとき、前問の解説位置に留まらず新しい問題文へ戻す。
+// v10.27: 次の問題へ進んだときは、カテゴリ・難易度・問題番号が見える問題ヘッダーへ戻す。
 // 初回起動時は不要な自動スクロールを避けるため、呼び出し側で抑止できる。
-function scrollToCurrentProblemStatement(kind = 'journal') {
-  const targetId = kind === 'table' ? 'table-problem-statement' : 'problem-statement';
+function scrollToCurrentProblemHeader(kind = 'journal') {
+  const targetId = kind === 'table' ? 'table-problem-header' : 'journal-problem-header';
   requestAnimationFrame(() => {
     const target = document.getElementById(targetId);
     if (target) target.scrollIntoView({ block: 'start', inline: 'nearest' });
@@ -15332,7 +15336,7 @@ function scrollToCurrentProblemStatement(kind = 'journal') {
 function nextQuestion({ scrollToProblem = true } = {}) {
   const nextIdx = Runtime.story.enabled ? getNextStoryQuestionIndex() : getNextQuestionIndex();
   loadQuestion(nextIdx);
-  if (scrollToProblem && nextIdx >= 0) scrollToCurrentProblemStatement('journal');
+  if (scrollToProblem && nextIdx >= 0) scrollToCurrentProblemHeader('journal');
 }
 
 
@@ -15951,14 +15955,14 @@ function loadTableQuestion(index) {
   const initialViewMode = getResponsiveTableView();
   dispatchRuntimeLifecycle({ type: RUNTIME_ACTION.TABLE_LOAD, index, viewMode: initialViewMode });
   const q = TABLE_DATABASE[index];
-  document.getElementById('table-problem-category').innerText = q.category;
+  document.getElementById('table-problem-category').textContent = q.category;
   renderDifficultyBadge('table-problem-difficulty', getTableDifficulty(q));
   const tableProblemProgress = document.getElementById('table-problem-id-text');
-  tableProblemProgress.innerText = `${index + 1} / ${TABLE_DATABASE.length}`;
+  tableProblemProgress.textContent = `${index + 1} / ${TABLE_DATABASE.length}`;
   tableProblemProgress.setAttribute('aria-label', `${index + 1}問目、全${TABLE_DATABASE.length}問`);
   renderStoryPanel('table', storyChapterForTableIndex(index), index);
   renderStructuredTableStatement(q);
-  const hint = document.getElementById('table-hint-box'); hint.innerText = tableHintFor(q, 1); hint.style.display = 'none';
+  const hint = document.getElementById('table-hint-box'); hint.textContent = tableHintFor(q, 1); hint.style.display = 'none';
   renderTableViewControls(q); renderTableQuestionTable(q);
   const rb = document.getElementById('table-result-box'); rb.className = 'table-result-box'; rb.style.display = 'none';
   const correctBox = document.getElementById('table-correct-answer-box'); if (correctBox) correctBox.hidden = true;
@@ -15999,13 +16003,13 @@ function toggleTableHint() {
   if (q.id === 'T024') {
     if (box.style.display !== 'block') {
       Runtime.table.hintLevel = 1;
-      box.innerText = tableHintFor(q, 1);
+      box.textContent = tableHintFor(q, 1);
       box.style.display = 'block';
       return;
     }
     if (Runtime.table.hintLevel < 3) {
       Runtime.table.hintLevel += 1;
-      box.innerText = tableHintFor(q, Runtime.table.hintLevel);
+      box.textContent = tableHintFor(q, Runtime.table.hintLevel);
       return;
     }
     Runtime.table.hintLevel = 0;
@@ -16013,7 +16017,7 @@ function toggleTableHint() {
     return;
   }
 
-  box.innerText = tableHintFor(q, 1);
+  box.textContent = tableHintFor(q, 1);
   box.style.display = box.style.display === 'block' ? 'none' : 'block';
 }
 
@@ -16067,9 +16071,9 @@ function checkTableAnswer() {
   const box = document.getElementById('table-result-box');
   box.className = `table-result-box ${isCorrect ? 'correct' : 'incorrect'}`;
   box.style.display = 'block';
-  document.getElementById('table-result-title').innerText = isCorrect ? '正解' : '不正解';
-  document.getElementById('table-result-detail').innerText = isCorrect ? 'すべての空欄が一致しています。' : `${wrong}か所不一致です。\n${wrongItems.join('\n')}`;
-  document.getElementById('table-explanation-box').innerText = q.explanation;
+  document.getElementById('table-result-title').textContent = isCorrect ? '正解' : '不正解';
+  document.getElementById('table-result-detail').textContent = isCorrect ? 'すべての空欄が一致しています。' : `${wrong}か所不一致です。\n${wrongItems.join('\n')}`;
+  document.getElementById('table-explanation-box').textContent = q.explanation;
   renderTablePracticalContext(q, isCorrect);
   renderTableCorrectAnswer(q);
   setTableEvalButtonsDisabled(false, isCorrect);
@@ -16176,7 +16180,7 @@ function getNextTableQuestionIndex() {
 
 function nextTableQuestion() {
   loadTableQuestion(Runtime.story.enabled ? getNextStoryTableQuestionIndex() : getNextTableQuestionIndex());
-  scrollToCurrentProblemStatement('table');
+  scrollToCurrentProblemHeader('table');
 }
 
 function applyCalcToTable() {
