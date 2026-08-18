@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="application-version" content="v10.27">
+  <meta name="application-version" content="v10.28">
   <title>日商簿記3級 総合演習システム（2026年度出題区分対応・仕訳200問＋表問題40問）</title>
   <style>
     :root {
@@ -11041,8 +11041,9 @@ const TOC_GROUPS = [
   { title: "総合演習", start: 161, end: 200 }
 ];
 
-// ===== v10.25 Story Layer（表示専用・企業ドラマ／学習導線統合） =====
+// ===== v10.28 Story Layer（表示専用・企業ドラマ／SRSと物語時間を分離） =====
 // Story Layerは表示専用。正解・金額・仕訳・採点・SRS・保存状態を持たない。
+// SRSは復習順だけを決め、物語の現在月は「最初の未学習問題」から導出する。復習で物語時間を巻き戻さない。
 // 既存240問は連続した1社の帳簿ではないため、各問題を独立ケースとして扱う。
 // 特定作家の文体は模倣せず、企業ドラマに一般的な「対立・判断・伏線・成長」の構造だけを採用する。
 const STORY_COMPANY = Object.freeze({
@@ -11064,7 +11065,7 @@ const JOURNAL_STORY_CHAPTERS = Object.freeze([
   ]},
   { id:'J03', month:'6月', groupTitle:'手形・電子記録債権債務', title:'「売れた」と「回収した」は違う', intro:[
     '営業会議のあと、高橋が言った。\n「売れたんだから、ひとまず安心ですよね」\n佐藤は首を横に振る。「売れたことと、代金を回収したことは同じではありません」\nあなたは、債権が生まれる時点と決済される時点を追い始める。',
-    '取引先との関係を大切にしたい営業と、記録を曖昧にできない経理。同じ取引を見ても、立場によって気にする点が違う。高橋が尋ねる。\n「経理って、そこまで見るんですか？」\nあなたは伝票ではなく、取引の時間の流れを説明しようとする。',
+    '高橋が納品伝票を持ってきた。「A社、納品完了です。請求書もお願いします」\n慣れてきたあなたは、目の前の伝票だけを見て売上全額を請求しようとする。佐藤が元帳を開いた。\n「前月の入金記録を見ましたか。このままでは二重請求です」\n手付金として受け取った前受金を見落としていた。正しい経理には、いまの伝票だけでなく過去から続く取引の流れを見る必要があると知る。',
     '決済の流れが見えるようになった頃、倉庫担当から古い営業車の処分について相談が入った。\n高橋は「買ったときの金額を見ればいいですよね」と言う。\n佐藤はあなたを見るだけで、何も答えなかった。'
   ]},
   { id:'J04', month:'7月', groupTitle:'固定資産・減価償却', title:'買った値段では見えないもの', intro:[
@@ -11079,7 +11080,7 @@ const JOURNAL_STORY_CHAPTERS = Object.freeze([
   ]},
   { id:'J06', month:'9月', groupTitle:'経過勘定・消耗品', title:'「いつの数字か」を見抜く', intro:[
     '支払日は一つでも、その支払いがどの期間に対応するかは別の問題だ。佐藤は契約書の日付を指した。\n「現金が動いた日だけで会社の成績を考えると、見誤ります」\nあなたは、費用と収益を時間の軸で見る感覚を身につけていく。',
-    '机の上には請求書、契約書、消耗品の記録が並ぶ。高橋が「払ったんだから、もう終わりじゃないんですか」と首をかしげる。\nあなたは以前の自分を思い出しながら、支払日と費用になる時期が必ずしも同じではないことを説明する。',
+    '高橋が「急ぎで払ったので、今月の経費でお願いします」と書類を持ってきた。あなたは現金が減った事実だけを見て、そのまま費用にしようとする。\n佐藤は契約書の期間を指した。「払った日は正しい。でも、会社の成績として『いつの費用か』は別の話です」\n来月からの期間に対応する支払いだと分かり、現金の動きと費用の発生時期を分けて考える意味が腹に落ちる。',
     '半年が過ぎた。佐藤から答えを聞く回数は、確実に減っている。\nその帰り際、人事担当から翌月の給与資料について連絡が入った。佐藤は一言だけ告げた。\n「給与は、間違えたら数字だけの問題では済みません」'
   ]},
   { id:'J07', month:'10月', groupTitle:'給与・社会保険・税金', title:'数字の向こうに生活がある', intro:[
@@ -11099,7 +11100,7 @@ const JOURNAL_STORY_CHAPTERS = Object.freeze([
   ]},
   { id:'J10', month:'1月', groupTitle:'決算整理・仮勘定・諸費用収益', title:'決算まで、あと二か月', intro:[
     '年が明けると、経理室の空気が変わった。仮のまま残った項目、期間をまたぐ費用や収益、決算で整理すべき数字。\n佐藤は決算予定表を指す。「ここからは、一つの仕訳だけでなく、その先まで考えてください」',
-    '以前なら佐藤が先に確認箇所を教えてくれた。今は違う。\n「まず、あなたはどう考えますか？」\n答えを言ってくれないことが、少し怖い。しかしそれは、任され始めた証拠でもあった。',
+    '出張精算の領収書が束で届く。あなたは仮払金をまとめて旅費交通費へ振り替えかけたが、一枚だけ得意先が負担すべき転送料金が混じっていることに気づく。\n佐藤が尋ねる。「領収書があることと、うちの会社の費用であることは同じですか？」\n証憑を受け取るだけでなく、その負担者まで確かめて立替金として分ける。経理は入力係ではなく、会社を守る確認の役割も担うと実感する。',
     '決算整理の考え方がつながり始めると、佐藤は青いファイルをあなたの机に置く時間を増やした。\n「2月は私からのヒントを減らします」\n冗談だと思ったが、佐藤は笑っていなかった。'
   ]},
   { id:'J11', month:'2月', groupTitle:'商品売買・消費税 追加演習', title:'答えを言わない上司', intro:[
@@ -11860,7 +11861,7 @@ function validateStoryAndDifficultyLayer() {
 
 function validateStoryLearningBridge() {
   const issues = [];
-  if (typeof selectNextStoryIndex !== 'function' || typeof storyGroupProgress !== 'function' || typeof renderStoryRoadmap !== 'function') {
+  if (typeof selectNextStoryIndex !== 'function' || typeof storyGroupProgress !== 'function' || typeof storyTimelineChapter !== 'function' || typeof buildStoryPresentationContext !== 'function' || typeof renderStoryRoadmap !== 'function') {
     issues.push('物語進行と学習進捗を結ぶ機構がありません');
     return issues;
   }
@@ -11880,6 +11881,27 @@ function validateStoryLearningBridge() {
   const chapter = JOURNAL_STORY_CHAPTERS[0];
   const progress = storyGroupProgress('journal', chapter, state, new Date('2026-08-15T00:00:00Z'));
   if (progress.total !== 20 || progress.studied !== 2 || progress.due !== 1) issues.push('物語章の学習進捗集計が不正です');
+
+  const timelineState = { progress: {}, tableProgress: {} };
+  for (let no = 1; no <= 60; no++) {
+    timelineState.progress[`Q${String(no).padStart(3, '0')}`] = { nextReviewDate: '2026-08-20T00:00:00.000Z' };
+  }
+  timelineState.progress.Q010 = { nextReviewDate: '2026-08-14T00:00:00.000Z' };
+  const sourceChapter = storyChapterForJournalIndex(9);
+  const timelineChapter = storyTimelineChapter('journal', timelineState);
+  if (sourceChapter?.month !== '4月' || timelineChapter?.month !== '7月') issues.push('復習問題の所属月と物語の現在月を分離できません');
+  const context = buildStoryPresentationContext('journal', sourceChapter, 9, timelineState, new Date('2026-08-15T00:00:00Z'));
+  if (!context.isReview || !context.isDetour || context.currentLabel !== '7月' || context.sourceLabel !== '4月') {
+    issues.push('過去問題の復習時に物語時間を現在月へ固定できません');
+  }
+  if (storyTimelineChapter('journal', timelineState)?.month !== '7月') issues.push('物語タイムラインの算出が不安定です');
+
+  const outOfOrderState = { progress: { Q150: { nextReviewDate: '2026-08-14T00:00:00.000Z' } }, tableProgress: {} };
+  const outOfOrderSource = storyChapterForJournalIndex(149);
+  const outOfOrderContext = buildStoryPresentationContext('journal', outOfOrderSource, 149, outOfOrderState, new Date('2026-08-15T00:00:00Z'));
+  if (outOfOrderContext.currentLabel !== '4月' || outOfOrderContext.sourceIsPastOrCurrent) {
+    issues.push('通常モード由来の先行学習があっても物語の現在月を巻き戻し・先送りせず扱えません');
+  }
   return issues;
 }
 
@@ -11987,7 +12009,7 @@ function validateUiStructure() {
   }
   if (typeof renderTableCorrectAnswer !== 'function') issues.push('表問題の不正解時に正しい完成表を表示する機構がありません');
   if (typeof applyTableSelfEval !== 'function') issues.push('表問題の復習用自己評価機構がありません');
-  if (typeof toggleStoryMode !== 'function' || typeof renderStoryPanel !== 'function' || typeof refreshStoryPanels !== 'function') {
+  if (typeof toggleStoryMode !== 'function' || typeof renderStoryPanel !== 'function' || typeof refreshStoryPanels !== 'function' || typeof alignCurrentQuestionToStoryRoute !== 'function') {
     issues.push('ストーリーレイヤーの表示切替機構がありません');
   }
   if (typeof getJournalDifficulty !== 'function' || typeof getTableDifficulty !== 'function' || typeof renderDifficultyBadge !== 'function') {
@@ -12435,7 +12457,7 @@ function runIntegrityCheck() {
 deepFreeze(QUESTION_DATABASE);
 deepFreeze(TABLE_DATABASE);
 
-const APP_VERSION = 'v10.27';
+const APP_VERSION = 'v10.28';
 const STORAGE_SCHEMA_VERSION = 3;
 const COMPATIBLE_STORAGE_SCHEMA_VERSIONS = new Set([2, 3]);
 const JOURNAL_BANK_VERSION = 'v7.3';
@@ -12458,11 +12480,11 @@ const EXPECTED_JOURNAL_DIFFICULTY_HASH = '0e7232f5';
 const EXPECTED_TABLE_DIFFICULTY_HASH = '6c3c5b90';
 // リリース取り違え検出用。APP/BANK定数から派生させず、意図的にリリース値を重複保持する。
 const RELEASE_MANIFEST = Object.freeze({
-  appVersion: 'v10.27',
-  storyLayerVersion: 'v6',
+  appVersion: 'v10.28',
+  storyLayerVersion: 'v7',
   practicalContextVersion: 'v2',
   difficultyLogicVersion: 'v2',
-  editorialCopyVersion: 'v4',
+  editorialCopyVersion: 'v5',
   journalBankVersion: 'v7.3',
   tableBankVersion: 'v8.5',
   journalBankHash: '622d0861',
@@ -13965,6 +13987,34 @@ function storyChapterForTableIndex(index) {
   return group ? TABLE_STORY_CHAPTERS.find(chapter => chapter.groupTitle === group.title) || null : null;
 }
 
+// SRSの復習対象と物語の時計を分離する。
+// 「現在」は最初の未学習問題が属する章。全問一巡後は最後の章に留めるため、復習で月が逆行しない。
+function storyTimelineChapter(kind, state = Runtime.state) {
+  const database = kind === 'table' ? TABLE_DATABASE : QUESTION_DATABASE;
+  const chapters = kind === 'table' ? TABLE_STORY_CHAPTERS : JOURNAL_STORY_CHAPTERS;
+  const chapterForIndex = kind === 'table' ? storyChapterForTableIndex : storyChapterForJournalIndex;
+  const firstFreshIndex = database.findIndex(q => !storyProgressRecord(kind, state, q.id));
+  if (firstFreshIndex >= 0) return chapterForIndex(firstFreshIndex) || chapters[0] || null;
+  return chapters[chapters.length - 1] || null;
+}
+
+function buildStoryPresentationContext(kind, sourceChapter, index = -1, state = Runtime.state, now = new Date()) {
+  const database = kind === 'table' ? TABLE_DATABASE : QUESTION_DATABASE;
+  const currentChapter = storyTimelineChapter(kind, state) || sourceChapter || null;
+  const question = Number.isInteger(index) ? database[index] : null;
+  const record = question ? storyProgressRecord(kind, state, question.id) : null;
+  const isReview = Boolean(record);
+  const isDue = question ? storyQuestionIsDue(kind, state, question.id, now) : false;
+  const sourceLabel = sourceChapter?.month || sourceChapter?.label || '';
+  const currentLabel = currentChapter?.month || currentChapter?.label || sourceLabel || 'STORY';
+  const chapters = kind === 'table' ? TABLE_STORY_CHAPTERS : JOURNAL_STORY_CHAPTERS;
+  const sourceOrder = sourceChapter ? chapters.findIndex(item => item.id === sourceChapter.id) : -1;
+  const currentOrder = currentChapter ? chapters.findIndex(item => item.id === currentChapter.id) : -1;
+  const isDetour = Boolean(sourceChapter && currentChapter && sourceChapter.id !== currentChapter.id);
+  const sourceIsPastOrCurrent = sourceOrder >= 0 && currentOrder >= 0 && sourceOrder <= currentOrder;
+  return { currentChapter, sourceChapter, question, record, isReview, isDue, isDetour, sourceLabel, currentLabel, sourceOrder, currentOrder, sourceIsPastOrCurrent };
+}
+
 function storyBeatForIndex(kind, chapter, index) {
   if (!chapter || !Array.isArray(chapter.intro) || !chapter.intro.length) return '';
   const groups = kind === 'table' ? TABLE_TOC_GROUPS : TOC_GROUPS;
@@ -14065,9 +14115,7 @@ function renderStoryRoadmap() {
   items.forEach(item => {
     const row = document.createElement('div');
     row.className = 'story-roadmap-item';
-    const currentChapter = item.kind === 'table'
-      ? storyChapterForTableIndex(Runtime.table.currentIndex)
-      : storyChapterForJournalIndex(Runtime.journal.currentQuestionIndex);
+    const currentChapter = storyTimelineChapter(item.kind);
     const isCurrent = Runtime.mode === item.kind && currentChapter?.id === item.chapter.id;
     if (isCurrent) row.classList.add('current');
     const name = document.createElement('span');
@@ -14130,19 +14178,41 @@ function renderStoryPanel(kind, chapter, index = -1) {
   const visible = Runtime.story.enabled && Boolean(chapter);
   panel.hidden = !visible;
   if (!visible) return;
-  const chapterLabel = chapter.month || chapter.label || 'STORY';
-  const database = kind === 'table' ? TABLE_DATABASE : QUESTION_DATABASE;
-  const question = Number.isInteger(index) ? database[index] : null;
-  const isDue = question ? storyQuestionIsDue(kind, Runtime.state, question.id, new Date()) : false;
-  kicker.textContent = isDue
-    ? `佐藤主任からの確認｜${chapterLabel}｜${STORY_COMPANY.name}`
-    : `${chapterLabel}｜${STORY_COMPANY.name}`;
-  title.textContent = chapter.title;
-  const beat = storyBeatForIndex(kind, chapter, index);
-  body.textContent = isDue
-    ? `以前扱ったケースです。結論を覚えているかではなく、今回も問題文の条件から根拠を組み立ててください。\n\n${beat}`
-    : beat;
-  renderStoryLearningStatus(kind, chapter);
+
+  const context = buildStoryPresentationContext(kind, chapter, index);
+  const currentChapter = context.currentChapter || chapter;
+  const currentLabel = context.currentLabel;
+  const sourceLabel = context.sourceLabel || currentLabel;
+
+  if (context.isReview) {
+    kicker.textContent = `${currentLabel}｜佐藤主任からの確認｜${STORY_COMPANY.name}`;
+    title.textContent = context.isDetour
+      ? (context.sourceIsPastOrCurrent ? `振り返り――${sourceLabel}に扱ったケース` : '振り返り――以前の演習で扱ったケース')
+      : `佐藤主任からの確認――${chapter.title}`;
+    body.textContent = context.isDetour
+      ? (context.sourceIsPastOrCurrent
+        ? `${currentLabel}。佐藤主任が、${sourceLabel}に扱ったケースの資料をもう一度あなたの机に置いた。
+「結論を覚えているかではなく、今回も問題文の条件から根拠を組み立ててください」
+過去のケースを、今の自分の視点で解き直す。`
+        : `${currentLabel}。佐藤主任が、以前の演習で扱った別論点の資料をあなたの机に置いた。
+「学んだ順番ではなく、今回も問題文の条件から根拠を組み立ててください」
+一年の流れは戻さず、既習のケースだけを確認する。`)
+      : `佐藤主任が、同じ時期に一度扱ったケースをもう一度確認するよう求めた。
+「結論を覚えているかではなく、今回も問題文の条件から根拠を組み立ててください」
+答えの暗記ではなく、判断の手順を再現する。`;
+  } else if (context.isDetour) {
+    kicker.textContent = `${currentLabel}｜佐藤主任からの追加ケース｜${STORY_COMPANY.name}`;
+    title.textContent = `追加ケース――${chapter.groupTitle}`;
+    body.textContent = `${currentLabel}。佐藤主任が、今月の仕事の途中に一件の資料を差し込んだ。
+「順番ではなく、問題文の条件から判断してください」
+いつもの流れとは別のケースでも、根拠を組み立てる手順は変わらない。`;
+  } else {
+    kicker.textContent = `${currentLabel}｜${STORY_COMPANY.name}`;
+    title.textContent = currentChapter.title;
+    body.textContent = storyBeatForIndex(kind, chapter, index);
+  }
+
+  renderStoryLearningStatus(kind, currentChapter);
   renderStoryRoadmap();
 }
 
@@ -14165,8 +14235,39 @@ function refreshStoryPanels() {
   renderStoryRoadmap();
 }
 
+function journalStoryDraftIsPristine() {
+  const selects = [...document.querySelectorAll('#journal-rows select')];
+  const inputs = [...document.querySelectorAll('#journal-rows input')];
+  return selects.every(select => !String(select.value || '').trim())
+    && inputs.every(input => !String(input.value || '').trim());
+}
+
+function tableStoryDraftIsPristine() {
+  const draft = Runtime.table.draft && typeof Runtime.table.draft === 'object' ? Runtime.table.draft : {};
+  return Object.values(draft).every(value => !String(value ?? '').trim());
+}
+
+function alignCurrentQuestionToStoryRoute() {
+  if (!Runtime.story.enabled) return false;
+  if (Runtime.mode === 'table') {
+    if (Runtime.table.answered || !tableStoryDraftIsPristine()) return false;
+    const index = selectNextStoryIndex('table', -1, Runtime.state, new Date());
+    if (index < 0 || index === Runtime.table.currentIndex) return false;
+    loadTableQuestion(index);
+    scrollToCurrentProblemHeader('table');
+    return true;
+  }
+  if (Runtime.journal.isAnswered || !journalStoryDraftIsPristine()) return false;
+  const index = selectNextStoryIndex('journal', -1, Runtime.state, new Date());
+  if (index < 0 || index === Runtime.journal.currentQuestionIndex) return false;
+  loadQuestion(index);
+  scrollToCurrentProblemHeader('journal');
+  return true;
+}
+
 function toggleStoryMode() {
   Runtime.story.enabled = !Runtime.story.enabled;
+  if (Runtime.story.enabled) alignCurrentQuestionToStoryRoute();
   refreshStoryPanels();
 }
 
@@ -15323,7 +15424,7 @@ function applySelfEval(quality) {
   nextQuestion();
 }
 
-// v10.27: 次の問題へ進んだときは、カテゴリ・難易度・問題番号が見える問題ヘッダーへ戻す。
+// v10.28: 次の問題へ進んだときは、カテゴリ・難易度・問題番号が見える問題ヘッダーへ戻す。
 // 初回起動時は不要な自動スクロールを避けるため、呼び出し側で抑止できる。
 function scrollToCurrentProblemHeader(kind = 'journal') {
   const targetId = kind === 'table' ? 'table-problem-header' : 'journal-problem-header';
