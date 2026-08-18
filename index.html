@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="application-version" content="v10.21">
+  <meta name="application-version" content="v10.25">
   <title>日商簿記3級 総合演習システム（2026年度出題区分対応・仕訳200問＋表問題40問）</title>
   <style>
     :root {
@@ -933,6 +933,7 @@
       color: #334155;
       font-size: .78rem;
       line-height: 1.55;
+      white-space: pre-line;
     }
     .story-safety-note {
       margin: 5px 0 0;
@@ -940,6 +941,62 @@
       font-size: .67rem;
       line-height: 1.45;
     }
+    .story-learning-status {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 7px;
+      color: #1e3a8a;
+      font-size: .68rem;
+      font-weight: 800;
+    }
+    .story-progress-track {
+      height: 5px;
+      margin-top: 4px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #dbeafe;
+    }
+    .story-progress-fill {
+      width: 0;
+      height: 100%;
+      border-radius: inherit;
+      background: #2563eb;
+      transition: width .2s ease;
+    }
+    .story-roadmap {
+      margin: -4px 0 12px;
+      border: 1px solid #dbeafe;
+      border-radius: 8px;
+      background: #f8fbff;
+    }
+    .story-roadmap[hidden] { display: none !important; }
+    .story-roadmap > summary {
+      cursor: pointer;
+      padding: 8px 10px;
+      color: #1e3a8a;
+      font-size: .76rem;
+      font-weight: 800;
+    }
+    .story-roadmap-summary { color: #64748b; font-weight: 700; }
+    .story-roadmap-list {
+      display: grid;
+      gap: 4px;
+      padding: 0 8px 8px;
+    }
+    .story-roadmap-item {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      align-items: center;
+      padding: 6px 7px;
+      border-radius: 6px;
+      background: #fff;
+      font-size: .7rem;
+    }
+    .story-roadmap-item.current { outline: 2px solid #93c5fd; }
+    .story-roadmap-name { min-width: 0; font-weight: 800; color: #334155; }
+    .story-roadmap-state { white-space: nowrap; color: #64748b; font-size: .66rem; }
     @media (max-width: 520px) {
       .story-control { align-items: flex-start; }
       .story-control-note { padding-top: 2px; }
@@ -1840,7 +1897,7 @@
     }
 
 
-    /* ===== v10.0 学習レベル・達成感・2級への橋渡し ===== */
+    /* ===== v10.0 学習レベル・達成感・次の学習へ ===== */
     .learning-growth-card {
       background: var(--card-bg);
       border: 1px solid var(--border-color);
@@ -2158,8 +2215,12 @@
   </div>
   <div class="story-control" id="story-control" aria-label="ストーリーモード">
     <button type="button" class="story-toggle-btn" id="story-mode-toggle" data-action="toggle-story-mode" aria-pressed="false" aria-describedby="story-mode-note">📖 ストーリー OFF</button>
-    <span class="story-control-note visually-hidden" id="story-mode-note">ストーリーモードは演出のみで、問題・採点・復習は通常演習と同じです。各問題は独立しており、復習順によって表示する月や章が前後することがあります。</span>
+    <span class="story-control-note visually-hidden" id="story-mode-note">ストーリーモードでは、復習期限を迎えた問題を優先し、未学習の問題は物語の順に案内します。問題・採点・復習間隔は通常演習と同じです。各問題は独立したケースです。</span>
   </div>
+  <details class="story-roadmap" id="story-roadmap-details" hidden>
+    <summary>青葉商事 経理1年目の進み具合 <span class="story-roadmap-summary" id="story-roadmap-summary"></span></summary>
+    <div class="story-roadmap-list" id="story-roadmap-list"></div>
+  </details>
 
   <main class="practice-area" id="practice-area" aria-label="問題演習">
   <section id="journal-mode-section" class="mode-section">
@@ -2186,11 +2247,13 @@
       <div class="story-kicker" id="journal-story-kicker">STORY</div>
       <div class="story-title" id="journal-story-title"></div>
       <p class="story-body" id="journal-story-body"></p>
-      <p class="story-safety-note">※各問題は独立した演習です。前の問題の金額や取引内容は引き継ぎません。復習では月の表示が前後することがあります。</p>
+      <div class="story-learning-status" id="journal-story-learning-status"><span>この章の進み具合</span><span>0 / 0問</span></div>
+      <div class="story-progress-track" id="journal-story-progress" role="progressbar" aria-label="この章の学習進捗" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="story-progress-fill" id="journal-story-progress-fill"></div></div>
+      <p class="story-safety-note">※各問題は独立したケースです。前の問題の金額や取引内容は引き継ぎません。</p>
     </section>
 
     <div class="statement" id="problem-statement">
-      問題文を読み込んでいます...
+      問題文を読み込んでいます…
     </div>
 
     <div class="tool-bar">
@@ -2217,7 +2280,7 @@
       </table>
     </div>
     <p id="journal-account-selection-help" class="visually-hidden">勘定科目欄を選択して借方・貸方の科目を指定します。選択した科目名は画面上で折り返して表示されます。</p>
-    <div class="journal-cbt-note">同じ勘定科目は、借方・貸方それぞれで1回までです。</div>
+    <div class="journal-cbt-note">同じ勘定科目は、借方・貸方それぞれに1回まで入力できます。</div>
 
     <div class="journal-row-controls">
       <button type="button" class="row-control-btn" id="add-row-btn" data-action="add-journal-row">＋ 行を追加</button>
@@ -2276,7 +2339,7 @@
         </details>
       </div>
 
-      <div style="margin-top: 10px; font-weight: bold; font-size: 0.75rem;" id="eval-instruction">理解度:</div>
+      <div style="margin-top: 10px; font-weight: bold; font-size: 0.75rem;" id="eval-instruction">理解度</div>
       <div class="self-eval-buttons">
         <button type="button" class="eval-btn" id="eval-btn-0" data-action="journal-eval" data-quality="0" disabled>要復習</button>
         <button type="button" class="eval-btn" id="eval-btn-2" data-action="journal-eval" data-quality="2" disabled>少し不安</button>
@@ -2308,12 +2371,14 @@
         <div class="story-kicker" id="table-story-kicker">STORY</div>
         <div class="story-title" id="table-story-title"></div>
         <p class="story-body" id="table-story-body"></p>
-        <p class="story-safety-note">※各問題は独立した演習です。前の問題の数値は引き継ぎません。復習では章の表示が前後することがあります。</p>
+        <div class="story-learning-status" id="table-story-learning-status"><span>この章の進み具合</span><span>0 / 0問</span></div>
+        <div class="story-progress-track" id="table-story-progress" role="progressbar" aria-label="この章の学習進捗" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="story-progress-fill" id="table-story-progress-fill"></div></div>
+        <p class="story-safety-note">※各問題は独立したケースです。前の問題の数値は引き継ぎません。</p>
       </section>
       <div class="table-problem-brief" id="table-problem-statement" aria-label="問題文">
         <section class="table-problem-block" aria-labelledby="table-problem-instruction-title">
           <h2 class="table-problem-block-title" id="table-problem-instruction-title">問題の指示</h2>
-          <p class="table-problem-instruction" id="table-problem-instruction">問題文を読み込んでいます...</p>
+          <p class="table-problem-instruction" id="table-problem-instruction">問題文を読み込んでいます…</p>
         </section>
         <section class="table-problem-block" id="table-problem-givens-block" aria-labelledby="table-problem-givens-title">
           <h2 class="table-problem-block-title" id="table-problem-givens-title">与えられた情報</h2>
@@ -2347,10 +2412,10 @@
         </div>
         <div class="table-correct-answer-box" id="table-correct-answer-box" hidden>
           <div class="table-correct-answer-title">正しい完成表</div>
-          <p class="table-correct-answer-note">不正解だった欄は、正答表で色を付けて示します。精算表は上の区分ボタンで切り替えて確認できます。</p>
+          <p class="table-correct-answer-note">不正解だった欄は、正しい完成表で色を付けて示します。精算表は、上の区分ボタンで切り替えて確認できます。</p>
           <div class="table-correct-answer-wrapper"><div id="table-correct-answer-host"></div></div>
         </div>
-        <div class="table-eval-instruction" id="table-eval-instruction">採点後に理解度を選べます:</div>
+        <div class="table-eval-instruction" id="table-eval-instruction">採点後、理解度を選んでください。</div>
         <div class="self-eval-buttons" id="table-eval-buttons">
           <button type="button" class="eval-btn" id="table-eval-btn-0" data-action="table-eval" data-quality="0" disabled>要復習</button>
           <button type="button" class="eval-btn" id="table-eval-btn-2" data-action="table-eval" data-quality="2" disabled>少し不安</button>
@@ -2358,7 +2423,7 @@
         </div>
         <div class="table-nav-row">
           <button type="button" class="table-secondary-btn" data-action="open-toc">目次へ</button>
-          <button type="button" class="table-primary-btn" id="table-next-btn" data-action="next-table" disabled>理解度を選ぶと次へ</button>
+          <button type="button" class="table-primary-btn" id="table-next-btn" data-action="next-table" disabled>理解度を選んで次へ</button>
         </div>
       </div>
     </div>
@@ -2385,8 +2450,8 @@
           <div class="learning-exp-track" role="progressbar" aria-label="次のレベルまでの進み具合" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="learning-exp-fill" id="learning-overall-bar"></div></div>
           <p class="learning-disclaimer">※教材内の学習指標で、検定の得点・合格判定ではありません。</p>
           <div class="learning-quick-grid learning-quick-grid-primary">
-            <div class="learning-quick-item"><span>学習済み</span><strong id="learning-studied-count">0 / 240問</strong></div>
-            <div class="learning-quick-item"><span>次におすすめ</span><strong id="learning-weakest-topic">—</strong></div>
+            <div class="learning-quick-item"><span>学習した問題</span><strong id="learning-studied-count">0 / 240問</strong></div>
+            <div class="learning-quick-item"><span>重点的に取り組む項目</span><strong id="learning-weakest-topic">—</strong></div>
           </div>
           <details class="learning-topics-details" id="learning-topics-details">
             <summary>項目別レベル・実績</summary>
@@ -2398,13 +2463,13 @@
         <div class="mode-status-panel" id="journal-status-panel">
           <div class="dashboard">
             <div class="dash-card"><div class="title">復習待ち</div><div class="value" id="stat-due">0</div></div>
-            <div class="dash-card"><div class="title">連続学習</div><div class="value streak" id="stat-streak">0 日</div></div>
+            <div class="dash-card"><div class="title">連続学習</div><div class="value streak" id="stat-streak">0日</div></div>
           </div>
         </div>
 
         <div class="mode-status-panel" id="table-status-panel" hidden>
           <div class="dashboard table-dashboard">
-            <div class="dash-card"><div class="title">正解済み</div><div class="value" id="table-stat-solved">0</div></div>
+            <div class="dash-card"><div class="title">正解した問題</div><div class="value" id="table-stat-solved">0</div></div>
             <div class="dash-card"><div class="title">復習待ち</div><div class="value" id="table-stat-due">0</div></div>
           </div>
         </div>
@@ -2438,14 +2503,14 @@
         <details class="exam-readiness-details" id="exam-readiness-details">
           <summary>試験形式と仕上げ方</summary>
           <div class="exam-readiness-body" id="exam-readiness-guide">
-            <p>この教材は、仕訳200問と表・決算40問の反復演習を中心にしています。本試験には、この教材だけでは扱わない形式もあります。受験前に、日本商工会議所の公式サンプル問題も確認してください。</p>
+            <p>この教材は、仕訳200問と表・決算演習40問の反復練習を中心にしています。本試験には、この教材では扱っていない形式もあります。受験前に、日本商工会議所の公式サンプル問題も確認してください。</p>
             <div class="exam-readiness-facts" aria-label="日商簿記3級の公式試験情報">
               <div class="exam-readiness-fact"><strong>60分</strong><span>試験時間</span></div>
               <div class="exam-readiness-fact"><strong>70%以上</strong><span>合格基準</span></div>
-              <div class="exam-readiness-fact"><strong>3題以内</strong><span>出題問題数</span></div>
+              <div class="exam-readiness-fact"><strong>3題以内</strong><span>出題数</span></div>
             </div>
-            <p class="exam-readiness-note"><strong>第2問対策：</strong>日本商工会議所の3級サンプル問題で、第2問の形式も練習してください。2026年公開サンプルには、勘定記入（次期繰越を含む）や固定資産台帳を使う問題があります。</p>
-            <p>ネット試験では、会場からA4サイズの計算・メモ用紙2枚と筆記具が配布され、規定に合う電卓を持ち込めます。受験前に、紙と普段使う電卓を併用して60分通しで解いておくと、単問演習との操作の違いを確認できます。</p>
+            <p class="exam-readiness-note"><strong>第2問の対策：</strong>日本商工会議所の3級サンプル問題で、第2問の形式も練習してください。2026年公開サンプルには、勘定記入（次期繰越を含む）や固定資産台帳を使う問題があります。</p>
+            <p>ネット試験では、会場でA4サイズの計算・メモ用紙2枚と筆記具が配布され、規定に合う電卓を持ち込めます。受験前に、紙と普段使う電卓を併用して60分間通して解いておくと、単問演習との進め方の違いを確認できます。</p>
             <div class="exam-readiness-links">
               <a href="https://www.kentei.ne.jp/bookkeeping/sample/sample_3" target="_blank" rel="noopener noreferrer">日本商工会議所「3級 サンプル問題」を確認</a>
               <a href="https://www.kentei.ne.jp/33013" target="_blank" rel="noopener noreferrer">日本商工会議所「ネット試験について」を確認</a>
@@ -2453,7 +2518,7 @@
           </div>
         </details>
         <div class="next-stage-card ready" id="learning-next-stage-card" hidden>
-          <div class="next-stage-kicker" id="learning-next-stage-kicker">2級への橋渡し</div>
+          <div class="next-stage-kicker" id="learning-next-stage-kicker">次の学習へ</div>
           <div class="next-stage-title" id="learning-next-stage-title">次のステージ：日商簿記2級</div>
           <div class="next-stage-status" id="learning-next-stage-status" hidden></div>
           <div class="next-stage-body" id="learning-next-stage-body" hidden></div>
@@ -2529,8 +2594,8 @@
     </div>
   </div>
 
-  <span class="visually-hidden" id="calc-drag-help">電卓上部の移動ボタンをドラッグして位置を変えられます。キーボードでは矢印キーで移動できます。</span>
-  <div class="calc-learning-note" id="calc-learning-note" hidden>上部の「⠿ 電卓」をドラッグすると移動できます。キーボードでは移動ボタンにフォーカスして矢印キーで動かせます。ACは計算全体、Cは現在入力中の数値を消去します。％は表示中の値を100で割ります。</div>
+  <span class="visually-hidden" id="calc-drag-help">電卓上部の移動ハンドルをドラッグして位置を変えられます。キーボードでは、移動ハンドルにフォーカスして矢印キーで動かせます。</span>
+  <div class="calc-learning-note" id="calc-learning-note" hidden>上部の「⠿ 電卓」をドラッグすると移動できます。キーボードでは、移動ハンドルにフォーカスして矢印キーで動かせます。ACは計算全体、Cは現在入力中の数値を消去します。％は表示中の値を100で割ります。</div>
 </div>
 </div>
 
@@ -2716,8 +2781,8 @@ const QUESTION_DATABASE = [
   {
     "id": "Q005",
     "category": "キャッシュレス決済",
-    "statement": "一般顧客に対して商品 ￥120,000 を販売し、代金はクレジットカードで決済された。信販会社への手数料（販売代金の 2%）は販売時に計上する。",
-    "hint": "信販会社への未回収金は「クレジット売掛金」、控除分（120,000×2%＝2,400円）は「支払手数料」です。",
+    "statement": "一般顧客に対して商品 ￥120,000 を販売し、代金はクレジットカードで決済された。信販会社への手数料（販売代金の 2％）は販売時に計上する。",
+    "hint": "信販会社への未回収金は「クレジット売掛金」、控除分（120,000×2％＝2,400円）は「支払手数料」です。",
     "options": [
       "クレジット売掛金",
       "支払手数料",
@@ -4212,7 +4277,7 @@ const QUESTION_DATABASE = [
     "id": "Q065",
     "category": "減価償却（期中取得・月割り）",
     "statement": "当期11月1日に取得した備品 ￥1,200,000（耐用年数 5年、残存価額 ゼロ）について、決算（3月31日）で定額法・間接法により月割り減価償却を行う。",
-    "hint": "年額 240,000円（1,200,000÷5）のうち当期使用分は5ヶ月（11〜3月）です。",
+    "hint": "年額 240,000円（1,200,000÷5）のうち当期使用分は5か月（11〜3月）です。",
     "options": [
       "減価償却費",
       "備品減価償却累計額"
@@ -4646,8 +4711,8 @@ const QUESTION_DATABASE = [
   {
     "id": "Q081",
     "category": "貸倒引当金の設定（差額補充法）",
-    "statement": "決算において、売上債権残高 ￥2,000,000 に対し 2% の貸倒引当金を繰り入れる。設定前の貸倒引当金残高は ￥15,000 である。",
-    "hint": "目標額 40,000円（2,000,000×2%）と既存残高 15,000円の差額を追加繰入れします。",
+    "statement": "決算において、売上債権残高 ￥2,000,000 に対し 2％の貸倒引当金を繰り入れる。設定前の貸倒引当金残高は ￥15,000 である。",
+    "hint": "目標額 40,000円（2,000,000×2％）と既存残高 15,000円の差額を追加で繰り入れます。",
     "options": [
       "貸倒引当金繰入",
       "貸倒引当金"
@@ -4669,7 +4734,7 @@ const QUESTION_DATABASE = [
   {
     "id": "Q082",
     "category": "貸倒引当金の戻入",
-    "statement": "決算において、売上債権残高 ￥1,000,000 に対し 2% の貸倒引当金を計上する。設定前の貸倒引当金残高は ￥30,000 である。",
+    "statement": "決算において、売上債権残高 ￥1,000,000 に対し 2％の貸倒引当金を計上する。設定前の貸倒引当金残高は ￥30,000 である。",
     "hint": "目標額 20,000円に対し既存残高が多いため、超過分（10,000円）を取り崩します。",
     "options": [
       "貸倒引当金",
@@ -4812,7 +4877,7 @@ const QUESTION_DATABASE = [
   {
     "id": "Q088",
     "category": "貸倒引当金・新規設定",
-    "statement": "創業初年度の決算において、売上債権 ￥500,000 に対し 2% の貸倒引当金を設定する。",
+    "statement": "創業初年度の決算において、売上債権 ￥500,000 に対し 2％の貸倒引当金を設定する。",
     "hint": "残高ゼロからの設定。全額（10,000円）を繰り入れます。",
     "options": [
       "貸倒引当金繰入",
@@ -4835,7 +4900,7 @@ const QUESTION_DATABASE = [
   {
     "id": "Q089",
     "category": "貸倒引当金・決算整理",
-    "statement": "決算にあたり、売上債権残高 ￥3,000,000 に対し 2% の貸倒引当金を差額補充法により設定する。なお、設定前の貸倒引当金残高は ￥40,000 である。",
+    "statement": "決算にあたり、売上債権残高 ￥3,000,000 に対し 2％の貸倒引当金を差額補充法により設定する。なお、設定前の貸倒引当金残高は ￥40,000 である。",
     "hint": "目標額 60,000円に対し残高 40,000円の差額 20,000円を追加補充します。",
     "options": [
       "貸倒引当金繰入",
@@ -4858,7 +4923,7 @@ const QUESTION_DATABASE = [
   {
     "id": "Q090",
     "category": "前払費用の計上（決算）",
-    "statement": "決算（3月31日）において、毎年12月1日に支払っている向こう1年分の保険料 ￥120,000 のうち、未経過分（4月〜11月の8ヶ月分）を繰延処理する。",
+    "statement": "決算（3月31日）において、毎年12月1日に支払っている向こう1年分の保険料 ￥120,000 のうち、未経過分（4月〜11月の8か月分）を繰延処理する。",
     "hint": "未経過分 80,000円（120,000×8/12）を「前払保険料（資産）」へ繰り延べます。",
     "options": [
       "前払保険料",
@@ -4904,7 +4969,7 @@ const QUESTION_DATABASE = [
   {
     "id": "Q092",
     "category": "未払費用の計上（決算）",
-    "statement": "決算日（3月31日）において、借入金利息 ￥60,000（年利 2%、支払期日は5月末）のうち、当期経過分（2ヶ月分 ￥10,000）を未払計上する。",
+    "statement": "決算日（3月31日）において、借入金利息 ￥60,000（年利 2％、支払期日は5月末）のうち、当期経過分（2か月分 ￥10,000）を未払計上する。",
     "hint": "当期発生済の利息 10,000円を「未払利息（負債）」として計上します。",
     "options": [
       "支払利息",
@@ -4927,7 +4992,7 @@ const QUESTION_DATABASE = [
   {
     "id": "Q093",
     "category": "前受収益の計上（決算）",
-    "statement": "決算において、10月1日に受け取った向こう1年分の家賃 ￥240,000 のうち、次期対応分（6ヶ月分 ￥120,000）を繰り延べる。",
+    "statement": "決算において、10月1日に受け取った向こう1年分の家賃 ￥240,000 のうち、次期対応分（6か月分 ￥120,000）を繰り延べる。",
     "hint": "受取済収益のうち次期対応分を「前受家賃（負債）」へ繰り延べます。",
     "options": [
       "受取家賃",
@@ -6174,8 +6239,8 @@ const QUESTION_DATABASE = [
   {
     "id": "Q144",
     "category": "売掛金の貸倒見積り（補足）",
-    "statement": "決算において、売掛金残高に対する貸倒引当金の設定を行った（売掛金 ￥1,500,000 に対し 3%、設定前残高ゼロ）。",
-    "hint": "1,500,000 × 3% ＝ 45,000円を新規設定します。",
+    "statement": "決算において、売掛金残高に対する貸倒引当金の設定を行った（売掛金 ￥1,500,000 に対し 3％、設定前残高ゼロ）。",
+    "hint": "1,500,000 × 3％＝ 45,000円を新規設定します。",
     "options": [
       "貸倒引当金繰入",
       "貸倒引当金"
@@ -6243,7 +6308,7 @@ const QUESTION_DATABASE = [
   {
     "id": "Q147",
     "category": "地代の前払い繰延べ",
-    "statement": "期中に支払っていた地代 ￥120,000 のうち、来期分（2ヶ月分 ￥20,000）を前払費用として繰り延べた。",
+    "statement": "期中に支払っていた地代 ￥120,000 のうち、来期分（2か月分 ￥20,000）を前払費用として繰り延べた。",
     "hint": "当期支払額のうち次期対応分を「前払地代（資産）」へ振り替えます。",
     "options": [
       "前払地代",
@@ -6500,7 +6565,7 @@ const QUESTION_DATABASE = [
   {
     "id": "Q158",
     "category": "貸倒引当金の設定（差額補充法）",
-    "statement": "決算において、売掛金残高 ￥1,500,000 に対して 3% の貸倒引当金を設定する。設定前の貸倒引当金残高は ￥10,000 である。",
+    "statement": "決算において、売掛金残高 ￥1,500,000 に対して 3％の貸倒引当金を設定する。設定前の貸倒引当金残高は ￥10,000 である。",
     "hint": "必要額は 45,000円。既存残高 10,000円との差額 35,000円を繰り入れます。",
     "options": [
       "貸倒引当金繰入",
@@ -6523,7 +6588,7 @@ const QUESTION_DATABASE = [
   {
     "id": "Q159",
     "category": "消費税・仕入時の処理（税抜方式）",
-    "statement": "商品 ￥110,000（税込、消費税率10%）を現金で仕入れた。消費税は税抜方式で処理する。",
+    "statement": "商品 ￥110,000（税込、消費税率10％）を現金で仕入れた。消費税は税抜方式で処理する。",
     "hint": "税抜本体価格は 100,000円、消費税は 10,000円です。消費税部分は「仮払消費税」とします。",
     "options": [
       "仕入",
@@ -6552,7 +6617,7 @@ const QUESTION_DATABASE = [
   {
     "id": "Q160",
     "category": "保険料の前払い（再確認）",
-    "statement": "決算にあたり、向こう1年分の保険料 ￥120,000 を期中に全額「支払保険料」として処理していたため、未経過分（4ヶ月分 ￥40,000）を繰り延べた。",
+    "statement": "決算にあたり、向こう1年分の保険料 ￥120,000 を期中に全額「支払保険料」として処理していたため、未経過分（4か月分 ￥40,000）を繰り延べた。",
     "hint": "未経過分 40,000円を「前払保険料（資産）」へ振り替えます。",
     "options": [
       "前払保険料",
@@ -10973,9 +11038,10 @@ const TOC_GROUPS = [
   { title: "総合演習", start: 161, end: 200 }
 ];
 
-// ===== v10.21 Story Layer（表示専用・学習者向けUI文言を校閲） =====
+// ===== v10.25 Story Layer（表示専用・企業ドラマ／学習導線統合） =====
 // Story Layerは表示専用。正解・金額・仕訳・採点・SRS・保存状態を持たない。
 // 既存240問は連続した1社の帳簿ではないため、各問題を独立ケースとして扱う。
+// 特定作家の文体は模倣せず、企業ドラマに一般的な「対立・判断・伏線・成長」の構造だけを採用する。
 const STORY_COMPANY = Object.freeze({
   name: '青葉商事株式会社',
   fictional: true,
@@ -10983,28 +11049,101 @@ const STORY_COMPANY = Object.freeze({
 });
 
 const JOURNAL_STORY_CHAPTERS = Object.freeze([
-  { id:'J01', month:'4月', groupTitle:'商品売買・手付金・諸掛り', title:'初仕事――会社の数字を預かる', intro:'青葉商事の経理担当として迎えた最初の月。まず任されたのは、日々の取引を正しく記録する仕事です。一つひとつの仕訳が会社の数字をつくる――そんな第一歩から始めます。' },
-  { id:'J02', month:'5月', groupTitle:'現金・預金・小口現金', title:'お金の流れを追える人になる', intro:'仕事に少し慣れ、現金や預金の動きも任されるようになりました。入出金の理由を丁寧にたどり、帳簿の数字が何を表しているのかを見抜いていきます。' },
-  { id:'J03', month:'6月', groupTitle:'手形・電子記録債権債務', title:'取引先との決済が一段複雑に', intro:'取引が広がるにつれ、決済方法も増えてきました。似た名前に惑わされず、「いつ債権・債務が生まれ、いつ決済されたのか」を読み分ける力が試されます。' },
-  { id:'J04', month:'7月', groupTitle:'固定資産・減価償却', title:'会社を支える資産を任される', intro:'今度は、会社が長く使う資産の記録です。取得・決算・売却など、同じ資産でも時点によって処理は変わります。経理担当として、時間の流れまで数字に落とし込みます。' },
-  { id:'J05', month:'8月', groupTitle:'貸倒れ・貸倒引当金', title:'順調な売上の裏にあるリスク', intro:'売上を記録するだけでは経理の仕事は終わりません。代金を回収できない可能性にも目を向けます。問題文の時点を見極め、債権管理の考え方を身につけます。' },
-  { id:'J06', month:'9月', groupTitle:'経過勘定・消耗品', title:'数字を「いつのものか」で見る', intro:'半年を越え、決算を意識する場面が増えてきました。支払日や入金日だけでなく、費用・収益がどの期間に属するのかを見抜く視点を磨きます。' },
-  { id:'J07', month:'10月', groupTitle:'給与・社会保険・税金', title:'従業員を支える数字に向き合う', intro:'給与や社会保険、税金など、会社と従業員をつなぐ数字を扱います。支給・控除・会社負担・納付を切り分け、正確に整理する力を養います。' },
-  { id:'J08', month:'11月', groupTitle:'株式会社の純資産・配当', title:'経営に近い数字が見えてくる', intro:'経理担当として扱う範囲が、会社の資本や利益の処分へ広がります。決議・払込み・配当などの時点を読み分け、会社の土台となる数字を整理します。' },
-  { id:'J09', month:'12月', groupTitle:'小口現金・貯蔵品・借入金', title:'年末――散らばる数字を整える', intro:'年末を迎え、資金・物品・借入れなど確認すべきものが増えてきました。名称だけに頼らず、取引の意味を一つずつ整理して、年明けへ備えます。' },
-  { id:'J10', month:'1月', groupTitle:'決算整理・仮勘定・諸費用収益', title:'決算の足音が近づく', intro:'年度末まで残りわずか。仮のまま残った項目や、決算で調整すべき項目を整理していきます。問題文の時点・残高・追加条件を切り分ける力が、ここで効いてきます。' },
-  { id:'J11', month:'2月', groupTitle:'商品売買・消費税 追加演習', title:'決算前の最終トレーニング', intro:'これまで身につけた処理を、違う条件でも使えるか確かめる月です。前の問題には頼らず、その場の条件だけで判断する力を仕上げます。' },
-  { id:'J12', month:'3月', groupTitle:'総合演習', title:'年度末――一年分の力を試す', intro:'いよいよ総仕上げ。複数の論点が同時に現れても、条件を分解すれば道筋は見えてきます。青葉商事の経理担当として歩んだ一年を、総合問題で締めくくります。' }
-].map(Object.freeze));
+  { id:'J01', month:'4月', groupTitle:'商品売買・手付金・諸掛り', title:'初仕事――会社の数字を預かる', intro:[
+    '4月1日。経理主任の佐藤真琴は、使い込まれた青いファイルをあなたの机に置いた。\n「数字を入力するだけが経理ではありません。数字の向こうで、誰が何をしたのか。それが分かる人になってください」\nそして来年3月の決算には、あなたにも最後まで参加してもらうと告げた。青葉商事での一年が始まる。',
+    '営業の高橋亮が、伝票の束を抱えて経理へ駆け込んできた。\n「これ、今日中にお願いできますか」\n佐藤は急かされても表情を変えない。「早く処理することと、正しく処理することは別です」――あなたは、取引を一つずつ読み解き始める。',
+    '月末。最初はただの数字に見えた伝票から、商品・代金・取引先の動きが少しずつ見えるようになってきた。佐藤は青いファイルを閉じる。\n「次は、お金そのものを任せます」\n翌朝、経理室では現金と帳簿を照らし合わせる作業が待っていた。'
+  ]},
+  { id:'J02', month:'5月', groupTitle:'現金・預金・小口現金', title:'数字が合わない朝', intro:[
+    '朝一番、佐藤が現金出納帳と手元の記録を並べた。\n「合っているはず、では締められません」\n現金、預金、小口現金。会社のお金は毎日動く。あなたは、数字が合わないときほど慌てず、証拠を一つずつたどることを覚えていく。',
+    '高橋が領収書を一枚差し出した。「細かい金額ですし、これくらいなら――」\n佐藤が言葉を遮る。「金額の大小で、確認するかどうかは決めません」\n経理が守るのは数字そのものではなく、数字を信頼できる状態なのだと、あなたは気づき始める。',
+    '月末の確認を終えると、佐藤は小さくうなずいた。以前ならすぐ質問していた場面でも、自分で記録をたどれるようになっている。\nそのとき高橋が新しい支払条件の書類を持ってきた。現金では終わらない取引が、次に待っていた。'
+  ]},
+  { id:'J03', month:'6月', groupTitle:'手形・電子記録債権債務', title:'「売れた」と「回収した」は違う', intro:[
+    '営業会議のあと、高橋が言った。\n「売れたんだから、ひとまず安心ですよね」\n佐藤は首を横に振る。「売れたことと、代金を回収したことは同じではありません」\nあなたは、債権が生まれる時点と決済される時点を追い始める。',
+    '取引先との関係を大切にしたい営業と、記録を曖昧にできない経理。同じ取引を見ても、立場によって気にする点が違う。高橋が尋ねる。\n「経理って、そこまで見るんですか？」\nあなたは伝票ではなく、取引の時間の流れを説明しようとする。',
+    '決済の流れが見えるようになった頃、倉庫担当から古い営業車の処分について相談が入った。\n高橋は「買ったときの金額を見ればいいですよね」と言う。\n佐藤はあなたを見るだけで、何も答えなかった。'
+  ]},
+  { id:'J04', month:'7月', groupTitle:'固定資産・減価償却', title:'買った値段では見えないもの', intro:[
+    '長く使ってきた営業車の資料が机に置かれた。買ったときの金額と、いま帳簿に残る価値は同じではない。\n「時間も、数字に残ります」\n佐藤の言葉を手がかりに、あなたは取得から減価償却、売却までを一つの流れとして見る。',
+    '高橋は営業車を見ながら少し寂しそうに笑った。「これで何軒も新しい取引先を回ったんです」\n経理では資産として処理するものにも、現場には思い出がある。だからこそ感情と記録を混同せず、事実を正確に残す必要がある。',
+    '資産の処理を終えた日の夕方、高橋が珍しく低い声で佐藤を呼んだ。\n「少し、相談があります。入金が遅れている得意先があって……」\n佐藤の表情が変わった。次に見るのは、売上の先にある回収だった。'
+  ]},
+  { id:'J05', month:'8月', groupTitle:'貸倒れ・貸倒引当金', title:'数字と人情のあいだ', intro:[
+    '営業の高橋は言った。\n「昔から付き合いのある会社です。きっと払ってくれます」\n佐藤は入金状況を見たまま答える。「信じることと、備えることは両立します」\nあなたは、売上の喜びだけでは見えない回収リスクと向き合う。',
+    '営業には営業の事情があり、経理には経理の責任がある。どちらか一方が正しいわけではない。必要なのは、感情ではなく確認できる事実から判断することだった。\n佐藤があなたに尋ねる。「この数字から、何が言えますか？」',
+    '結論を急がず、必要な情報を分けて考えられるようになったあなたを、高橋も以前とは違う目で見るようになった。\nその夜、佐藤は保険契約の書類を机に置く。「次は、お金が動いた日だけを見ていては解けません」'
+  ]},
+  { id:'J06', month:'9月', groupTitle:'経過勘定・消耗品', title:'「いつの数字か」を見抜く', intro:[
+    '支払日は一つでも、その支払いがどの期間に対応するかは別の問題だ。佐藤は契約書の日付を指した。\n「現金が動いた日だけで会社の成績を考えると、見誤ります」\nあなたは、費用と収益を時間の軸で見る感覚を身につけていく。',
+    '机の上には請求書、契約書、消耗品の記録が並ぶ。高橋が「払ったんだから、もう終わりじゃないんですか」と首をかしげる。\nあなたは以前の自分を思い出しながら、支払日と費用になる時期が必ずしも同じではないことを説明する。',
+    '半年が過ぎた。佐藤から答えを聞く回数は、確実に減っている。\nその帰り際、人事担当から翌月の給与資料について連絡が入った。佐藤は一言だけ告げた。\n「給与は、間違えたら数字だけの問題では済みません」'
+  ]},
+  { id:'J07', month:'10月', groupTitle:'給与・社会保険・税金', title:'数字の向こうに生活がある', intro:[
+    '給与日の朝。支給額、控除、会社負担、納付。似た数字が並ぶ資料を前に、佐藤はいつも以上に慎重だった。\n「この一行の向こうには、従業員の生活があります」\n正確さが求められる理由を、あなたは初めて重く感じる。',
+    '従業員から問い合わせが入る。高橋も「給与明細って、こんなに項目があるんですね」と驚いている。\nあなたは資料を見直し、誰のお金を会社が預かり、何を会社が負担しているのかを切り分ける。数字の意味を説明する責任も、経理の仕事だった。',
+    '給与処理を終えた夕方、内線が鳴った。相手は藤田社長だった。\n「少し会議室に来てもらえるかな」\n高橋が小声で「何かやりました？」と聞く。あなた自身にも心当たりはない。社長が見せたのは、会社の利益に関する資料だった。'
+  ]},
+  { id:'J08', month:'11月', groupTitle:'株式会社の純資産・配当', title:'社長が見ている数字', intro:[
+    '会議室で藤田社長が資料を差し出した。\n「利益が出たことと、自由に使えるお金があることは同じだろうか」\n質問の意図を考えるあなたに、佐藤は助け舟を出さない。資本金、利益、配当――数字が経営判断につながる場面だった。',
+    '社長は答えを急がない。「数字は結果だけじゃない。会社が何を選んできたかも残る」\nあなたは、資本と利益、決議と支払いを分けて考える。4月には遠く感じた経営の話が、少しずつ自分の仕事につながり始める。',
+    '会議を出ると、高橋が待っていた。「社長に何を聞かれたんです？」\nあなたが笑ってごまかすと、佐藤が年末確認の予定表を渡してきた。\n「浮かれている暇はありません。12月は、散らばった数字を全部拾います」'
+  ]},
+  { id:'J09', month:'12月', groupTitle:'小口現金・貯蔵品・借入金', title:'年末――見落としを残さない', intro:[
+    '年内最終営業日が近づき、経理の机には確認待ちの書類が積み上がっていた。現金、物品、借入れ。派手ではないが、どれも残せない。\n佐藤は言う。「決算で困るのは、大きなミスより、確認しなかった小さな違和感です」',
+    '書類を追ううち、あなたは自分から確認すべき点を見つけるようになった。佐藤に聞く前に、契約や記録を確かめる。\n「よく気づきましたね」\nその一言が、4月の頃には想像できなかったほど、うれしかった。',
+    '仕事納めの夕方。みんなが帰ったあと、佐藤が来年の決算スケジュールを机に置いた。\n「ここからは、個別の仕訳だけ分かっていても終わりません」\n青いファイルの表紙に、3月31日という日付が書き込まれた。'
+  ]},
+  { id:'J10', month:'1月', groupTitle:'決算整理・仮勘定・諸費用収益', title:'決算まで、あと二か月', intro:[
+    '年が明けると、経理室の空気が変わった。仮のまま残った項目、期間をまたぐ費用や収益、決算で整理すべき数字。\n佐藤は決算予定表を指す。「ここからは、一つの仕訳だけでなく、その先まで考えてください」',
+    '以前なら佐藤が先に確認箇所を教えてくれた。今は違う。\n「まず、あなたはどう考えますか？」\n答えを言ってくれないことが、少し怖い。しかしそれは、任され始めた証拠でもあった。',
+    '決算整理の考え方がつながり始めると、佐藤は青いファイルをあなたの机に置く時間を増やした。\n「2月は私からのヒントを減らします」\n冗談だと思ったが、佐藤は笑っていなかった。'
+  ]},
+  { id:'J11', month:'2月', groupTitle:'商品売買・消費税 追加演習', title:'答えを言わない上司', intro:[
+    '2月。佐藤は本当に答えを言わなくなった。質問しても返ってくるのは「問題文には何とありますか」「どこまで確認しましたか」という問いだけだ。\nあなたは、正解を教わるのではなく、自分で根拠を探すようになる。',
+    '高橋が経理へ来て、以前のように「これ、処理しておいてください」と言いかけて止まった。\n「……必要な資料、ほかにあります？」\n営業と経理のやり取りも、一年前とは少し変わっていた。あなたが数字の理由を説明してきた結果だった。',
+    '月末。佐藤が、4月1日に渡した青いファイルをあなたへ差し出した。\n「これは、もう私の机に置いておく必要はありません」\n表紙には決算日。あと一か月。次にファイルを閉じるのは、あなた自身だ。'
+  ]},
+  { id:'J12', month:'3月', groupTitle:'総合演習', title:'年度末――自分の判断で進む', intro:[
+    '3月。佐藤は青いファイルを開き、あなたの前に置いた。\n「4月のあなたは、分からないたびに私を見ていました」\n少し間を置いて続ける。「今日は、まず自分で判断してください」\n総仕上げが始まる。',
+    '複数の条件が重なるほど、焦ると見落とす。あなたは取引を分け、時点を確認し、根拠を一つずつ積み上げる。高橋も藤田社長も、それぞれの場所で年度末を迎えている。経理の仕事は、その一年を数字として残すことだった。',
+    '仕訳の総仕上げを終えたあなたに、佐藤が決算資料を渡した。\n「ここまでが記録です。ここから、その数字を一つの形にまとめます」\nそして静かに言った。\n「では、始めましょう。あなたの初めての決算です」'
+  ]}
+].map(chapter => Object.freeze({ ...chapter, intro: Object.freeze(chapter.intro.slice()) })));
 
 const TABLE_STORY_CHAPTERS = Object.freeze([
-  { id:'T01', label:'決算編 1', groupTitle:'残高試算表', title:'決算室へ――まず残高をつかむ', intro:'仕訳で積み上げてきた数字を、今度は表で確認します。まずは各勘定の残高を見渡し、決算作業の出発点を整えます。' },
-  { id:'T02', label:'決算編 2', groupTitle:'合計試算表', title:'数字の動きを集計で確かめる', intro:'残高だけでなく、借方・貸方の動きも追います。表の構造を読み、どの数字をどこへ集計するのかを落ち着いて見極めます。' },
-  { id:'T03', label:'決算編 3', groupTitle:'8桁精算表', title:'決算整理――数字を完成形へ近づける', intro:'試算表の数字に決算整理を反映し、損益計算書と貸借対照表へつなげます。ばらばらに見えた処理が一つの流れになる瞬間です。' },
-  { id:'T04', label:'決算編 4', groupTitle:'決算整理後残高試算表', title:'整理後の数字をもう一度確かめる', intro:'決算整理を反映した後の残高を確認します。ここでは「整理前」と「整理後」を混同せず、財務諸表へ進む前の数字を整えます。' },
-  { id:'T05', label:'決算編 5', groupTitle:'損益計算書', title:'一年の成果を一枚にまとめる', intro:'収益と費用を整理し、一定期間の経営成績を表にします。仕訳で学んだ一つひとつの処理が、会社の成果としてまとまっていきます。' },
-  { id:'T06', label:'決算編 6', groupTitle:'貸借対照表', title:'決算完了――会社の姿を数字で示す', intro:'最後は、決算日時点の資産・負債・純資産を一つの表にまとめます。問題ごとの数値は独立していますが、簿記全体の流れを意識して完成させましょう。' }
-].map(Object.freeze));
+  { id:'T01', label:'最終章 1/6', groupTitle:'残高試算表', title:'初めての決算', intro:[
+    '3月31日、朝。佐藤が決算スケジュールを机に置いた。\n「今日は、私から先に答えは言いません。まず残高をつかんでください」\n仕訳で積み上げてきた数字を、今度は会社全体を見渡す形にまとめていく。',
+    '数字が並ぶほど、どこを見るべきか迷う。しかし一つずつ残高を追えば、全体像は見えてくる。佐藤は何も言わず、あなたの確認手順を見ている。沈黙が、以前より重く感じなくなっていた。',
+    '残高を整理したあなたに、佐藤が次の資料を重ねる。\n「残高だけでは見えない動きもあります」\n決算はまだ入口だ。次は、借方と貸方の動きを集計して確かめる。'
+  ]},
+  { id:'T02', label:'最終章 2/6', groupTitle:'合計試算表', title:'初めての決算', intro:[
+    '決算作業は、数字を転記するだけでは終わらない。どこから来た数字なのかを追えることが大切だ。\n高橋が経理室をのぞき、「まだ終わらないんですか」と笑う。佐藤は「ここからが決算です」とだけ返した。',
+    '集計の途中で迷っても、あなたはすぐ佐藤を見ない。借方・貸方の動きを自分でたどり直す。4月にはできなかった確認の仕方が、いまは自然にできている。',
+    '佐藤が精算表の資料を出す。\n「次は、決算整理を反映します。数字を完成形へ近づけてください」\nここから、個別に学んだ論点が一つの流れにつながり始める。'
+  ]},
+  { id:'T03', label:'最終章 3/6', groupTitle:'8桁精算表', title:'初めての決算', intro:[
+    '試算表の数字に決算整理を反映し、損益と貸借へつなぐ。ばらばらだった知識が、一枚の表の上で同時に動き始める。\n佐藤は言う。「全部を一度に見ようとしないでください。列ごとに意味を追えばいい」',
+    '経理室の時計だけが進んでいく。焦りそうになったとき、あなたは4月の言葉を思い出す――数字の向こうで何が起きたのかを見る。表になっても、その原則は変わらない。',
+    '精算表を終えると、佐藤が初めて笑った。\n「ここまで来れば、決算書はもう遠くありません」\nだが、整理後の数字をもう一度確認する仕事が残っている。'
+  ]},
+  { id:'T04', label:'最終章 4/6', groupTitle:'決算整理後残高試算表', title:'初めての決算', intro:[
+    '決算整理を反映した後の数字を確認する。整理前と整理後を混同しないこと――地味だが、最後の帳票へ進むための重要な確認だ。佐藤はあなたに任せ、別の作業へ移った。',
+    '気づけば、佐藤が隣にいなくても手が止まらなくなっていた。分からなければ資料へ戻る。数字が合わなければ原因を探す。それが当たり前になっている。',
+    '確認を終えた頃、藤田社長が経理室へ顔を出した。\n「今年の数字、見えてきた？」\n佐藤ではなく、社長の視線があなたに向いている。次は一年の成果を損益計算書にまとめる。'
+  ]},
+  { id:'T05', label:'最終章 5/6', groupTitle:'損益計算書', title:'初めての決算', intro:[
+    '収益と費用を整理し、一年間の経営成績を形にする。11月に社長から聞かれた言葉がよみがえる――利益が出たことと、自由に使えるお金があることは同じなのか。いま、その問いの意味が以前より深く分かる。',
+    '高橋が完成途中の資料を見て言った。「営業の一年も、ここに出るんですね」\nあなたはうなずく。経理の数字は、経理だけのものではない。営業も、従業員も、会社の判断も、一年の積み重ねとして表れる。',
+    '損益計算書を確認した佐藤が、最後の資料をあなたへ渡す。\n「あと一枚です」\n資産、負債、純資産。決算日時点の会社の姿をまとめる貸借対照表が残っている。'
+  ]},
+  { id:'T06', label:'最終章 6/6', groupTitle:'貸借対照表', title:'初めての決算', intro:[
+    '最後は貸借対照表。会社が持つもの、返すべきもの、積み上げてきたものを決算日時点で一つの表にする。\n佐藤は何も言わない。あなたも、もう答えを待たない。',
+    '数字を確認しながら、青いファイルの最初のページを思い出す。伝票一枚から始まった一年が、いま会社全体を見るための知識につながっている。仕訳で積み上げた考え方が、最後の一枚へ集まっていく。',
+    '最後の確認を終える。佐藤は青いファイルを閉じ、あなたへ渡した。\n「4月のあなたなら、ここまで来られたと思いますか？」\nそこへ藤田社長が顔を出す。「来期も、会社の数字をよろしく」\nあなたの初めての決算が終わった。'
+  ]}
+].map(chapter => Object.freeze({ ...chapter, intro: Object.freeze(chapter.intro.slice()) })));
+
 
 function renderTableOfContents() {
   const host = document.getElementById('toc-groups');
@@ -11156,7 +11295,7 @@ function switchMode(mode, shouldScroll=true) {
   if (Runtime.mode === 'table') {
     updateTableDashboard();
     renderTableToc();
-    if (Runtime.table.currentIndex < 0 || !TABLE_DATABASE[Runtime.table.currentIndex]) loadTableQuestion(getNextTableQuestionIndex());
+    if (Runtime.table.currentIndex < 0 || !TABLE_DATABASE[Runtime.table.currentIndex]) loadTableQuestion(Runtime.story.enabled ? getNextStoryTableQuestionIndex() : getNextTableQuestionIndex());
   }
   // 非表示中は入力欄の実幅を取得できないため、モード表示後に全金額欄を再計測する。
   scheduleAllAmountRefits();
@@ -11193,7 +11332,8 @@ const UPDATED_FROM_V7_0_IDS = new Set(["Q012","Q024","Q029","Q036","Q039","Q052"
 // v7.1→v7.2で問題文の取引時点・減価償却方法を明確化した問題ID。
 // 正答形式は同じでも、復習時に旧文面と混在しないよう当該問題の旧履歴だけを引き継がない。
 const UPDATED_FROM_V7_1_IDS = new Set(["Q065", "Q179"]);
-const COMPATIBLE_JOURNAL_BANK_VERSIONS = new Set(['v7.0', 'v7.1', 'v7.2']);
+// v7.2→v7.3は表記・文体の校閲のみ。問題条件・正答は不変のため旧履歴を破棄しない。
+const COMPATIBLE_JOURNAL_BANK_VERSIONS = new Set(['v7.0', 'v7.1', 'v7.2', 'v7.3']);
 const UPDATED_FROM_TABLE_V8_4_IDS = new Set(['T015','T016','T017','T018','T019','T020','T021','T022','T023']);
 const COMPATIBLE_TABLE_BANK_VERSIONS = new Set(['v8.3', 'v8.4', 'v8.5']);
 
@@ -11245,7 +11385,7 @@ const ACHIEVEMENT_DEFINITIONS = Object.freeze([
   Object.freeze({ id:'table-10', label:'表問題10問', check:snapshot => snapshot.tableAttempted >= 10 }),
   Object.freeze({ id:'table-40', label:'表問題40問一巡', check:snapshot => snapshot.tableAttempted >= 40 }),
   Object.freeze({ id:'streak-7', label:'7日連続学習', check:snapshot => snapshot.streak >= 7 }),
-  Object.freeze({ id:'all-240', label:'全240問に学習履歴', check:snapshot => snapshot.totalStudied >= 240 }),
+  Object.freeze({ id:'all-240', label:'全240問を学習', check:snapshot => snapshot.totalStudied >= 240 }),
   Object.freeze({ id:'overall-10', label:'総合Lv.10', check:snapshot => snapshot.overall.level >= 10 }),
   Object.freeze({ id:'overall-20', label:'総合Lv.20', check:snapshot => snapshot.overall.level >= 20 }),
   Object.freeze({ id:'overall-30', label:'総合Lv.30', check:snapshot => snapshot.overall.level >= 30 })
@@ -11330,8 +11470,8 @@ function levelWindowProgress(xp, maxXp, level, maxLevel) {
 
 function getOverallLearningTitle(level) {
   if (level >= 30) return '教材内Lv.MAX';
-  if (level >= 25) return '教材内・総合演習の熟練者';
-  if (level >= 20) return '会計の実践者';
+  if (level >= 25) return '総合演習の熟練者';
+  if (level >= 20) return '簿記の実践者';
   if (level >= 15) return '決算の探究者';
   if (level >= 10) return '帳簿の使い手';
   if (level >= 5) return '仕訳の旅人';
@@ -11553,6 +11693,16 @@ function validateBackupUtilities() {
   if (migrated.ok && !migrated.state.progress.Q002) issues.push('変更対象外Q002の旧履歴が移行されていません');
   if (migrated.ok && migrated.state.tableProgress.T015) issues.push('修正記入力化対象T015の旧履歴が除外されていません');
 
+  // v7.2→v7.3は文章校閲のみ。問題条件・正答は変わらないため、既存の学習履歴を保持できることを検証する。
+  const copyOnlyLegacy = JSON.parse(JSON.stringify(payload));
+  copyOnlyLegacy.state.journalBankVersion = 'v7.2';
+  copyOnlyLegacy.journalBankVersion = 'v7.2';
+  copyOnlyLegacy.state.progress.Q005 = { intervalDays: 5, repetitionCount: 3, easeFactor: 2.5, nextReviewDate: '2026-08-20T00:00:00.000Z', lastReviewed: '2026-08-15T00:00:00.000Z' };
+  copyOnlyLegacy.stateChecksum = stableBankHash(copyOnlyLegacy.state);
+  const migratedCopyOnly = StorageManager.sanitizeBackupState(copyOnlyLegacy);
+  if (!migratedCopyOnly.ok) issues.push(`v7.2文章校閲版の移行検証に失敗: ${migratedCopyOnly.error}`);
+  if (migratedCopyOnly.ok && !migratedCopyOnly.state.progress.Q005) issues.push('文章校閲のみのv7.2→v7.3移行で学習履歴が失われています');
+
   // v9.9相当（backup format 1 / schema 2 / learningGameなし）からv10.0へ移行できることを検証する。
   const legacyV99 = JSON.parse(JSON.stringify(payload));
   legacyV99.backupFormatVersion = 1;
@@ -11646,7 +11796,7 @@ function validateDomIdReferences() {
   return issues;
 }
 
-const REQUIRED_DOM_IDS = Object.freeze(['account-effect-list', 'account-nature-details', 'add-row-btn', 'backup-status', 'calc-apply-bar', 'calc-apply-debit', 'calc-apply-table', 'calc-apply-credit', 'calc-help-btn', 'calc-drag-handle', 'calc-drag-help', 'calc-display', 'calc-expression', 'calc-learning-note', 'calculator-floating-home', 'calculator-modal', 'calculator-toggle-button', 'correct-journal-content', 'data-integrity-banner', 'diagnostic-box', 'diagnostic-list', 'diagnostic-summary', 'exam-readiness-details', 'exam-readiness-guide', 'eval-btn-0', 'eval-btn-2', 'eval-btn-3', 'eval-instruction', 'explanation-reference-list', 'explanation-reference-policy', 'hint-box', 'journal-mode-section', 'journal-rows', 'journal-account-selection-help', 'learning-achievement-count', 'learning-growth-card', 'learning-next-stage-body', 'learning-next-stage-card', 'learning-next-stage-kicker', 'learning-next-stage-link', 'learning-next-stage-status', 'learning-next-stage-title', 'learning-overall-bar', 'learning-overall-level', 'learning-overall-title', 'learning-studied-count', 'learning-toast', 'learning-topic-list', 'learning-support-details', 'study-status-details', 'study-status-summary', 'journal-status-panel', 'table-status-panel', 'learning-weakest-topic', 'mode-journal-btn', 'mode-table-btn', 'story-control', 'story-mode-toggle', 'story-mode-note', 'journal-story-panel', 'journal-story-kicker', 'journal-story-title', 'journal-story-body', 'problem-category', 'problem-difficulty', 'problem-id-text', 'problem-statement', 'progress-import-input', 'quiz-card', 'remove-row-btn', 'result-box', 'result-detail', 'result-title', 'scenario-amount-section', 'scenario-amount-text', 'scenario-confusion-section', 'scenario-confusion-text', 'scenario-cue-list', 'scenario-guide-box', 'scenario-reading-text', 'scenario-reason-text', 'stat-due', 'stat-streak', 'submit-btn', 'table-correct-answer-box', 'table-correct-answer-host', 'table-eval-btn-0', 'table-eval-btn-2', 'table-eval-btn-3', 'table-eval-instruction', 'table-next-btn', 'table-exercise-host', 'table-exercise-wrapper', 'table-explanation-box', 'table-hint-box', 'table-mode-section', 'table-story-panel', 'table-story-kicker', 'table-story-title', 'table-story-body', 'table-problem-category', 'table-problem-difficulty', 'table-problem-givens', 'table-problem-givens-block', 'table-problem-id-text', 'table-problem-instruction', 'table-problem-statement', 'table-problem-targets', 'table-problem-targets-block', 'table-quiz-card', 'table-result-box', 'table-result-detail', 'table-result-title', 'table-segment-nav', 'table-submit-btn', 'table-toc-card', 'table-toc-details', 'table-toc-groups', 'table-workspace-help', 'table-workspace-title', 'toc-card', 'toc-details', 'toc-groups']);
+const REQUIRED_DOM_IDS = Object.freeze(['account-effect-list', 'account-nature-details', 'add-row-btn', 'backup-status', 'calc-apply-bar', 'calc-apply-debit', 'calc-apply-table', 'calc-apply-credit', 'calc-help-btn', 'calc-drag-handle', 'calc-drag-help', 'calc-display', 'calc-expression', 'calc-learning-note', 'calculator-floating-home', 'calculator-modal', 'calculator-toggle-button', 'correct-journal-content', 'data-integrity-banner', 'diagnostic-box', 'diagnostic-list', 'diagnostic-summary', 'exam-readiness-details', 'exam-readiness-guide', 'eval-btn-0', 'eval-btn-2', 'eval-btn-3', 'eval-instruction', 'explanation-reference-list', 'explanation-reference-policy', 'hint-box', 'journal-mode-section', 'journal-rows', 'journal-account-selection-help', 'learning-achievement-count', 'learning-growth-card', 'learning-next-stage-body', 'learning-next-stage-card', 'learning-next-stage-kicker', 'learning-next-stage-link', 'learning-next-stage-status', 'learning-next-stage-title', 'learning-overall-bar', 'learning-overall-level', 'learning-overall-title', 'learning-studied-count', 'learning-toast', 'learning-topic-list', 'learning-support-details', 'study-status-details', 'study-status-summary', 'journal-status-panel', 'table-status-panel', 'learning-weakest-topic', 'mode-journal-btn', 'mode-table-btn', 'story-control', 'story-mode-toggle', 'story-mode-note', 'story-roadmap-details', 'story-roadmap-summary', 'story-roadmap-list', 'journal-story-panel', 'journal-story-kicker', 'journal-story-title', 'journal-story-body', 'journal-story-learning-status', 'journal-story-progress', 'journal-story-progress-fill', 'problem-category', 'problem-difficulty', 'problem-id-text', 'problem-statement', 'progress-import-input', 'quiz-card', 'remove-row-btn', 'result-box', 'result-detail', 'result-title', 'scenario-amount-section', 'scenario-amount-text', 'scenario-confusion-section', 'scenario-confusion-text', 'scenario-cue-list', 'scenario-guide-box', 'scenario-reading-text', 'scenario-reason-text', 'stat-due', 'stat-streak', 'submit-btn', 'table-correct-answer-box', 'table-correct-answer-host', 'table-eval-btn-0', 'table-eval-btn-2', 'table-eval-btn-3', 'table-eval-instruction', 'table-next-btn', 'table-exercise-host', 'table-exercise-wrapper', 'table-explanation-box', 'table-hint-box', 'table-mode-section', 'table-story-panel', 'table-story-kicker', 'table-story-title', 'table-story-body', 'table-story-learning-status', 'table-story-progress', 'table-story-progress-fill', 'table-problem-category', 'table-problem-difficulty', 'table-problem-givens', 'table-problem-givens-block', 'table-problem-id-text', 'table-problem-instruction', 'table-problem-statement', 'table-problem-targets', 'table-problem-targets-block', 'table-quiz-card', 'table-result-box', 'table-result-detail', 'table-result-title', 'table-segment-nav', 'table-submit-btn', 'table-toc-card', 'table-toc-details', 'table-toc-groups', 'table-workspace-help', 'table-workspace-title', 'toc-card', 'toc-details', 'toc-groups']);
 
 function validateStoryAndDifficultyLayer() {
   const issues = [];
@@ -11666,13 +11816,24 @@ function validateStoryAndDifficultyLayer() {
       if (!allowedStoryKeys.has(key)) issues.push(`ストーリー章に未許可フィールドがあります: ${chapter.id}.${key}`);
       if (forbiddenStoryKeys.has(key)) issues.push(`ストーリー章が学習エンジン領域を保持しています: ${chapter.id}.${key}`);
     });
-    if (!String(chapter.title || '').trim() || !String(chapter.intro || '').trim()) issues.push(`ストーリー章の表示文が不足しています: ${chapter.id}`);
+    if (!String(chapter.title || '').trim()) issues.push(`ストーリー章タイトルが不足しています: ${chapter.id}`);
+    if (!Array.isArray(chapter.intro) || chapter.intro.length !== 3 || chapter.intro.some(text => !String(text || '').trim())) {
+      issues.push(`ストーリー章は導入・展開・転換の3場面が必要です: ${chapter.id}`);
+    }
+    const displayCopy = [chapter.title, ...(Array.isArray(chapter.intro) ? chapter.intro : [])].join('\n');
+    if (displayCopy.includes('架空')) issues.push(`画面表示用ストーリー文に「架空」が含まれています: ${chapter.id}`);
+    if (/[￥¥]\s*\d|\d[\d,]*\s*円/.test(displayCopy)) issues.push(`ストーリー文に問題固有と誤認され得る金額表現があります: ${chapter.id}`);
   });
   TOC_GROUPS.forEach((group, index) => {
     if (JOURNAL_STORY_CHAPTERS[index]?.groupTitle !== group.title) issues.push(`仕訳ストーリー章と目次の対応不一致: ${group.title}`);
   });
   TABLE_TOC_GROUPS.forEach((group, index) => {
     if (TABLE_STORY_CHAPTERS[index]?.groupTitle !== group.title) issues.push(`表ストーリー章と目次の対応不一致: ${group.title}`);
+  });
+  if (TABLE_STORY_CHAPTERS.some(chapter => chapter.title !== '初めての決算')) issues.push('表・決算編の最終章タイトルが「初めての決算」に統一されていません');
+  const journalStoryCopy = JOURNAL_STORY_CHAPTERS.flatMap(chapter => chapter.intro).join('\n');
+  ['佐藤','高橋','藤田社長','青いファイル'].forEach(token => {
+    if (!journalStoryCopy.includes(token)) issues.push(`ストーリーの継続要素が不足しています: ${token}`);
   });
   QUESTION_DATABASE.forEach(q => {
     const level = getJournalDifficulty(q);
@@ -11694,6 +11855,44 @@ function validateStoryAndDifficultyLayer() {
   return issues;
 }
 
+function validateStoryLearningBridge() {
+  const issues = [];
+  if (typeof selectNextStoryIndex !== 'function' || typeof storyGroupProgress !== 'function' || typeof renderStoryRoadmap !== 'function') {
+    issues.push('物語進行と学習進捗を結ぶ機構がありません');
+    return issues;
+  }
+
+  const emptyState = { progress: {}, tableProgress: {} };
+  const emptyBefore = JSON.stringify(emptyState);
+  if (selectNextStoryIndex('journal', -1, emptyState, new Date('2026-08-15T00:00:00Z')) !== 0) issues.push('未学習の仕訳が物語順で開始されません');
+  if (selectNextStoryIndex('table', -1, emptyState, new Date('2026-08-15T00:00:00Z')) !== 0) issues.push('未学習の表問題が決算順で開始されません');
+  if (JSON.stringify(emptyState) !== emptyBefore) issues.push('物語ルーターが学習状態を変更しています');
+
+  const state = { progress: {}, tableProgress: {} };
+  state.progress.Q001 = { nextReviewDate: '2026-08-20T00:00:00.000Z' };
+  if (selectNextStoryIndex('journal', 0, state, new Date('2026-08-15T00:00:00Z')) !== 1) issues.push('学習済み問題の次に最初の未学習問題へ進みません');
+  state.progress.Q010 = { nextReviewDate: '2026-08-14T00:00:00.000Z' };
+  if (selectNextStoryIndex('journal', 1, state, new Date('2026-08-15T00:00:00Z')) !== 9) issues.push('復習期限の問題が未学習問題より優先されません');
+
+  const chapter = JOURNAL_STORY_CHAPTERS[0];
+  const progress = storyGroupProgress('journal', chapter, state, new Date('2026-08-15T00:00:00Z'));
+  if (progress.total !== 20 || progress.studied !== 2 || progress.due !== 1) issues.push('物語章の学習進捗集計が不正です');
+  return issues;
+}
+
+function validateEditorialQuality() {
+  const issues = [];
+  const journalCopy = QUESTION_DATABASE.map(q => [q.statement, q.hint, q.explanation].filter(Boolean).join('\n')).join('\n');
+  if (journalCopy.includes('ヶ月')) issues.push('期間表記に「ヶ月」が残っています。「か月」に統一してください');
+  if (/\d\s*%/.test(journalCopy)) issues.push('割合表記に半角%が残っています。全角％に統一してください');
+  const visibleText = String(document.body?.innerText || '');
+  const deprecatedVisibleCopy = ['理解度:', '出題問題数', '次におすすめ', '正解済み', '学習データを保存', '保存データを戻す'];
+  deprecatedVisibleCopy.forEach(term => {
+    if (visibleText.includes(term)) issues.push(`旧UI文言が残っています: ${term}`);
+  });
+  return issues;
+}
+
 function validateReleaseManifest() {
   const issues = [];
   const metaVersion = String(document.querySelector('meta[name="application-version"]')?.getAttribute('content') || '');
@@ -11703,7 +11902,7 @@ function validateReleaseManifest() {
   if (RELEASE_MANIFEST.tableBankVersion !== TABLE_BANK_VERSION) issues.push('Release Manifestの表bank versionが不一致です');
   if (RELEASE_MANIFEST.journalBankHash !== EXPECTED_QUESTION_BANK_HASH) issues.push('Release Manifestの仕訳bank hashが不一致です');
   if (RELEASE_MANIFEST.tableBankHash !== EXPECTED_TABLE_BANK_HASH) issues.push('Release Manifestの表bank hashが不一致です');
-  ['storyLayerVersion','practicalContextVersion','difficultyLogicVersion'].forEach(key => {
+  ['storyLayerVersion','practicalContextVersion','difficultyLogicVersion','editorialCopyVersion'].forEach(key => {
     if (!String(RELEASE_MANIFEST[key] || '').trim()) issues.push(`Release Manifestの${key}が未設定です`);
   });
   return issues;
@@ -11794,7 +11993,7 @@ function validateUiStructure() {
   if (storyToggle && !['true','false'].includes(String(storyToggle.getAttribute('aria-pressed')))) issues.push('ストーリーモード切替のaria-pressedが不正です');
   const storyModeNoteElement = document.getElementById('story-mode-note');
   const storyModeNote = String(storyModeNoteElement?.textContent || '');
-  if (!storyModeNote.includes('復習順') || !storyModeNote.includes('通常演習と同じ')) issues.push('ストーリーモードに復習順・学習エンジン非干渉の説明がありません');
+  if (!storyModeNote.includes('復習期限') || !storyModeNote.includes('物語の順') || !storyModeNote.includes('通常演習と同じ')) issues.push('ストーリーモードに復習優先・物語順・学習エンジン非干渉の説明がありません');
   if (storyModeNoteElement && !storyModeNoteElement.classList.contains('visually-hidden')) issues.push('ストーリーモードの補足説明が常時表示されています');
   if (storyToggle?.getAttribute('aria-describedby') !== 'story-mode-note') issues.push('ストーリーモード切替に補足説明が関連付けられていません');
   const journalProgressText = String(document.getElementById('problem-id-text')?.textContent || '');
@@ -12017,7 +12216,7 @@ function reportStartupFailure(error) {
   disableLearningUiForSafety();
   const banner = document.getElementById('data-integrity-banner');
   if (banner) {
-    banner.textContent = '教材を開始できませんでした。ページを再読み込みしてください。解消しない場合は新しいファイルを使用してください。学習データの保存機能は、画面が操作できる場合のみ利用してください。';
+    banner.textContent = '教材を開始できませんでした。ページを再読み込みしてください。解消しない場合は新しいファイルを使用してください。学習記録の保存機能は、画面を操作できる場合のみ利用してください。';
     banner.classList.add('visible');
   }
 }
@@ -12080,6 +12279,7 @@ function runDetailedNonDomIntegritySuite() {
     sourceAuditedTextIssues: validateSourceAuditedTextExpectations(),
     tablePresentationIssues: validateTablePresentationUtilities(),
     storyDifficultyIssues: validateStoryAndDifficultyLayer(),
+    storyLearningBridgeIssues: validateStoryLearningBridge(),
     practicalContextIssues: validatePracticalContextLayer(),
     learningLevelIssues: validateLearningLevelSystem(),
     runtimeLifecycleIssues: validateRuntimeLifecycleTransitions()
@@ -12095,7 +12295,8 @@ function runDetailedDomRuntimeIntegritySuite() {
     uiStructureIssues: validateUiStructure(),
     runtimeShapeIssues: validateRuntimeShape(),
     calculatorIssues: validateCalculatorUtilities(),
-    releaseManifestIssues: validateReleaseManifest()
+    releaseManifestIssues: validateReleaseManifest(),
+    editorialIssues: validateEditorialQuality()
   };
 }
 
@@ -12126,11 +12327,13 @@ function buildDetailedIntegritySeverity(all = {}) {
     ...values('amountFitIssues').map(issue => `金額表示: ${issue}`),
     ...values('tablePresentationIssues').map(issue => `表問題表示: ${issue}`),
     ...values('storyDifficultyIssues').map(issue => `ストーリー・難易度: ${issue}`),
+    ...values('storyLearningBridgeIssues').map(issue => `物語学習導線: ${issue}`),
     ...values('practicalContextIssues').map(issue => `実務シチュエーション: ${issue}`),
     ...values('uiStructureIssues').map(issue => `UI品質: ${issue}`),
     ...values('runtimeShapeIssues').map(issue => `実装構造: ${issue}`),
     ...values('calculatorIssues').map(issue => `電卓QA: ${issue}`),
     ...values('releaseManifestIssues').map(issue => `リリース整合: ${issue}`),
+    ...values('editorialIssues').map(issue => `文章品質: ${issue}`),
     ...values('learningLevelIssues').map(issue => `学習レベル: ${issue}`)
   ];
   return { blockingIssues, advisoryIssues };
@@ -12228,10 +12431,10 @@ function runIntegrityCheck() {
 deepFreeze(QUESTION_DATABASE);
 deepFreeze(TABLE_DATABASE);
 
-const APP_VERSION = 'v10.21';
+const APP_VERSION = 'v10.25';
 const STORAGE_SCHEMA_VERSION = 3;
 const COMPATIBLE_STORAGE_SCHEMA_VERSIONS = new Set([2, 3]);
-const JOURNAL_BANK_VERSION = 'v7.2';
+const JOURNAL_BANK_VERSION = 'v7.3';
 const TABLE_BANK_VERSION = 'v8.5';
 
 /*
@@ -12244,20 +12447,21 @@ const TABLE_BANK_VERSION = 'v8.5';
  * 5) stableBankHashは破損・意図しない変更を検知するための32bitチェックサムであり、暗号学的署名ではない。
  * 6) STORAGE_SCHEMA_VERSION（保存データ構造）とJOURNAL/TABLE_BANK_VERSION（問題バンク版）は別物として管理する。
  */
-const EXPECTED_QUESTION_BANK_HASH = '7eec5e67';
+const EXPECTED_QUESTION_BANK_HASH = '622d0861';
 const EXPECTED_TABLE_BANK_HASH = '269213e1';
 // 難易度ロジックの意図しない変更を検出するため、問題IDと算出難易度だけを固定監視する。
 const EXPECTED_JOURNAL_DIFFICULTY_HASH = '0e7232f5';
 const EXPECTED_TABLE_DIFFICULTY_HASH = '6c3c5b90';
 // リリース取り違え検出用。APP/BANK定数から派生させず、意図的にリリース値を重複保持する。
 const RELEASE_MANIFEST = Object.freeze({
-  appVersion: 'v10.21',
-  storyLayerVersion: 'v3',
+  appVersion: 'v10.25',
+  storyLayerVersion: 'v6',
   practicalContextVersion: 'v2',
   difficultyLogicVersion: 'v2',
-  journalBankVersion: 'v7.2',
+  editorialCopyVersion: 'v4',
+  journalBankVersion: 'v7.3',
   tableBankVersion: 'v8.5',
-  journalBankHash: '7eec5e67',
+  journalBankHash: '622d0861',
   tableBankHash: '269213e1'
 });
 const BACKUP_PRODUCT_ID = 'boki3-comprehensive';
@@ -12341,14 +12545,14 @@ function reportStorageSaveFailure(error, serializedState = '') {
   const quota = isQuotaExceededError(error);
   const sizeBytes = serializedState ? utf8ByteLength(serializedState) : 0;
   console.warn('Storage save diagnostics.', { quota, sizeBytes, error });
-  const message = '学習記録をこの端末に保存できませんでした。先に「学習データを保存」でファイルを保管してください。';
+  const message = '学習記録をこの端末に保存できませんでした。先に「学習記録を保存」でファイルを保管してください。';
   showStoragePersistenceFailure(message, '保存エラー');
 }
 
 function reportStorageLoadFailure(error) {
   const quota = isQuotaExceededError(error);
   console.warn('Storage load diagnostics.', { quota, error });
-  const message = '以前の学習記録を読み込めなかったため、初期状態で開始します。保存データがある場合は「保存データを戻す」を選んでください。';
+  const message = '以前の学習記録を読み込めなかったため、初期状態で開始します。保存した学習記録がある場合は「学習記録を復元」を選んでください。';
   showStoragePersistenceFailure(message, '履歴読込エラー');
 }
 
@@ -12506,19 +12710,19 @@ class StorageManager {
   static sanitizeBackupState(payload) {
     const result = { ok: false, error: '', warnings: [], debugWarnings: [], state: null, summary: null };
     if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
-      result.error = 'このファイルは学習データとして読み込めません。';
+      result.error = 'このファイルは学習記録として読み込めません。';
       result.debugWarnings.push('Backup payload is not an object.');
       return result;
     }
 
     if (payload.productId != null && payload.productId !== BACKUP_PRODUCT_ID) {
-      result.error = 'この教材の保存データではありません。';
+      result.error = 'この教材の学習記録ではありません。';
       result.debugWarnings.push(`Unexpected productId: ${String(payload.productId)}`);
       return result;
     }
     const backupFormat = payload.backupFormatVersion == null ? 1 : payload.backupFormatVersion;
     if (!COMPATIBLE_BACKUP_FORMAT_VERSIONS.has(backupFormat)) {
-      result.error = 'この保存データは、この版では読み込めません。';
+      result.error = 'この学習記録は、この版では読み込めません。';
       result.debugWarnings.push(`Unsupported backup format: ${backupFormat}`);
       return result;
     }
@@ -12531,7 +12735,7 @@ class StorageManager {
     }
     const rawSchema = raw.schemaVersion == null ? 2 : raw.schemaVersion;
     if (!COMPATIBLE_STORAGE_SCHEMA_VERSIONS.has(rawSchema)) {
-      result.error = 'この保存データは、この版では読み込めません。';
+      result.error = 'この学習記録は、この版では読み込めません。';
       result.debugWarnings.push(`Unsupported storage schema: ${String(raw.schemaVersion ?? 'unknown')}`);
       return result;
     }
@@ -12540,7 +12744,7 @@ class StorageManager {
     if (payload.stateChecksum != null && payload.state) {
       const actual = stableBankHash(raw);
       if (String(payload.stateChecksum) !== actual) {
-        result.error = '保存データが破損している可能性があるため、読み込めません。';
+        result.error = '学習記録が破損している可能性があるため、読み込めません。';
         result.debugWarnings.push('Backup checksum mismatch.');
         return result;
       }
@@ -12548,13 +12752,13 @@ class StorageManager {
 
     const journalVersion = typeof raw.journalBankVersion === 'string' ? raw.journalBankVersion : raw.bankVersion;
     if (!COMPATIBLE_JOURNAL_BANK_VERSIONS.has(journalVersion)) {
-      result.error = 'この保存データは、この版では読み込めません。';
+      result.error = 'この学習記録は、この版では読み込めません。';
       result.debugWarnings.push(`Unsupported journal bank version: ${journalVersion || 'unknown'} -> ${JOURNAL_BANK_VERSION}`);
       return result;
     }
     const tableVersion = typeof raw.tableBankVersion === 'string' ? raw.tableBankVersion : TABLE_BANK_VERSION;
     if (!COMPATIBLE_TABLE_BANK_VERSIONS.has(tableVersion)) {
-      result.error = 'この保存データは、この版では読み込めません。';
+      result.error = 'この学習記録は、この版では読み込めません。';
       result.debugWarnings.push(`Unsupported table bank version: ${tableVersion || 'unknown'} -> ${TABLE_BANK_VERSION}`);
       return result;
     }
@@ -12564,7 +12768,7 @@ class StorageManager {
     const backupTablePurgeSet = (tableVersion === 'v8.3' || tableVersion === 'v8.4') ? UPDATED_FROM_TABLE_V8_4_IDS : new Set();
     const needsMigration = journalVersion !== JOURNAL_BANK_VERSION || tableVersion !== TABLE_BANK_VERSION
       || rawSchema !== STORAGE_SCHEMA_VERSION || backupFormat !== BACKUP_FORMAT_VERSION;
-    if (needsMigration) result.warnings.push('古い保存データを現在の形式に変換して戻します。');
+    if (needsMigration) result.warnings.push('以前の形式の学習記録を、現在の形式に変換して復元します。');
     if (journalVersion !== JOURNAL_BANK_VERSION) result.debugWarnings.push(`Journal history migration: ${journalVersion} -> ${JOURNAL_BANK_VERSION}`);
     if (tableVersion !== TABLE_BANK_VERSION) result.debugWarnings.push(`Table history migration: ${tableVersion} -> ${TABLE_BANK_VERSION}`);
     if (rawSchema !== STORAGE_SCHEMA_VERSION || backupFormat !== BACKUP_FORMAT_VERSION) result.debugWarnings.push(`Storage/backup migration: schema ${rawSchema}, format ${backupFormat}`);
@@ -13044,7 +13248,7 @@ function renderLearningDashboard() {
     stageCard.classList.add('ready');
     stageCard.classList.remove('preview');
   }
-  setText('learning-next-stage-kicker', '2級への橋渡し');
+  setText('learning-next-stage-kicker', '次の学習へ');
   setText('learning-next-stage-title', '次のステージ：日商簿記2級');
   if (stageStatus) {
     stageStatus.hidden = !allStudied;
@@ -13110,11 +13314,11 @@ function setEvalButtonsDisabled(disabled, isCorrect = false) {
   const instruction = document.getElementById('eval-instruction');
   if (instruction) {
     if (disabled) {
-      instruction.innerText = '採点後に理解度を選べます:';
+      instruction.innerText = '採点後、理解度を選んでください。';
     } else if (!isCorrect) {
-      instruction.innerText = '不正解のため「要復習」を選んで次へ進みます:';
+      instruction.innerText = '不正解です。「要復習」を選んで次へ進んでください。';
     } else {
-      instruction.innerText = '理解度を選ぶと次の問題へ進みます:';
+      instruction.innerText = '理解度を選んで次の問題へ進んでください。';
     }
   }
 }
@@ -13146,8 +13350,9 @@ function updateDashboard() {
   });
 
   document.getElementById('stat-due').innerText = String(dueCount);
-  document.getElementById('stat-streak').innerText = `${Runtime.state.streak} 日`;
+  document.getElementById('stat-streak').innerText = `${Runtime.state.streak}日`;
   renderLearningDashboard();
+  renderStoryRoadmap();
 }
 
 function getNextQuestionIndex() {
@@ -13182,14 +13387,31 @@ function renderCompletionMessage(quizCard) {
   const wrapper = document.createElement('div');
   wrapper.className = 'completion-message';
   const heading = document.createElement('h2');
-  heading.textContent = '本日の学習・復習はすべて完了しました。';
   const body = document.createElement('p');
-  body.textContent = '復習期限が到来している問題、および未学習の問題は現在ありません。';
   const note = document.createElement('p');
-  note.textContent = '次回アクセス時、復習期日が到来した問題が自動出題されます。';
   note.style.color = 'var(--text-muted)';
   note.style.fontSize = '0.85rem';
-  wrapper.append(heading, body, note);
+
+  const snapshot = buildLearningSnapshot(Runtime.state);
+  const storyReadyForFinalChapter = Runtime.story.enabled && snapshot.journalStudied >= QUESTION_DATABASE.length && snapshot.tableAttempted < TABLE_DATABASE.length;
+  if (storyReadyForFinalChapter) {
+    heading.textContent = '仕訳編を一巡しました。';
+    body.textContent = '4月から積み上げた仕訳を、最終章「初めての決算」で試算表・精算表・財務諸表へつなげていきます。';
+    note.textContent = '復習期限を迎えた仕訳は、次回以降も「佐藤主任からの確認」として優先して出題されます。';
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'table-primary-btn';
+    button.dataset.action = 'switch-mode';
+    button.dataset.mode = 'table';
+    button.textContent = '最終章「初めての決算」へ';
+    button.style.marginTop = '12px';
+    wrapper.append(heading, body, note, button);
+  } else {
+    heading.textContent = '本日の学習・復習はすべて完了しました。';
+    body.textContent = '現在、復習期限を迎えた問題や未学習の問題はありません。';
+    note.textContent = '次回アクセス時は、復習期限を迎えた問題が自動で出題されます。';
+    wrapper.append(heading, body, note);
+  }
   quizCard.replaceChildren(wrapper);
 }
 
@@ -13218,7 +13440,7 @@ function loadQuestion(index) {
   problemProgress.innerText = `${index + 1} / ${QUESTION_DATABASE.length}`;
   problemProgress.setAttribute('aria-label', `${index + 1}問目、全${QUESTION_DATABASE.length}問`);
   document.getElementById('problem-statement').innerText = q.statement;
-  renderStoryPanel('journal', storyChapterForJournalIndex(index));
+  renderStoryPanel('journal', storyChapterForJournalIndex(index), index);
 
   const hintBox = document.getElementById('hint-box');
   hintBox.innerText = q.hint || "ヒントはありません。問題文の仕訳構造を考えましょう。";
@@ -13739,7 +13961,162 @@ function storyChapterForTableIndex(index) {
   return group ? TABLE_STORY_CHAPTERS.find(chapter => chapter.groupTitle === group.title) || null : null;
 }
 
-function renderStoryPanel(kind, chapter) {
+function storyBeatForIndex(kind, chapter, index) {
+  if (!chapter || !Array.isArray(chapter.intro) || !chapter.intro.length) return '';
+  const groups = kind === 'table' ? TABLE_TOC_GROUPS : TOC_GROUPS;
+  const group = groups.find(item => item.title === chapter.groupTitle);
+  if (!group || !Number.isInteger(index)) return chapter.intro[0];
+  const count = Math.max(1, group.end - group.start + 1);
+  const offset = Math.min(count - 1, Math.max(0, index + 1 - group.start));
+  const beatIndex = Math.min(chapter.intro.length - 1, Math.floor(offset * chapter.intro.length / count));
+  return chapter.intro[beatIndex];
+}
+
+function storyProgressRecord(kind, state, questionId) {
+  if (!state || !questionId) return null;
+  if (kind === 'table') {
+    const item = state.tableProgress?.[questionId];
+    return item && (Number(item.attempts) || 0) > 0 ? item : null;
+  }
+  return state.progress?.[questionId] || null;
+}
+
+function storyQuestionIsDue(kind, state, questionId, now = new Date()) {
+  const item = storyProgressRecord(kind, state, questionId);
+  if (!item?.nextReviewDate) return false;
+  const dueAt = Date.parse(item.nextReviewDate);
+  return Number.isFinite(dueAt) && dueAt <= now.getTime();
+}
+
+function storyGroupProgress(kind, chapter, state = Runtime.state, now = new Date()) {
+  const groups = kind === 'table' ? TABLE_TOC_GROUPS : TOC_GROUPS;
+  const group = groups.find(item => item.title === chapter?.groupTitle);
+  if (!group) return { studied: 0, total: 0, due: 0, percent: 0, status: '未着手' };
+  const prefix = kind === 'table' ? 'T' : 'Q';
+  let studied = 0;
+  let due = 0;
+  for (let no = group.start; no <= group.end; no++) {
+    const id = `${prefix}${String(no).padStart(3, '0')}`;
+    if (storyProgressRecord(kind, state, id)) studied += 1;
+    if (storyQuestionIsDue(kind, state, id, now)) due += 1;
+  }
+  const total = group.end - group.start + 1;
+  const percent = total ? Math.round(studied / total * 100) : 0;
+  let status = '未着手';
+  if (due > 0) status = `復習待ち ${due}問`;
+  else if (studied >= total && total > 0) status = '一巡済み';
+  else if (studied > 0) status = '学習中';
+  return { studied, total, due, percent, status };
+}
+
+function renderStoryLearningStatus(kind, chapter) {
+  const prefix = kind === 'table' ? 'table' : 'journal';
+  const status = document.getElementById(`${prefix}-story-learning-status`);
+  const track = document.getElementById(`${prefix}-story-progress`);
+  const fill = document.getElementById(`${prefix}-story-progress-fill`);
+  if (!status || !track || !fill || !chapter) return;
+  const progress = storyGroupProgress(kind, chapter);
+  const label = kind === 'table' ? chapter.label : chapter.month;
+  const left = document.createElement('span');
+  left.textContent = `${label}の仕事`;
+  const right = document.createElement('span');
+  right.textContent = `${progress.studied} / ${progress.total}問${progress.due ? `・復習 ${progress.due}問` : ''}`;
+  status.replaceChildren(left, right);
+  fill.style.width = `${progress.percent}%`;
+  track.setAttribute('aria-valuenow', String(progress.percent));
+  track.setAttribute('aria-label', `${label}の学習進捗 ${progress.studied}問、全${progress.total}問`);
+}
+
+function storyRoadmapItems(state = Runtime.state, now = new Date()) {
+  const journalItems = JOURNAL_STORY_CHAPTERS.map(chapter => ({
+    kind: 'journal',
+    chapter,
+    progress: storyGroupProgress('journal', chapter, state, now),
+    label: chapter.month
+  }));
+  const tableItems = TABLE_STORY_CHAPTERS.map(chapter => ({
+    kind: 'table',
+    chapter,
+    progress: storyGroupProgress('table', chapter, state, now),
+    label: chapter.label
+  }));
+  return [...journalItems, ...tableItems];
+}
+
+function renderStoryRoadmap() {
+  const details = document.getElementById('story-roadmap-details');
+  const summary = document.getElementById('story-roadmap-summary');
+  const host = document.getElementById('story-roadmap-list');
+  if (!details || !summary || !host) return;
+  details.hidden = !Runtime.story.enabled;
+  if (!Runtime.story.enabled) return;
+
+  const items = storyRoadmapItems();
+  const studied = items.reduce((sum, item) => sum + item.progress.studied, 0);
+  const total = items.reduce((sum, item) => sum + item.progress.total, 0);
+  const due = items.reduce((sum, item) => sum + item.progress.due, 0);
+  summary.textContent = ` ${studied} / ${total}問${due ? `・復習 ${due}問` : ''}`;
+
+  const fragment = document.createDocumentFragment();
+  items.forEach(item => {
+    const row = document.createElement('div');
+    row.className = 'story-roadmap-item';
+    const currentChapter = item.kind === 'table'
+      ? storyChapterForTableIndex(Runtime.table.currentIndex)
+      : storyChapterForJournalIndex(Runtime.journal.currentQuestionIndex);
+    const isCurrent = Runtime.mode === item.kind && currentChapter?.id === item.chapter.id;
+    if (isCurrent) row.classList.add('current');
+    const name = document.createElement('span');
+    name.className = 'story-roadmap-name';
+    name.textContent = item.kind === 'table'
+      ? `${item.label}｜${item.chapter.groupTitle}`
+      : `${item.label}｜${item.chapter.title}`;
+    const state = document.createElement('span');
+    state.className = 'story-roadmap-state';
+    state.textContent = item.progress.due > 0
+      ? `復習 ${item.progress.due}問`
+      : item.progress.studied >= item.progress.total && item.progress.total > 0
+        ? '一巡済み'
+        : item.progress.studied > 0
+          ? `${item.progress.studied}/${item.progress.total}`
+          : '未着手';
+    row.append(name, state);
+    fragment.appendChild(row);
+  });
+  host.replaceChildren(fragment);
+}
+
+function selectNextStoryIndex(kind, currentIndex, state, now = new Date()) {
+  const database = kind === 'table' ? TABLE_DATABASE : QUESTION_DATABASE;
+  const due = [];
+  const fresh = [];
+  database.forEach((q, index) => {
+    const item = storyProgressRecord(kind, state, q.id);
+    if (storyQuestionIsDue(kind, state, q.id, now)) {
+      due.push({ index, dueAt: Date.parse(item.nextReviewDate) || 0 });
+    } else if (!item) {
+      fresh.push(index);
+    }
+  });
+  if (due.length) {
+    due.sort((a, b) => a.dueAt - b.dueAt || a.index - b.index);
+    const alternative = due.find(item => item.index !== currentIndex);
+    return (alternative || due[0]).index;
+  }
+  if (fresh.length) return fresh[0];
+  return -1;
+}
+
+function getNextStoryQuestionIndex() {
+  return selectNextStoryIndex('journal', Runtime.journal.currentQuestionIndex, Runtime.state, new Date());
+}
+
+function getNextStoryTableQuestionIndex() {
+  const index = selectNextStoryIndex('table', Runtime.table.currentIndex, Runtime.state, new Date());
+  return index >= 0 ? index : getNextTableQuestionIndex();
+}
+
+function renderStoryPanel(kind, chapter, index = -1) {
   const prefix = kind === 'table' ? 'table' : 'journal';
   const panel = document.getElementById(`${prefix}-story-panel`);
   const kicker = document.getElementById(`${prefix}-story-kicker`);
@@ -13750,19 +14127,29 @@ function renderStoryPanel(kind, chapter) {
   panel.hidden = !visible;
   if (!visible) return;
   const chapterLabel = chapter.month || chapter.label || 'STORY';
-  kicker.textContent = `${chapterLabel}｜${STORY_COMPANY.name}（架空）`;
+  const database = kind === 'table' ? TABLE_DATABASE : QUESTION_DATABASE;
+  const question = Number.isInteger(index) ? database[index] : null;
+  const isDue = question ? storyQuestionIsDue(kind, Runtime.state, question.id, new Date()) : false;
+  kicker.textContent = isDue
+    ? `佐藤主任からの確認｜${chapterLabel}｜${STORY_COMPANY.name}`
+    : `${chapterLabel}｜${STORY_COMPANY.name}`;
   title.textContent = chapter.title;
-  body.textContent = chapter.intro;
+  const beat = storyBeatForIndex(kind, chapter, index);
+  body.textContent = isDue
+    ? `以前扱ったケースです。結論を覚えているかではなく、今回も問題文の条件から根拠を組み立ててください。\n\n${beat}`
+    : beat;
+  renderStoryLearningStatus(kind, chapter);
+  renderStoryRoadmap();
 }
 
 function refreshStoryPanels() {
   if (Runtime.journal.currentQuestionIndex >= 0) {
-    renderStoryPanel('journal', storyChapterForJournalIndex(Runtime.journal.currentQuestionIndex));
+    renderStoryPanel('journal', storyChapterForJournalIndex(Runtime.journal.currentQuestionIndex), Runtime.journal.currentQuestionIndex);
   } else {
     renderStoryPanel('journal', null);
   }
   if (Runtime.table.currentIndex >= 0) {
-    renderStoryPanel('table', storyChapterForTableIndex(Runtime.table.currentIndex));
+    renderStoryPanel('table', storyChapterForTableIndex(Runtime.table.currentIndex), Runtime.table.currentIndex);
   } else {
     renderStoryPanel('table', null);
   }
@@ -13771,6 +14158,7 @@ function refreshStoryPanels() {
     toggle.setAttribute('aria-pressed', String(Runtime.story.enabled));
     toggle.textContent = Runtime.story.enabled ? '📖 ストーリー ON' : '📖 ストーリー OFF';
   }
+  renderStoryRoadmap();
 }
 
 function toggleStoryMode() {
@@ -14005,19 +14393,19 @@ function diagnoseJournalAnswer(userDebit, userCredit, correctDebit, correctCredi
 
   const issueTypes = new Set(issues.map(issue => issue.type));
   let errorType = 'ACCOUNT_ITEM';
-  let summary = '勘定科目または借方・貸方の位置に相違があります。下の差分を確認してください。';
+  let summary = '勘定科目、または借方・貸方の位置が正解と異なります。下の差分を確認してください。';
   if (issues.length === 0) {
     errorType = 'NONE';
-    summary = '入力内容は登録済み正解仕訳と一致しています。';
+    summary = '入力した仕訳は正解と一致しています。';
   } else if ([...issueTypes].every(type => type === 'AMOUNT')) {
     errorType = 'CALCULATION';
-    summary = '勘定科目と借方・貸方の位置は一致していますが、金額に相違があります。';
+    summary = '勘定科目と借方・貸方の位置は一致していますが、金額が正解と異なります。';
   } else if (issueTypes.has('SIDE_REVERSED')) {
     errorType = 'CONCEPT';
     summary = '借方・貸方が逆になっている勘定科目があります。';
   } else {
     errorType = 'ACCOUNT_ITEM';
-    summary = '勘定科目に不足または余分な入力があります。';
+    summary = '必要な勘定科目が不足しているか、余分な勘定科目が入力されています。';
   }
 
   return { issues, errorType, summary };
@@ -14134,7 +14522,7 @@ function checkAnswer() {
   const creditRes = getEntries('credit');
 
   if (debitRes.hasIncomplete || creditRes.hasIncomplete) {
-    alert('入力途中の行、または使用できない金額があります。勘定科目と金額を確認してください。');
+    alert('入力が途中の行、または数値として読み取れない金額があります。勘定科目と金額を確認してください。');
     return;
   }
   if (debitRes.duplicateAccounts.length || creditRes.duplicateAccounts.length) {
@@ -14167,7 +14555,7 @@ function checkAnswer() {
   if (isAllCorrect) {
     resultBox.className = 'result-box correct';
     resultTitle.innerText = '正解';
-    resultDetail.innerText = '借方・貸方の勘定科目および金額が完全に一致しています。';
+    resultDetail.innerText = '借方・貸方の勘定科目と金額が正解と一致しています。';
     renderJournalDiagnostic(null);
   } else {
     resultBox.className = 'result-box incorrect';
@@ -14932,7 +15320,7 @@ function applySelfEval(quality) {
 }
 
 function nextQuestion() {
-  const nextIdx = getNextQuestionIndex();
+  const nextIdx = Runtime.story.enabled ? getNextStoryQuestionIndex() : getNextQuestionIndex();
   loadQuestion(nextIdx);
 }
 
@@ -15507,14 +15895,14 @@ function setTableEvalButtonsDisabled(disabled, isCorrect = false) {
   }
   if (next) {
     next.disabled = !Runtime.table.isEvalCompleted;
-    next.textContent = Runtime.table.isEvalCompleted ? '次の表問題' : '理解度を選ぶと次へ';
+    next.textContent = Runtime.table.isEvalCompleted ? '次の表問題' : '理解度を選んで次へ';
   }
   const instruction = document.getElementById('table-eval-instruction');
   if (instruction) {
-    if (!Runtime.table.answered) instruction.textContent = '採点後に理解度を選べます:';
-    else if (Runtime.table.isEvalCompleted) instruction.textContent = '復習予定に反映しました。正しい表を確認してから次へ進めます。';
-    else if (!isCorrect) instruction.textContent = '不正解のため「要復習」を選ぶと復習予定に反映されます:';
-    else instruction.textContent = '理解度を選ぶと復習予定に反映されます:';
+    if (!Runtime.table.answered) instruction.textContent = '採点後、理解度を選んでください。';
+    else if (Runtime.table.isEvalCompleted) instruction.textContent = '復習予定に反映しました。正しい完成表を確認してから、次へ進めます。';
+    else if (!isCorrect) instruction.textContent = '不正解です。「要復習」を選ぶと復習予定に反映されます。';
+    else instruction.textContent = '理解度を選ぶと、復習予定に反映されます。';
   }
 }
 
@@ -15557,7 +15945,7 @@ function loadTableQuestion(index) {
   const tableProblemProgress = document.getElementById('table-problem-id-text');
   tableProblemProgress.innerText = `${index + 1} / ${TABLE_DATABASE.length}`;
   tableProblemProgress.setAttribute('aria-label', `${index + 1}問目、全${TABLE_DATABASE.length}問`);
-  renderStoryPanel('table', storyChapterForTableIndex(index));
+  renderStoryPanel('table', storyChapterForTableIndex(index), index);
   renderStructuredTableStatement(q);
   const hint = document.getElementById('table-hint-box'); hint.innerText = tableHintFor(q, 1); hint.style.display = 'none';
   renderTableViewControls(q); renderTableQuestionTable(q);
@@ -15723,9 +16111,18 @@ function applyTableSelfEval(quality) {
   });
   setTableEvalButtonsDisabled(true, isCorrect);
   const next = document.getElementById('table-next-btn');
-  if (next) { next.disabled = false; next.textContent = '次の表問題'; }
+  const storyNext = Runtime.story.enabled ? selectNextStoryIndex('table', Runtime.table.currentIndex, Runtime.state, new Date()) : null;
+  const storyFinalChapterCompleted = Runtime.story.enabled && storyNext < 0;
+  if (next) {
+    next.disabled = storyFinalChapterCompleted;
+    next.textContent = storyFinalChapterCompleted ? '初めての決算 一巡完了' : '次の表問題';
+  }
   const instruction = document.getElementById('table-eval-instruction');
-  if (instruction) instruction.textContent = '復習予定に反映しました。正しい表を確認してから次へ進めます。';
+  if (instruction) {
+    instruction.textContent = storyFinalChapterCompleted
+      ? '最終章を一巡しました。復習期限を迎えた問題は、次回以降「佐藤主任からの確認」として出題されます。'
+      : '復習予定に反映しました。正しい完成表を確認してから、次へ進めます。';
+  }
 }
 
 function updateTableDashboard() {
@@ -15767,7 +16164,7 @@ function getNextTableQuestionIndex() {
 }
 
 function nextTableQuestion() {
-  loadTableQuestion(getNextTableQuestionIndex());
+  loadTableQuestion(Runtime.story.enabled ? getNextStoryTableQuestionIndex() : getNextTableQuestionIndex());
 }
 
 function applyCalcToTable() {
@@ -16323,17 +16720,17 @@ function exportProgressBackup() {
     link.click();
     link.remove();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
-    setBackupStatus('✓ 学習データを保存しました', 'success');
+    setBackupStatus('✓ 学習記録を保存しました', 'success');
   } catch (error) {
     console.error('Backup export failed.', error);
-    setBackupStatus('学習データを保存できませんでした。', 'error');
+    setBackupStatus('学習記録を保存できませんでした。', 'error');
   }
 }
 
 function chooseProgressRestoreFile() {
   const input = document.getElementById('progress-import-input');
   if (!(input instanceof HTMLInputElement)) return;
-  setBackupStatus('以前保存した学習データのファイルを選んでください。');
+  setBackupStatus('以前に保存した学習記録のファイルを選んでください。');
   input.value = '';
   // ユーザー操作の同期処理内でネイティブpickerを優先し、呼び出し自体が例外となった場合だけclickへフォールバックする。
   if (typeof input.showPicker === 'function') {
@@ -16380,28 +16777,28 @@ async function handleProgressRestoreFile(event) {
 
     const warningText = checked.warnings.length ? `\n\n注意：\n${checked.warnings.join('\n')}` : '';
     const confirmed = window.confirm(
-      `現在の学習記録を、選択した保存データで置き換えます。よろしいですか？${warningText}`
+      `現在の学習記録を、選択した学習記録で置き換えます。よろしいですか？${warningText}`
     );
     if (!confirmed) {
-      setBackupStatus('データの復元をキャンセルしました。');
+      setBackupStatus('学習記録の復元をキャンセルしました。');
       input.value = '';
       return;
     }
 
     const restoredState = checked.state;
     if (!StorageManager.saveState(restoredState)) {
-      setBackupStatus('この端末に学習データを保存できなかったため、復元できませんでした。', 'error');
+      setBackupStatus('この端末に学習記録を保存できなかったため、復元できませんでした。', 'error');
       input.value = '';
       return;
     }
     Runtime.state = restoredState;
 
-    setBackupStatus('✓ 学習データを戻しました。画面を更新します。', 'success');
+    setBackupStatus('✓ 学習記録を復元しました。画面を更新します。', 'success');
     input.value = '';
     setTimeout(() => window.location.reload(), 350);
   } catch (error) {
     console.error('Backup import failed.', error);
-    setBackupStatus('保存データを読み込めませんでした。ファイルを確認してください。', 'error');
+    setBackupStatus('学習記録を読み込めませんでした。ファイルを確認してください。', 'error');
     if (input) input.value = '';
   }
 }
