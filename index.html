@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="application-version" content="v10.25">
+  <meta name="application-version" content="v10.26">
   <title>日商簿記3級 総合演習システム（2026年度出題区分対応・仕訳200問＋表問題40問）</title>
   <style>
     :root {
@@ -12431,7 +12431,7 @@ function runIntegrityCheck() {
 deepFreeze(QUESTION_DATABASE);
 deepFreeze(TABLE_DATABASE);
 
-const APP_VERSION = 'v10.25';
+const APP_VERSION = 'v10.26';
 const STORAGE_SCHEMA_VERSION = 3;
 const COMPATIBLE_STORAGE_SCHEMA_VERSIONS = new Set([2, 3]);
 const JOURNAL_BANK_VERSION = 'v7.3';
@@ -12454,7 +12454,7 @@ const EXPECTED_JOURNAL_DIFFICULTY_HASH = '0e7232f5';
 const EXPECTED_TABLE_DIFFICULTY_HASH = '6c3c5b90';
 // リリース取り違え検出用。APP/BANK定数から派生させず、意図的にリリース値を重複保持する。
 const RELEASE_MANIFEST = Object.freeze({
-  appVersion: 'v10.25',
+  appVersion: 'v10.26',
   storyLayerVersion: 'v6',
   practicalContextVersion: 'v2',
   difficultyLogicVersion: 'v2',
@@ -15319,9 +15319,20 @@ function applySelfEval(quality) {
   nextQuestion();
 }
 
-function nextQuestion() {
+// v10.26: 次の問題へ進んだとき、前問の解説位置に留まらず新しい問題文へ戻す。
+// 初回起動時は不要な自動スクロールを避けるため、呼び出し側で抑止できる。
+function scrollToCurrentProblemStatement(kind = 'journal') {
+  const targetId = kind === 'table' ? 'table-problem-statement' : 'problem-statement';
+  requestAnimationFrame(() => {
+    const target = document.getElementById(targetId);
+    if (target) target.scrollIntoView({ block: 'start', inline: 'nearest' });
+  });
+}
+
+function nextQuestion({ scrollToProblem = true } = {}) {
   const nextIdx = Runtime.story.enabled ? getNextStoryQuestionIndex() : getNextQuestionIndex();
   loadQuestion(nextIdx);
+  if (scrollToProblem && nextIdx >= 0) scrollToCurrentProblemStatement('journal');
 }
 
 
@@ -16165,6 +16176,7 @@ function getNextTableQuestionIndex() {
 
 function nextTableQuestion() {
   loadTableQuestion(Runtime.story.enabled ? getNextStoryTableQuestionIndex() : getNextTableQuestionIndex());
+  scrollToCurrentProblemStatement('table');
 }
 
 function applyCalcToTable() {
@@ -16870,7 +16882,7 @@ function initializeApp() {
   renderContentReferencePolicy();
   renderTableOfContents();
   updateDashboard();
-  nextQuestion();
+  nextQuestion({ scrollToProblem: false });
   scheduleAllAmountRefits();
   updateTableDashboard();
   renderTableToc();
