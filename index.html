@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="application-version" content="v10.29">
+  <meta name="application-version" content="v10.30">
   <title>日商簿記3級 総合演習システム（2026年度出題区分対応・仕訳200問＋表問題40問）</title>
   <style>
     :root {
@@ -2650,7 +2650,7 @@
 
 // ===== Domain Data: 仕訳問題バンク =====
 
-// 仕訳200問データベース（2026年度適用 出題区分対応・校閲監査 v10.29）
+// 仕訳200問データベース（2026年度適用 出題区分対応・論理校閲監査 v10.30）
 const QUESTION_DATABASE = [
   {
     "id": "Q001",
@@ -2694,8 +2694,8 @@ const QUESTION_DATABASE = [
   {
     "id": "Q002",
     "category": "商品売買・仕入手付金",
-    "statement": "仕入先より商品 ￥300,000 を仕入れ、以前に内金として支払っていた ￥50,000 を差し引き、残額は掛けとした。なお、先方負担の引取費用 ￥3,000 を当店が現金で立替払いした。",
-    "hint": "既払内金は「前払金（資産）」の減少。取引先負担の費用立替は「立替金（資産）」です。",
+    "statement": "仕入先より商品 ￥300,000 を仕入れ、以前に内金として支払っていた ￥50,000 を差し引き、商品代金の残額 ￥250,000 は掛けとした。なお、仕入先の依頼により、仕入先が負担すべき引取費用 ￥3,000 を運送会社へ現金で立替払いした。",
+    "hint": "商品代金の精算と、仕入先負担の引取費用の立替払いは別々に考えます。既払内金は「前払金」の減少、立替分は「立替金（資産）」です。",
     "options": [
       "仕入",
       "立替金",
@@ -2727,13 +2727,13 @@ const QUESTION_DATABASE = [
         "amount": 3000
       }
     ],
-    "explanation": "【考え方】商品を受け入れたため仕入300,000円を認識し、以前支払った内金は前払金を取り崩します。仕入先が負担すべき引取費用を当店が立て替えた分は、当店の費用ではなく立替金です。\n【金額の求め方】商品代金300,000円から前払金50,000円を差し引くと、未払額は250,000円です。先方負担の引取費用3,000円は当店の仕入原価には含めず、立替金とします。\n【仕訳の理由】借方は「仕入」300,000円（費用の発生）、「立替金」3,000円（資産の増加）、貸方は「前払金」50,000円（資産の減少）、「買掛金」250,000円（負債の増加）、「現金」3,000円（資産の減少）です。"
+    "explanation": "【考え方】商品300,000円を仕入れ、以前に支払った内金50,000円は前払金を取り崩します。商品代金の残額250,000円は買掛金です。仕入先が負担すべき引取費用3,000円は、仕入先の依頼で当店が一時的に支払っただけなので、当店の仕入原価には含めず立替金とします。\n【金額の求め方】商品代金300,000円－前払金50,000円＝250,000円が買掛金です。引取費用3,000円は商品代金とは別の立替払いです。\n【仕訳の理由】借方は「仕入」300,000円（費用の発生）、「立替金」3,000円（資産の増加）、貸方は「前払金」50,000円（資産の減少）、「買掛金」250,000円（負債の増加）、「現金」3,000円（資産の減少）です。"
   },
   {
     "id": "Q003",
     "category": "商品売買・仕入引取費用",
-    "statement": "商品 ￥200,000 を仕入れ、代金は掛けとした。なお、当店負担の引取運賃 ￥4,000 は現金で支払った。",
-    "hint": "買主負担の仕入諸掛りは、商品の購入原価（仕入）に加算します。",
+    "statement": "商品 ￥200,000 を仕入れ、商品代金は掛けとした。なお、商品代金とは別に、当店が負担する引取運賃 ￥4,000 を現金で支払った。",
+    "hint": "商品代金は掛けですが、当店負担の引取運賃は別途現金で支払っています。買主負担の仕入諸掛りは商品の購入原価（仕入）に加算します。",
     "options": [
       "仕入",
       "買掛金",
@@ -2859,8 +2859,8 @@ const QUESTION_DATABASE = [
   {
     "id": "Q008",
     "category": "商品売買・発送費（売手負担）",
-    "statement": "商品 ￥180,000 を掛けで販売した。なお、当店負担の発送運賃 ￥3,000 は現金で支払った。",
-    "hint": "売手（当店）が負担する発送運賃は「発送費（費用）」として計上します。",
+    "statement": "商品 ￥180,000 を掛けで販売した。なお、商品代金とは別に、当店が負担する発送運賃 ￥3,000 を現金で支払った。",
+    "hint": "商品代金は掛け、発送運賃は別途現金払いです。売手（当店）が負担する発送運賃は「発送費（費用）」として計上します。",
     "options": [
       "売掛金",
       "発送費",
@@ -3143,8 +3143,8 @@ const QUESTION_DATABASE = [
   {
     "id": "Q019",
     "category": "商品売買・仕入諸掛り（先方負担）",
-    "statement": "商品 ￥400,000 を仕入れ、代金は掛けとした。なお、発送運賃 ￥5,000 は仕入先負担であったが、当店が現金で立替払いした。",
-    "hint": "先方（仕入先）が負担すべき費用を当店が立て替えた場合、「立替金（資産）」で処理します。",
+    "statement": "商品 ￥400,000 を仕入れ、商品代金は掛けとした。なお、仕入先の依頼により、仕入先が負担すべき発送運賃 ￥5,000 を当店が運送会社へ現金で立替払いした。",
+    "hint": "商品代金の掛け仕入と、仕入先負担の発送運賃の立替払いは別々の取引として考えます。立替分は「立替金（資産）」です。",
     "options": [
       "仕入",
       "立替金",
@@ -3171,13 +3171,13 @@ const QUESTION_DATABASE = [
         "amount": 5000
       }
     ],
-    "explanation": "【考え方】商品本体400,000円は仕入として処理します。一方、仕入先が負担すべき発送運賃を当店が一時的に支払っただけなので、5,000円は立替金として回収すべき債権にします。\n【仕訳の理由】借方は「仕入」400,000円（費用の発生）、「立替金」5,000円（資産の増加）、貸方は「買掛金」400,000円（負債の増加）、「現金」5,000円（資産の減少）です。"
+    "explanation": "【考え方】商品代金400,000円は掛けで仕入れたため、仕入と買掛金を計上します。一方、発送運賃5,000円は仕入先が負担すべき費用であり、仕入先の依頼で当店が運送会社へ一時的に支払っただけなので、当店の費用ではなく立替金です。\n【仕訳の理由】借方は「仕入」400,000円（費用の発生）、「立替金」5,000円（資産の増加）、貸方は「買掛金」400,000円（負債の増加）、「現金」5,000円（資産の減少）です。"
   },
   {
     "id": "Q020",
     "category": "商品売買・売上諸掛り（当店負担）",
-    "statement": "商品 ￥350,000 を掛けで販売し、当店負担の発送費 ￥4,000 を現金で支払った。",
-    "hint": "売手負担の発送費は独立した「発送費（費用）」勘定で処理します。",
+    "statement": "商品 ￥350,000 を掛けで販売した。なお、商品代金とは別に、当店が負担する発送費 ￥4,000 を現金で支払った。",
+    "hint": "商品代金は掛け、発送費は別途現金払いです。売手負担の発送費は独立した「発送費（費用）」勘定で処理します。",
     "options": [
       "売掛金",
       "発送費",
@@ -3348,8 +3348,8 @@ const QUESTION_DATABASE = [
   {
     "id": "Q027",
     "category": "小切手・自己振出小切手の受取",
-    "statement": "売掛金 ￥40,000 の回収として、以前に当店が振り出した小切手が得意先より支払われ、受け取った。",
-    "hint": "自己振出小切手の戻り受領は「当座預金」の増加として処理します。",
+    "statement": "売掛金 ￥40,000 の回収として、得意先から、以前に当店が振り出した小切手 ￥40,000 を受け取った。",
+    "hint": "以前に当店が振り出した自己振出小切手を再び受け取った場合は、「当座預金」の増加として処理します。",
     "options": [
       "当座預金",
       "売掛金"
@@ -3370,9 +3370,9 @@ const QUESTION_DATABASE = [
   },
   {
     "id": "Q028",
-    "category": "当座借越（二勘定法）",
-    "statement": "当座預金残高 ￥50,000 の状態で、買掛金 ￥80,000 を支払うため小切手を振り出した。なお、当座借越契約（限度額 ￥200,000）を結んでおり、二勘定法で処理する。",
-    "hint": "預金残高超過分（30,000円）は「当座借越（負債）」で処理します。",
+    "category": "当座預金・当座借越契約（期中取引）",
+    "statement": "当座預金残高 ￥50,000 の状態で、買掛金 ￥80,000 を支払うため小切手を振り出した。なお、当座借越契約（限度額 ￥200,000）を結んでいる。期中の取引として仕訳しなさい。",
+    "hint": "期中は支払額の全額を「当座預金」の減少として記録します。残高超過による貸方残高の振替は決算整理で扱います。",
     "options": [
       "買掛金",
       "当座預金",
@@ -3387,20 +3387,16 @@ const QUESTION_DATABASE = [
     "credit": [
       {
         "account": "当座預金",
-        "amount": 50000
-      },
-      {
-        "account": "当座借越",
-        "amount": 30000
+        "amount": 80000
       }
     ],
-    "explanation": "【考え方】二勘定法では、当座預金の残高までは当座預金の減少として処理し、その残高を超えて支払った部分を当座借越という負債の増加として処理します。\n【金額の求め方】支払額80,000円－当座預金残高50,000円＝30,000円が当座借越による借入額です。\n【仕訳の理由】借方は「買掛金」80,000円（負債の減少）、貸方は「当座預金」50,000円（資産の減少）、「当座借越」30,000円（負債の増加）です。"
+    "explanation": "【考え方】当座借越契約があっても、期中の小切手振出は支払額の全額を当座預金勘定の貸方に記録します。その結果、当座預金勘定が貸方残高になった場合は、決算整理で当座借越などの負債勘定へ振り替えます。\n【仕訳の理由】借方は「買掛金」80,000円（負債の減少）、貸方は「当座預金」80,000円（資産勘定への期中記録）です。"
   },
   {
     "id": "Q029",
-    "category": "当座借越・残高超過分の処理",
-    "statement": "当座預金残高 ￥30,000 の状態で、買掛金 ￥50,000 を支払うため小切手を振り出した。なお、当座借越契約を結んでおり、当座預金と当座借越の二勘定で処理する。",
-    "hint": "当座預金残高を超える 20,000円は「当座借越（負債）」として処理します。",
+    "category": "当座預金・残高超過の期中処理",
+    "statement": "当座預金残高 ￥30,000 の状態で、買掛金 ￥50,000 を支払うため小切手を振り出した。なお、当座借越契約を結んでいる。期中の取引として仕訳しなさい。",
+    "hint": "当座預金残高を超えても、期中は支払額の全額を「当座預金」に記録します。",
     "options": [
       "買掛金",
       "当座預金",
@@ -3415,14 +3411,10 @@ const QUESTION_DATABASE = [
     "credit": [
       {
         "account": "当座預金",
-        "amount": 30000
-      },
-      {
-        "account": "当座借越",
-        "amount": 20000
+        "amount": 50000
       }
     ],
-    "explanation": "【考え方】当座預金と当座借越を別々の勘定で記録する二勘定法の問題です。当座預金残高を使い切った後の不足額が、当座借越による借入れとなります。\n【金額の求め方】支払額50,000円－当座預金残高30,000円＝20,000円が当座借越による借入額です。\n【仕訳の理由】借方は「買掛金」50,000円（負債の減少）、貸方は「当座預金」30,000円（資産の減少）、「当座借越」20,000円（負債の増加）です。"
+    "explanation": "【考え方】期中は、当座預金残高を超える支払いであっても小切手の振出額全額を当座預金勘定の貸方に記録します。当座借越への振替は決算整理で行います。\n【仕訳の理由】借方は「買掛金」50,000円（負債の減少）、貸方は「当座預金」50,000円（資産勘定への期中記録）です。"
   },
   {
     "id": "Q030",
@@ -3519,9 +3511,9 @@ const QUESTION_DATABASE = [
   },
   {
     "id": "Q034",
-    "category": "当座借越決算整理（二勘定法）",
+    "category": "当座借越の決算整理",
     "statement": "決算において、当座預金勘定の貸方残高（当座借越額）￥40,000 を「当座借越」勘定へ振り替えた。",
-    "hint": "期末の当座預金マイナス残高を負債科目「当座借越」へ調整します。",
+    "hint": "決算では、当座預金勘定の貸方残高を負債科目「当座借越」へ振り替えます。",
     "options": [
       "当座預金",
       "当座借越"
@@ -3613,8 +3605,8 @@ const QUESTION_DATABASE = [
   {
     "id": "Q038",
     "category": "小口現金・定額資金前渡法（インプレスト・システム）",
-    "statement": "本社から小口現金係に対し、当座預金から ￥50,000 を振り出して小口現金を前渡した。",
-    "hint": "定額資金前渡法による小口現金の最初の支給は「小口現金（資産）」の増加として処理します。",
+    "statement": "本社から小口現金係へ、当座預金口座について ￥50,000 の小切手を振り出し、小口現金として前渡した。",
+    "hint": "小口現金係への最初の資金前渡しです。この時点では費用ではなく「小口現金（資産）」の増加として処理します。",
     "options": [
       "小口現金",
       "当座預金"
@@ -3693,8 +3685,8 @@ const QUESTION_DATABASE = [
   {
     "id": "Q041",
     "category": "電子記録債権の発生",
-    "statement": "得意先に対する売掛金 ￥300,000 について、電子記録債権の発生記録の請求を受け、通知が到達した。",
-    "hint": "売掛金から電子記録債権への振替です。",
+    "statement": "得意先に対する売掛金 ￥300,000 について、電子債権記録機関で電子記録債権の発生記録が行われ、当店に通知された。",
+    "hint": "売掛金という債権が、電子記録債権という形態へ切り替わった取引です。",
     "options": [
       "電子記録債権",
       "売掛金"
@@ -3882,7 +3874,7 @@ const QUESTION_DATABASE = [
   {
     "id": "Q049",
     "category": "手形貸付金",
-    "statement": "取引先に ￥300,000 を貸し付け、同額の約束手形を受け取った。代金は普通預金口座から振り込んだ。",
+    "statement": "取引先に ￥300,000 を貸し付け、同額の約束手形を受け取った。貸付額 ￥300,000 は普通預金口座から振り込んだ。",
     "hint": "貸付のための手形受領は「手形貸付金」で処理します。",
     "options": [
       "手形貸付金",
@@ -4003,9 +3995,9 @@ const QUESTION_DATABASE = [
   },
   {
     "id": "Q054",
-    "category": "自己振出手形の引き受け",
-    "statement": "買掛金 ￥150,000 の支払いのために、自己振出の約束手形を交付した。",
-    "hint": "自己振出の約束手形を交付して買掛金を支払った場合、「支払手形」の増加となります。",
+    "category": "約束手形の振出（買掛金の支払）",
+    "statement": "買掛金 ￥150,000 の支払いのため、当店が約束手形 ￥150,000 を振り出して仕入先へ交付した。",
+    "hint": "買掛金を、当店が振り出した約束手形で支払ったため、「買掛金」を減らし「支払手形」を増やします。",
     "options": [
       "買掛金",
       "支払手形"
@@ -4972,8 +4964,8 @@ const QUESTION_DATABASE = [
   {
     "id": "Q092",
     "category": "未払費用の計上（決算）",
-    "statement": "決算日（3月31日）において、借入金利息 ￥60,000（年利 2％、支払期日は5月末）のうち、当期経過分（2か月分 ￥10,000）を未払計上する。",
-    "hint": "当期発生済の利息 10,000円を「未払利息（負債）」として計上します。",
+    "statement": "2月1日に借入金 ￥3,000,000 を年利 2％で借り入れた。利息は5月31日に4か月分をまとめて支払う契約である。決算日（3月31日）に、2月1日から3月31日までの2か月分の未払利息を月割計上する。",
+    "hint": "当期に発生した2か月分の利息を計算し、「支払利息」と「未払利息」を計上します。",
     "options": [
       "支払利息",
       "未払利息"
@@ -4990,7 +4982,7 @@ const QUESTION_DATABASE = [
         "amount": 10000
       }
     ],
-    "explanation": "【考え方】当期に発生しているのにまだ支払っていない利息は、当期の費用である支払利息と、負債である未払利息を認識します。\n【金額の求め方】問題文で当期経過分が10,000円と示されているため、その全額を当期の支払利息と未払利息として計上します。\n【仕訳の理由】借方は「支払利息」10,000円（費用の発生）、貸方は「未払利息」10,000円（負債の増加）です。"
+    "explanation": "【考え方】当期に発生しているのにまだ支払っていない利息は、当期の費用である支払利息と、負債である未払利息を認識します。\n【金額の求め方】3,000,000円×2％×2か月÷12か月＝10,000円です。\n【仕訳の理由】借方は「支払利息」10,000円（費用の発生）、貸方は「未払利息」10,000円（負債の増加）です。"
   },
   {
     "id": "Q093",
@@ -5268,8 +5260,8 @@ const QUESTION_DATABASE = [
   {
     "id": "Q104",
     "category": "消費税の決算処理（税抜方式）",
-    "statement": "決算にあたり、当期の仮受消費税 ￥350,000 および仮払消費税 ￥280,000 を相殺し、納付確定額を処理する。",
-    "hint": "仮受・仮払を相殺し、差額（70,000円）を「未払消費税」とします。",
+    "statement": "決算にあたり、当期の仮受消費税 ￥350,000 と仮払消費税 ￥280,000 を相殺する。差額は未納であり、後日納付するものとする。",
+    "hint": "仮受・仮払を相殺し、未納の差額70,000円を「未払消費税」とします。",
     "options": [
       "仮受消費税",
       "仮払消費税",
@@ -5365,8 +5357,8 @@ const QUESTION_DATABASE = [
   {
     "id": "Q108",
     "category": "法人税等の確定処理（中間納付あり）",
-    "statement": "決算において法人税等 ￥150,000 が決定した。中間納付済の仮払法人税等 ￥60,000 を差し引き、残額を処理する。",
-    "hint": "確定額から「仮払法人税等」を相殺し、差額を「未払法人税等」とします。",
+    "statement": "決算において法人税等の確定額が ￥150,000 となった。中間納付済の仮払法人税等は ￥60,000 であり、差額は未納である。",
+    "hint": "確定額から「仮払法人税等」を相殺し、未納額90,000円を「未払法人税等」とします。",
     "options": [
       "法人税、住民税及び事業税",
       "仮払法人税等",
@@ -5518,8 +5510,8 @@ const QUESTION_DATABASE = [
   {
     "id": "Q114",
     "category": "配当金の支払",
-    "statement": "株主配当金 ￥200,000 を当座預金口座から振り込んで支払った。",
-    "hint": "「未払配当金」の振込決済です。",
+    "statement": "株主総会で配当を決議した際に計上していた未払配当金 ￥200,000 を、当座預金口座から振り込んで支払った。",
+    "hint": "すでに計上済みの「未払配当金」を支払う取引です。",
     "options": [
       "未払配当金",
       "当座預金"
@@ -5536,7 +5528,7 @@ const QUESTION_DATABASE = [
         "amount": 200000
       }
     ],
-    "explanation": "【考え方】「未払配当金」の減少と当座預金の減少を計上します。\n【仕訳の理由】借方は「未払配当金」200,000円（負債の減少）、貸方は「当座預金」200,000円（資産の減少）です。"
+    "explanation": "【考え方】配当決議時に計上していた未払配当金を実際に支払うため、未払配当金という負債を減らし、当座預金を減らします。\n【仕訳の理由】借方は「未払配当金」200,000円（負債の減少）、貸方は「当座預金」200,000円（資産の減少）です。"
   },
   {
     "id": "Q115",
@@ -5615,12 +5607,13 @@ const QUESTION_DATABASE = [
   },
   {
     "id": "Q118",
-    "category": "郵便切手・収入印紙の購入（保管用）",
-    "statement": "将来使用するため、郵便切手 ￥5,000 および収入印紙 ￥10,000 を現金で購入し、手許で保管した。",
-    "hint": "購入時にすぐ使用せず保管する場合は「貯蔵品（資産）」勘定で処理します。",
+    "category": "貯蔵品の棚卸（未使用切手・収入印紙）",
+    "statement": "決算において、期中に購入時の全額を費用処理していた郵便切手の未使用分 ￥5,000 と収入印紙の未使用分 ￥10,000 が手許に残っていることが判明した。未使用分を貯蔵品へ振り替える。",
+    "hint": "未使用分は当期の費用から除き、「貯蔵品（資産）」へ振り替えます。郵便切手は「通信費」、収入印紙は「租税公課」から取り崩します。",
     "options": [
       "貯蔵品",
-      "現金"
+      "通信費",
+      "租税公課"
     ],
     "debit": [
       {
@@ -5630,11 +5623,15 @@ const QUESTION_DATABASE = [
     ],
     "credit": [
       {
-        "account": "現金",
-        "amount": 15000
+        "account": "通信費",
+        "amount": 5000
+      },
+      {
+        "account": "租税公課",
+        "amount": 10000
       }
     ],
-    "explanation": "【考え方】切手や収入印紙を購入しても、決算まで使用せず保管する部分は費用ではなく貯蔵品という資産として扱います。\n【金額の求め方】保管する郵便切手5,000円＋収入印紙10,000円＝15,000円を貯蔵品とします。\n【仕訳の理由】借方は「貯蔵品」15,000円（資産の増加）、貸方は「現金」15,000円（資産の減少）です。"
+    "explanation": "【考え方】購入時に費用処理していても、決算時に未使用の郵便切手や収入印紙が残っている場合、その未使用分は当期の費用ではなく次期以降に使用できる資産です。そこで未使用分を貯蔵品へ振り替えます。\n【金額の求め方】郵便切手5,000円＋収入印紙10,000円＝15,000円を貯蔵品とします。\n【仕訳の理由】借方は「貯蔵品」15,000円（資産の増加）、貸方は「通信費」5,000円（費用の減少・取消し）、「租税公課」10,000円（費用の減少・取消し）です。"
   },
   {
     "id": "Q119",
@@ -5941,7 +5938,7 @@ const QUESTION_DATABASE = [
     "id": "Q131",
     "category": "保険料の現金支払い",
     "statement": "店舗の火災保険料 ￥60,000 を現金で支払った。",
-    "hint": "保険契約に基づく拠出は「支払保険料（費用）」です。",
+    "hint": "店舗の火災保険料は「支払保険料（費用）」として処理します。",
     "options": [
       "支払保険料",
       "現金"
@@ -6102,7 +6099,7 @@ const QUESTION_DATABASE = [
     "id": "Q138",
     "category": "雑費の支払い",
     "statement": "少額のゴミ処理手数料 ￥1,500 を現金で支払った。",
-    "hint": "他のいずれの勘定科目にも当てはまらない少額の経費は「雑費（費用）」とします。",
+    "hint": "他の適切な費用科目に該当せず、独立した科目を設けない経費は「雑費（費用）」として処理します。",
     "options": [
       "雑費",
       "現金"
@@ -6119,7 +6116,7 @@ const QUESTION_DATABASE = [
         "amount": 1500
       }
     ],
-    "explanation": "【考え方】「雑費」の発生と現金の減少を計上します。\n【仕訳の理由】借方は「雑費」1,500円（費用の発生）、貸方は「現金」1,500円（資産の減少）です。"
+    "explanation": "【考え方】このゴミ処理手数料は、問題上ほかの適切な費用科目を用いないため「雑費」として処理します。\n【仕訳の理由】借方は「雑費」1,500円（費用の発生）、貸方は「現金」1,500円（資産の減少）です。"
   },
   {
     "id": "Q139",
@@ -6194,7 +6191,7 @@ const QUESTION_DATABASE = [
   {
     "id": "Q142",
     "category": "発送費の支払い",
-    "statement": "商品発送のための梱包資材および発送運賃 ￥22,000 を現金で支払った。",
+    "statement": "商品発送のために使用した梱包資材代と発送運賃の合計 ￥22,000 を現金で支払った。",
     "hint": "商品を販売・発送するために当店が負担する費用は「発送費」です。",
     "options": [
       "発送費",
@@ -6311,8 +6308,8 @@ const QUESTION_DATABASE = [
   {
     "id": "Q147",
     "category": "地代の前払い繰延べ",
-    "statement": "期中に支払っていた地代 ￥120,000 のうち、来期分（2か月分 ￥20,000）を前払費用として繰り延べた。",
-    "hint": "当期支払額のうち次期対応分を「前払地代（資産）」へ振り替えます。",
+    "statement": "期中に地代 ￥120,000 を支払い、その全額を「支払地代」として処理していた。決算にあたり、このうち来期分（2か月分 ￥20,000）を前払地代へ繰り延べる。",
+    "hint": "当期に「支払地代」として処理した金額のうち、次期分20,000円を「前払地代（資産）」へ振り替えます。",
     "options": [
       "前払地代",
       "支払地代"
@@ -6334,8 +6331,8 @@ const QUESTION_DATABASE = [
   {
     "id": "Q148",
     "category": "受取手数料の前受繰延べ",
-    "statement": "期中に受け取っていた手数料 ￥60,000 のうち、次期対応分 ￥10,000 を前受収益として繰り延べた。",
-    "hint": "受領済収益の次期対応分は「前受手数料（負債）」へ繰り延べます。",
+    "statement": "期中に手数料 ￥60,000 を受け取り、その全額を「受取手数料」として処理していた。決算にあたり、このうち次期分 ￥10,000 を前受手数料へ繰り延べる。",
+    "hint": "当期に「受取手数料」とした金額のうち、次期分10,000円を「前受手数料（負債）」へ振り替えます。",
     "options": [
       "受取手数料",
       "前受手数料"
@@ -6379,9 +6376,9 @@ const QUESTION_DATABASE = [
   },
   {
     "id": "Q150",
-    "category": "当座借越の期末振替（二勘定法）",
+    "category": "当座借越の期末振替",
     "statement": "決算において、当座預金勘定の貸方残高（当座借越）￥70,000 を、負債勘定である「当座借越」へ振り替えた。",
-    "hint": "期中「当座預金」の貸方残高として処理していたマイナス分を期末に「当座借越」へ振り替えます。",
+    "hint": "決算では、当座預金勘定の貸方残高を負債科目「当座借越」へ振り替えます。",
     "options": [
       "当座預金",
       "当座借越"
@@ -6398,7 +6395,7 @@ const QUESTION_DATABASE = [
         "amount": 70000
       }
     ],
-    "explanation": "【考え方】決算では、当座預金勘定に生じている貸方残高を負債である当座借越へ振り替えます。\n【仕訳の理由】借方は「当座預金」70,000円として当座預金勘定の貸方残高を解消し、貸方は「当座借越」70,000円として負債へ振り替えます。"
+    "explanation": "【考え方】決算では、当座預金勘定の貸方残高をそのまま資産勘定に残さず、負債である当座借越へ振り替えます。\n【仕訳の理由】借方は「当座預金」70,000円として当座預金勘定の貸方残高を解消し、貸方は「当座借越」70,000円として負債へ振り替えます。"
   },
   {
     "id": "Q151",
@@ -6812,7 +6809,7 @@ const QUESTION_DATABASE = [
     "id": "Q168",
     "category": "総合・未払利息の再振替",
     "statement": "期首にあたり、前期末に負債計上していた未払利息 ￥15,000 について再振替仕訳を行った。",
-    "hint": "前期末に未払費用とした金額を、期首に当期の支払利息へ戻し入れます。",
+    "hint": "前期末の未払計上を期首に逆仕訳し、「未払利息」を取り崩すとともに「支払利息」を貸方へ戻します。",
     "options": [
       "未払利息",
       "支払利息"
@@ -6829,7 +6826,7 @@ const QUESTION_DATABASE = [
         "amount": 15000
       }
     ],
-    "explanation": "【考え方】期首の再振替仕訳により、前期末の未払利息を取り消し、当期の「支払利息」へ戻します。\n【仕訳の理由】借方は「未払利息」15,000円（負債の減少）、貸方は「支払利息」15,000円（費用の減少・取消し）です。"
+    "explanation": "【考え方】期首の再振替仕訳では、前期末に行った未払利息の決算整理仕訳を逆に記入します。これにより未払利息を取り崩し、前期末に計上した支払利息をいったん戻します。\n【仕訳の理由】借方は「未払利息」15,000円（負債の減少）、貸方は「支払利息」15,000円（費用の減少・取消し）です。"
   },
   {
     "id": "Q169",
@@ -6915,8 +6912,8 @@ const QUESTION_DATABASE = [
   {
     "id": "Q172",
     "category": "総合・見本市出展料の支払い",
-    "statement": "新商品の見本市出展料 ￥80,000 を普通預金から振り込んで支払った。",
-    "hint": "見本市への出展料は商品の宣伝目的であるため「広告宣伝費」として処理します。",
+    "statement": "新商品の販売促進を目的として見本市へ出展し、出展料 ￥80,000 を普通預金口座から振り込んで支払った。",
+    "hint": "販売促進を目的とする見本市の出展料は「広告宣伝費」として処理します。",
     "options": [
       "広告宣伝費",
       "普通預金"
@@ -7431,7 +7428,7 @@ const QUESTION_DATABASE = [
   {
     "id": "Q193",
     "category": "総合・預り金の受入れ",
-    "statement": "従業員から団体保険料として会社が一時的に預かる金額 ￥30,000 を現金で受け取った。",
+    "statement": "会社が一時的に預かる団体保険料 ￥30,000 を、従業員から現金で受け取った。",
     "hint": "会社が一時的に預かった金額は「預り金（負債）」として処理します。",
     "options": [
       "現金",
@@ -7450,7 +7447,7 @@ const QUESTION_DATABASE = [
         "amount": 30000
       }
     ],
-    "explanation": "【考え方】受け取った現金 30,000円を借方に計上し、後日支払うため一時的に預かっている同額を「預り金」として貸方に計上します。\n【仕訳の理由】借方は「現金」30,000円（資産の増加）、貸方は「預り金」30,000円（負債の増加）です。"
+    "explanation": "【考え方】現金30,000円を受け取る一方、この金額は会社の収益ではなく、後日所定の相手先へ支払うため一時的に預かっているものなので「預り金」とします。\n【仕訳の理由】借方は「現金」30,000円（資産の増加）、貸方は「預り金」30,000円（負債の増加）です。"
   },
   {
     "id": "Q194",
@@ -7478,7 +7475,7 @@ const QUESTION_DATABASE = [
   {
     "id": "Q195",
     "category": "総合・貸付金の分割回収",
-    "statement": "取引先への貸付金 ￥800,000 のうち、 ￥300,000 が現金で返済された。",
+    "statement": "取引先への貸付金 ￥800,000 のうち、￥300,000 が現金で返済された。",
     "hint": "貸付金の回収による資産の減少です。",
     "options": [
       "現金",
@@ -7573,8 +7570,8 @@ const QUESTION_DATABASE = [
   {
     "id": "Q199",
     "category": "総合・当座預金の振込入金",
-    "statement": "得意先から売掛金 ￥450,000 が当座預金口座に直接振り込まれた。",
-    "hint": "当座預金の増加と売掛金の回収です。",
+    "statement": "得意先から、売掛金 ￥450,000 の回収として当座預金口座へ振込みがあった。",
+    "hint": "売掛金の回収により、当座預金が増加し、売掛金が減少します。",
     "options": [
       "当座預金",
       "売掛金"
@@ -7620,7 +7617,7 @@ const QUESTION_DATABASE = [
 
 
 // v10.14: 8桁精算表の修正記入欄を入力対象化。その他の表問題内容は維持。
-// v10.29: T025〜T040は正答セルを変えず、決算の「なぜ」が分かる解説へ補強。
+// v10.30: T032〜T040は正答セルを変えず、問題文単体で回答対象が分かる指示文を追加。
 // ===== Domain Data: 表・決算問題バンク =====
 // 表・決算演習40問（2026年度3級範囲：試算表、8桁精算表、決算整理後残高試算表、損益計算書、貸借対照表）
 const TABLE_DATABASE = [
@@ -10635,7 +10632,7 @@ const TABLE_DATABASE = [
     "id": "T032",
     "group": "損益計算書",
     "category": "損益計算書②・複数費用",
-    "statement": "売上1,200,000円、受取手数料20,000円、仕入700,000円、給料250,000円、広告宣伝費80,000円、支払利息10,000円です。",
+    "statement": "売上1,200,000円、受取手数料20,000円、仕入700,000円、給料250,000円、広告宣伝費80,000円、支払利息10,000円です。 収益合計・費用合計・当期純利益を求めてください。",
     "columns": [
       {
         "key": "amount",
@@ -10674,7 +10671,7 @@ const TABLE_DATABASE = [
     "id": "T033",
     "group": "損益計算書",
     "category": "損益計算書③・当期純損失",
-    "statement": "売上600,000円、受取利息5,000円、仕入450,000円、給料120,000円、支払家賃60,000円、水道光熱費30,000円です。",
+    "statement": "売上600,000円、受取利息5,000円、仕入450,000円、給料120,000円、支払家賃60,000円、水道光熱費30,000円です。 収益合計・費用合計・当期純損失を求めてください。",
     "columns": [
       {
         "key": "amount",
@@ -10713,7 +10710,7 @@ const TABLE_DATABASE = [
     "id": "T034",
     "group": "損益計算書",
     "category": "損益計算書④・決算整理後",
-    "statement": "売上1,000,000円、受取利息5,000円、仕入500,000円、給料200,000円、減価償却費50,000円、貸倒引当金繰入10,000円、支払家賃100,000円です。",
+    "statement": "売上1,000,000円、受取利息5,000円、仕入500,000円、給料200,000円、減価償却費50,000円、貸倒引当金繰入10,000円、支払家賃100,000円です。 収益合計・費用合計・当期純利益を求めてください。",
     "columns": [
       {
         "key": "amount",
@@ -10752,7 +10749,7 @@ const TABLE_DATABASE = [
     "id": "T035",
     "group": "損益計算書",
     "category": "損益計算書⑤・売上原価を含む",
-    "statement": "売上1,500,000円、売上原価900,000円、給料250,000円、広告宣伝費100,000円、通信費30,000円、受取利息10,000円です。",
+    "statement": "売上1,500,000円、売上原価900,000円、給料250,000円、広告宣伝費100,000円、通信費30,000円、受取利息10,000円です。 収益合計・費用合計・当期純利益を求めてください。",
     "columns": [
       {
         "key": "amount",
@@ -10791,7 +10788,7 @@ const TABLE_DATABASE = [
     "id": "T036",
     "group": "貸借対照表",
     "category": "貸借対照表①・基本",
-    "statement": "現金100,000円、売掛金200,000円、貸倒引当金5,000円、備品300,000円、備品減価償却累計額60,000円、買掛金150,000円、借入金100,000円、資本金200,000円、繰越利益剰余金85,000円です。",
+    "statement": "現金100,000円、売掛金200,000円、貸倒引当金5,000円、備品300,000円、備品減価償却累計額60,000円、買掛金150,000円、借入金100,000円、資本金200,000円、繰越利益剰余金85,000円です。 資産合計・負債合計・純資産合計・負債・純資産合計を求めてください。",
     "columns": [
       {
         "key": "amount",
@@ -10838,7 +10835,7 @@ const TABLE_DATABASE = [
     "id": "T037",
     "group": "貸借対照表",
     "category": "貸借対照表②・経過勘定",
-    "statement": "普通預金250,000円、売掛金150,000円、前払保険料20,000円、消耗品10,000円、買掛金80,000円、未払給料30,000円、前受家賃20,000円、資本金250,000円、繰越利益剰余金50,000円です。",
+    "statement": "普通預金250,000円、売掛金150,000円、前払保険料20,000円、消耗品10,000円、買掛金80,000円、未払給料30,000円、前受家賃20,000円、資本金250,000円、繰越利益剰余金50,000円です。 資産合計・負債合計・純資産合計・負債・純資産合計を求めてください。",
     "columns": [
       {
         "key": "amount",
@@ -10885,7 +10882,7 @@ const TABLE_DATABASE = [
     "id": "T038",
     "group": "貸借対照表",
     "category": "貸借対照表③・手形等",
-    "statement": "現金80,000円、電子記録債権120,000円、受取手形100,000円、備品400,000円、備品減価償却累計額160,000円、電子記録債務100,000円、支払手形80,000円、借入金160,000円、資本金200,000円です。",
+    "statement": "現金80,000円、電子記録債権120,000円、受取手形100,000円、備品400,000円、備品減価償却累計額160,000円、電子記録債務100,000円、支払手形80,000円、借入金160,000円、資本金200,000円です。 資産合計・負債合計・純資産合計・負債・純資産合計を求めてください。",
     "columns": [
       {
         "key": "amount",
@@ -10932,7 +10929,7 @@ const TABLE_DATABASE = [
     "id": "T039",
     "group": "貸借対照表",
     "category": "貸借対照表④・商品と引当金",
-    "statement": "現金100,000円、売掛金300,000円、貸倒引当金6,000円、繰越商品120,000円、前払家賃40,000円、買掛金150,000円、未払利息4,000円、前受金50,000円、資本金250,000円、繰越利益剰余金100,000円です。",
+    "statement": "現金100,000円、売掛金300,000円、貸倒引当金6,000円、繰越商品120,000円、前払家賃40,000円、買掛金150,000円、未払利息4,000円、前受金50,000円、資本金250,000円、繰越利益剰余金100,000円です。 資産合計・負債合計・純資産合計・負債・純資産合計を求めてください。",
     "columns": [
       {
         "key": "amount",
@@ -10979,7 +10976,7 @@ const TABLE_DATABASE = [
     "id": "T040",
     "group": "貸借対照表",
     "category": "貸借対照表⑤・当期純利益の反映",
-    "statement": "決算前の繰越利益剰余金100,000円、当期純利益50,000円、資本金300,000円、負債合計250,000円です。決算後の貸借対照表は資産合計700,000円となります。",
+    "statement": "決算前の繰越利益剰余金100,000円、当期純利益50,000円、資本金300,000円、負債合計250,000円です。決算後の貸借対照表は資産合計700,000円となります。 決算後の繰越利益剰余金・純資産合計・負債・純資産合計を求めてください。",
     "columns": [
       {
         "key": "amount",
@@ -11339,10 +11336,12 @@ const UPDATED_FROM_V7_0_IDS = new Set(["Q012","Q024","Q029","Q036","Q039","Q052"
 const UPDATED_FROM_V7_1_IDS = new Set(["Q065", "Q179"]);
 // v7.2→v7.3は表記・文体の校閲のみ。問題条件・正答は不変のため旧履歴を破棄しない。
 // v7.3→v7.4は問題文・解説の校閲のみ。問題条件・正答は不変のため旧履歴を保持する。
-const COMPATIBLE_JOURNAL_BANK_VERSIONS = new Set(['v7.0', 'v7.1', 'v7.2', 'v7.3', 'v7.4']);
+// v7.4→v7.5では、Q028/Q029の期中当座借越処理、Q092の利息計算条件、Q118の貯蔵品棚卸を再設計したため当該履歴のみ破棄する。
+const UPDATED_FROM_V7_4_IDS = new Set(['Q028','Q029','Q092','Q118']);
+const COMPATIBLE_JOURNAL_BANK_VERSIONS = new Set(['v7.0', 'v7.1', 'v7.2', 'v7.3', 'v7.4', 'v7.5']);
 const UPDATED_FROM_TABLE_V8_4_IDS = new Set(['T015','T016','T017','T018','T019','T020','T021','T022','T023']);
-// v8.5→v8.6はT025〜T040の解説補強のみ。正答セルは不変のため旧履歴を保持する。
-const COMPATIBLE_TABLE_BANK_VERSIONS = new Set(['v8.3', 'v8.4', 'v8.5', 'v8.6']);
+// v8.5→v8.6はT025〜T040の解説補強、v8.6→v8.7はT032〜T040の指示文追加のみ。正答セルは不変のため旧履歴を保持する。
+const COMPATIBLE_TABLE_BANK_VERSIONS = new Set(['v8.3', 'v8.4', 'v8.5', 'v8.6', 'v8.7']);
 
 // ===== Infrastructure / Integrity: 保存・バックアップ・問題バンク整合性 =====
 // --- LocalStorage 管理クラス（JSONバックアップ／復元対応） ---
@@ -11724,6 +11723,25 @@ function validateBackupUtilities() {
   if (migratedEditorial.ok && !migratedEditorial.state.progress.Q001) issues.push('v7.3→v7.4校閲移行で仕訳学習履歴が失われています');
   if (migratedEditorial.ok && !migratedEditorial.state.tableProgress.T038) issues.push('v8.5→v8.6解説補強移行で表学習履歴が失われています');
 
+  // v7.4→v7.5は一部問題の条件・正答を再設計。対象IDのみ旧履歴を除外し、校閲のみの問題は保持する。
+  const scopeFixLegacy = JSON.parse(JSON.stringify(payload));
+  scopeFixLegacy.state.journalBankVersion = 'v7.4';
+  scopeFixLegacy.state.tableBankVersion = 'v8.6';
+  scopeFixLegacy.journalBankVersion = 'v7.4';
+  scopeFixLegacy.tableBankVersion = 'v8.6';
+  ['Q028','Q029','Q092','Q118','Q019'].forEach(id => {
+    scopeFixLegacy.state.progress[id] = { intervalDays: 5, repetitionCount: 3, easeFactor: 2.5, nextReviewDate: '2026-08-20T00:00:00.000Z', lastReviewed: '2026-08-15T00:00:00.000Z' };
+  });
+  scopeFixLegacy.state.tableProgress.T038 = { attempts: 2, correct: true, lastResultCorrect: true, intervalDays: 3, repetitionCount: 2, easeFactor: 2.5, nextReviewDate: '2026-08-20T00:00:00.000Z', lastAttempt: '2026-08-15T00:00:00.000Z', lastReviewed: '2026-08-15T00:00:00.000Z' };
+  scopeFixLegacy.stateChecksum = stableBankHash(scopeFixLegacy.state);
+  const migratedScopeFix = StorageManager.sanitizeBackupState(scopeFixLegacy);
+  if (!migratedScopeFix.ok) issues.push(`v7.4/v8.6→v7.5/v8.7移行検証に失敗: ${migratedScopeFix.error}`);
+  if (migratedScopeFix.ok) {
+    ['Q028','Q029','Q092','Q118'].forEach(id => { if (migratedScopeFix.state.progress[id]) issues.push(`${id}: 再設計前の旧学習履歴が除外されていません`); });
+    if (!migratedScopeFix.state.progress.Q019) issues.push('Q019: 文言明確化のみの旧学習履歴が失われています');
+    if (!migratedScopeFix.state.tableProgress.T038) issues.push('v8.6→v8.7指示文追加で表学習履歴が失われています');
+  }
+
   // v9.9相当（backup format 1 / schema 2 / learningGameなし）からv10.0へ移行できることを検証する。
   const legacyV99 = JSON.parse(JSON.stringify(payload));
   legacyV99.backupFormatVersion = 1;
@@ -11927,12 +11945,28 @@ function validateEditorialQuality() {
   const journalCopy = QUESTION_DATABASE.map(q => [q.category, q.statement, q.hint, q.explanation].filter(Boolean).join('\n')).join('\n');
   if (journalCopy.includes('ヶ月')) issues.push('期間表記に「ヶ月」が残っています。「か月」に統一してください');
   if (/\d\s*%/.test(journalCopy)) issues.push('割合表記に半角%が残っています。全角％に統一してください');
-  const forbiddenEditorialCopy = ['税金考慮外', '正式な「当座借越」', '現金差額を仮勘定の', '自店振出'];
+  const forbiddenEditorialCopy = ['税金考慮外', '正式な「当座借越」', '現金差額を仮勘定の', '自店振出', '二勘定法', '代金は普通預金口座から振り込んだ', '当座預金から ￥50,000 を振り出して'];
   forbiddenEditorialCopy.forEach(term => {
     if (journalCopy.includes(term)) issues.push(`校閲済みの旧表現が再混入しています: ${term}`);
   });
   if (QUESTION_DATABASE.find(q => q.id === 'Q001')?.statement.includes('丸の内商事株式会社')) issues.push('Q001にストーリー会社と競合する固有会社名が残っています');
   if (QUESTION_DATABASE.find(q => q.id === 'Q095')?.category !== '未払地代の計上') issues.push('Q095の未払地代表記が統一されていません');
+  const q028 = QUESTION_DATABASE.find(q => q.id === 'Q028');
+  const q029 = QUESTION_DATABASE.find(q => q.id === 'Q029');
+  [q028, q029].forEach(q => {
+    if (!q) return;
+    const hasCurrentPeriodOverdraftCredit = (q.credit || []).some(entry => entry.account === '当座借越');
+    if (hasCurrentPeriodOverdraftCredit) issues.push(`${q.id}: 期中取引で当座借越勘定を貸方計上しています`);
+    const currentAccountCredit = (q.credit || []).find(entry => entry.account === '当座預金');
+    const debitTotal = (q.debit || []).reduce((sum, entry) => sum + Number(entry.amount || 0), 0);
+    if (!currentAccountCredit || Number(currentAccountCredit.amount) !== debitTotal) issues.push(`${q.id}: 期中の支払額全額が当座預金に記録されていません`);
+  });
+  const q118 = QUESTION_DATABASE.find(q => q.id === 'Q118');
+  if (q118 && (!(q118.credit || []).some(entry => entry.account === '通信費') || !(q118.credit || []).some(entry => entry.account === '租税公課'))) issues.push('Q118: 未使用切手・収入印紙の決算振替が費用科目からの振替になっていません');
+  const tableInstructionIds = new Set(['T032','T033','T034','T035','T036','T037','T038','T039','T040']);
+  TABLE_DATABASE.filter(q => tableInstructionIds.has(q.id)).forEach(q => {
+    if (!String(q.statement || '').includes('求めてください')) issues.push(`${q.id}: 問題文に回答対象の指示がありません`);
+  });
   const finalTableExplanations = TABLE_DATABASE.filter(q => Number(q.id.slice(1)) >= 25 && Number(q.id.slice(1)) <= 40);
   finalTableExplanations.forEach(q => {
     const explanation = String(q.explanation || '');
@@ -12493,11 +12527,11 @@ function runIntegrityCheck() {
 deepFreeze(QUESTION_DATABASE);
 deepFreeze(TABLE_DATABASE);
 
-const APP_VERSION = 'v10.29';
+const APP_VERSION = 'v10.30';
 const STORAGE_SCHEMA_VERSION = 3;
 const COMPATIBLE_STORAGE_SCHEMA_VERSIONS = new Set([2, 3]);
-const JOURNAL_BANK_VERSION = 'v7.4';
-const TABLE_BANK_VERSION = 'v8.6';
+const JOURNAL_BANK_VERSION = 'v7.5';
+const TABLE_BANK_VERSION = 'v8.7';
 
 /*
  * ===== 問題バンク更新手順（保守用） =====
@@ -12509,22 +12543,22 @@ const TABLE_BANK_VERSION = 'v8.6';
  * 5) stableBankHashは破損・意図しない変更を検知するための32bitチェックサムであり、暗号学的署名ではない。
  * 6) STORAGE_SCHEMA_VERSION（保存データ構造）とJOURNAL/TABLE_BANK_VERSION（問題バンク版）は別物として管理する。
  */
-const EXPECTED_QUESTION_BANK_HASH = '11e628e2';
-const EXPECTED_TABLE_BANK_HASH = 'e1bc55e9';
+const EXPECTED_QUESTION_BANK_HASH = 'db5aaaa5';
+const EXPECTED_TABLE_BANK_HASH = '998ed2cf';
 // 難易度ロジックの意図しない変更を検出するため、問題IDと算出難易度だけを固定監視する。
-const EXPECTED_JOURNAL_DIFFICULTY_HASH = '0e7232f5';
+const EXPECTED_JOURNAL_DIFFICULTY_HASH = 'c7ea73ba';
 const EXPECTED_TABLE_DIFFICULTY_HASH = '6c3c5b90';
 // リリース取り違え検出用。APP/BANK定数から派生させず、意図的にリリース値を重複保持する。
 const RELEASE_MANIFEST = Object.freeze({
-  appVersion: 'v10.29',
+  appVersion: 'v10.30',
   storyLayerVersion: 'v7',
   practicalContextVersion: 'v2',
   difficultyLogicVersion: 'v2',
-  editorialCopyVersion: 'v6',
-  journalBankVersion: 'v7.4',
-  tableBankVersion: 'v8.6',
-  journalBankHash: '11e628e2',
-  tableBankHash: 'e1bc55e9'
+  editorialCopyVersion: 'v7',
+  journalBankVersion: 'v7.5',
+  tableBankVersion: 'v8.7',
+  journalBankHash: 'db5aaaa5',
+  tableBankHash: '998ed2cf'
 });
 const BACKUP_PRODUCT_ID = 'boki3-comprehensive';
 const BACKUP_FORMAT_VERSION = 2;
@@ -12642,8 +12676,9 @@ class StorageManager {
         : parsed.bankVersion;
       let purgeSet = new Set();
       const journalCompatible = COMPATIBLE_JOURNAL_BANK_VERSIONS.has(legacyJournalVersion);
-      if (legacyJournalVersion === 'v7.0') purgeSet = new Set([...UPDATED_FROM_V7_0_IDS, ...UPDATED_FROM_V7_1_IDS]);
-      else if (legacyJournalVersion === 'v7.1') purgeSet = UPDATED_FROM_V7_1_IDS;
+      if (legacyJournalVersion === 'v7.0') purgeSet = new Set([...UPDATED_FROM_V7_0_IDS, ...UPDATED_FROM_V7_1_IDS, ...UPDATED_FROM_V7_4_IDS]);
+      else if (legacyJournalVersion === 'v7.1') purgeSet = new Set([...UPDATED_FROM_V7_1_IDS, ...UPDATED_FROM_V7_4_IDS]);
+      else if (['v7.2', 'v7.3', 'v7.4'].includes(legacyJournalVersion)) purgeSet = UPDATED_FROM_V7_4_IDS;
 
       const legacyTableVersion = typeof parsed.tableBankVersion === 'string' ? parsed.tableBankVersion : TABLE_BANK_VERSION;
       const tableCompatible = COMPATIBLE_TABLE_BANK_VERSIONS.has(legacyTableVersion);
@@ -12825,8 +12860,10 @@ class StorageManager {
       return result;
     }
     const backupJournalPurgeSet = journalVersion === 'v7.0'
-      ? new Set([...UPDATED_FROM_V7_0_IDS, ...UPDATED_FROM_V7_1_IDS])
-      : journalVersion === 'v7.1' ? UPDATED_FROM_V7_1_IDS : new Set();
+      ? new Set([...UPDATED_FROM_V7_0_IDS, ...UPDATED_FROM_V7_1_IDS, ...UPDATED_FROM_V7_4_IDS])
+      : journalVersion === 'v7.1'
+        ? new Set([...UPDATED_FROM_V7_1_IDS, ...UPDATED_FROM_V7_4_IDS])
+        : ['v7.2', 'v7.3', 'v7.4'].includes(journalVersion) ? UPDATED_FROM_V7_4_IDS : new Set();
     const backupTablePurgeSet = (tableVersion === 'v8.3' || tableVersion === 'v8.4') ? UPDATED_FROM_TABLE_V8_4_IDS : new Set();
     const needsMigration = journalVersion !== JOURNAL_BANK_VERSION || tableVersion !== TABLE_BANK_VERSION
       || rawSchema !== STORAGE_SCHEMA_VERSION || backupFormat !== BACKUP_FORMAT_VERSION;
